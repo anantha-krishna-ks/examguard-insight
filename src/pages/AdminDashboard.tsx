@@ -37,18 +37,16 @@ const AdminDashboard = () => {
               
               <AnalyticsGrid onChartClick={handleChartClick} />
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <ActivityTimeline />
-                </div>
-                <div>
-                  <AlertFeed />
-                </div>
+              <div className="grid grid-cols-1 gap-6">
+                <ActivityTimeline />
               </div>
               
               <QuickActions />
             </main>
           </div>
+          
+          {/* Sticky Alert Feed */}
+          <AlertFeed />
         </div>
 
         {selectedChart && (
