@@ -144,20 +144,32 @@ const Candidate360Page = () => {
         </Card>
 
         <Tabs defaultValue="candidates" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="candidates" className="flex items-center space-x-2">
+          <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-muted/50 to-muted/30 backdrop-blur-sm border border-border/50 rounded-xl p-1.5 shadow-lg">
+            <TabsTrigger 
+              value="candidates" 
+              className="flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105 hover:bg-accent/50 text-sm"
+            >
               <Users className="h-4 w-4" />
               <span>Candidates</span>
             </TabsTrigger>
-            <TabsTrigger value="organizations" className="flex items-center space-x-2">
+            <TabsTrigger 
+              value="organizations" 
+              className="flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105 hover:bg-accent/50 text-sm"
+            >
               <Building2 className="h-4 w-4" />
               <span>Organizations</span>
             </TabsTrigger>
-            <TabsTrigger value="locations" className="flex items-center space-x-2">
+            <TabsTrigger 
+              value="locations" 
+              className="flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105 hover:bg-accent/50 text-sm"
+            >
               <MapPin className="h-4 w-4" />
               <span>Locations</span>
             </TabsTrigger>
-            <TabsTrigger value="testcenters" className="flex items-center space-x-2">
+            <TabsTrigger 
+              value="testcenters" 
+              className="flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:scale-105 hover:bg-accent/50 text-sm"
+            >
               <Building2 className="h-4 w-4" />
               <span>Test Centers</span>
             </TabsTrigger>
