@@ -284,13 +284,6 @@ export function AlertFeed() {
             >
               {isPinned ? <Pin className="h-4 w-4" /> : <PinOff className="h-4 w-4" />}
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setIsMinimized(true)}
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
           </div>
         </div>
         
