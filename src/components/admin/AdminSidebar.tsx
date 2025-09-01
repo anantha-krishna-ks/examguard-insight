@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Monitor,
@@ -8,8 +7,6 @@ import {
   Briefcase,
   Settings,
   Shield,
-  Users,
-  Activity,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -47,19 +44,6 @@ export function AdminSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
-  
-  const [activeCandidates, setActiveCandidates] = useState(1247);
-  const [systemHealth, setSystemHealth] = useState(99.8);
-
-  // Simulate live updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveCandidates(prev => prev + Math.floor(Math.random() * 3) - 1);
-      setSystemHealth(prev => Math.max(95, Math.min(100, prev + (Math.random() - 0.5) * 0.2)));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const isActive = (path: string) => {
     if (path === "/admin") {
@@ -72,12 +56,6 @@ export function AdminSidebar() {
     isActive 
       ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
       : "hover:bg-sidebar-accent/50";
-  
-  const getHealthColor = (health: number) => {
-    if (health >= 99) return "bg-admin-normal-safe";
-    if (health >= 95) return "bg-admin-warning";
-    return "bg-admin-critical-alert";
-  };
 
   return (
     <Sidebar
@@ -91,31 +69,9 @@ export function AdminSidebar() {
           {/* Header Section */}
           {!collapsed && (
             <div className="p-3 border-b mb-4">
-              <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-primary" />
                 <span className="font-semibold text-sm">ExamGuard Forensics</span>
-              </div>
-              
-              {/* Stats */}
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-1">
-                    <Users className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">Active</span>
-                  </div>
-                  <span className="font-medium">{activeCandidates.toLocaleString()}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-1">
-                    <Activity className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-muted-foreground">Health</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className={`w-2 h-2 rounded-full ${getHealthColor(systemHealth)}`} />
-                    <span className="font-medium">{systemHealth.toFixed(1)}%</span>
-                  </div>
-                </div>
               </div>
             </div>
           )}

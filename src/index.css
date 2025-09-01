@@ -104,15 +104,15 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* Admin Dashboard Colors - Dark Mode */
-    --admin-bg: 222 84% 5%;
-    --admin-response-anomaly: 48 100% 67%;
-    --admin-sequential-pattern: 210 100% 66%;
-    --admin-answer-revision: 25 100% 60%;
-    --admin-normal-safe: 120 60% 60%;
+    --admin-bg: 222 84% 4.9%;
+    --admin-response-anomaly: 48 96% 53%;
+    --admin-sequential-pattern: 210 100% 56%;
+    --admin-answer-revision: 25 95% 53%;
+    --admin-normal-safe: 120 60% 50%;
     --admin-critical-alert: 0 84% 60%;
-    --admin-warning: 38 92% 60%;
-    --admin-info: 204 50% 20%;
-    --admin-success: 120 40% 20%;
+    --admin-warning: 38 92% 50%;
+    --admin-info: 204 100% 15%;
+    --admin-success: 120 60% 15%;
   }
 }
 
