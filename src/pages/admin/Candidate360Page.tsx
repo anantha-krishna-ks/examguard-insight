@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, Filter, Users, MapPin, Building2, Eye } from "lucide-react";
+import { Search, Filter, Users, MapPin, Building2, Eye, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -164,67 +164,95 @@ const Candidate360Page = () => {
           </TabsList>
 
           <TabsContent value="candidates" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCandidates.map(candidate => (
-                <Card key={candidate.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-3">
+                <Card key={candidate.id} className="group relative overflow-hidden border-0 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
+                  {/* Status indicator bar */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 ${getStatusColor(candidate.status)}`} />
+                  
+                  <CardHeader className="pb-4 pt-6">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Avatar>
-                          <AvatarFallback className="bg-primary text-primary-foreground">
-                            {candidate.name.split(' ').map(n => n[0]).join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="font-semibold">{candidate.name}</h3>
-                          <p className="text-sm text-muted-foreground">{candidate.email}</p>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <Avatar className="h-12 w-12 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
+                            <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold text-lg">
+                              {candidate.name.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-card ${getStatusColor(candidate.status)}`} />
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${getStatusColor(candidate.status)}`} />
-                        <span className="text-xs font-medium">{getStatusText(candidate.status)}</span>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors duration-200 truncate">
+                            {candidate.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground truncate">{candidate.email}</p>
+                          <div className="flex items-center mt-1">
+                            <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                              {getStatusText(candidate.status)}
+                            </Badge>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="text-sm space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Organization:</span>
-                        <span className="font-medium">{candidate.organization}</span>
+                  
+                  <CardContent className="space-y-4 pb-6">
+                    {/* Organization & Location */}
+                    <div className="space-y-3">
+                      <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Organization</span>
+                          <Building2 className="h-3 w-3 text-muted-foreground" />
+                        </div>
+                        <p className="font-semibold text-sm truncate">{candidate.organization}</p>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Location:</span>
-                        <span className="font-medium">{candidate.location}</span>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 rounded-md bg-accent/20">
+                          <p className="text-xs text-muted-foreground">Location</p>
+                          <p className="font-medium text-xs truncate">{candidate.location}</p>
+                        </div>
+                        <div className="p-2 rounded-md bg-accent/20">
+                          <p className="text-xs text-muted-foreground">Test Center</p>
+                          <p className="font-medium text-xs truncate">{candidate.testCenter}</p>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Test Center:</span>
-                        <span className="font-medium">{candidate.testCenter}</span>
+                    </div>
+
+                    {/* Performance Metrics */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="text-center p-3 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200/50 dark:border-blue-800/30">
+                        <div className="text-xl font-bold text-blue-700 dark:text-blue-300">{candidate.testsCompleted}</div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">Tests</div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Tests:</span>
-                        <span className="font-medium">{candidate.testsCompleted}</span>
+                      <div className="text-center p-3 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 border border-green-200/50 dark:border-green-800/30">
+                        <div className="text-xl font-bold text-green-700 dark:text-green-300">{candidate.averageScore}%</div>
+                        <div className="text-xs text-green-600 dark:text-green-400 font-medium">Avg Score</div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Avg Score:</span>
-                        <span className="font-medium">{candidate.averageScore}%</span>
+                    </div>
+
+                    {/* Time & Flags */}
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">{candidate.timeSpent}</span>
                       </div>
                       {candidate.suspiciousActivity > 0 && (
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Flags:</span>
-                          <Badge variant="destructive" className="text-xs">
-                            {candidate.suspiciousActivity}
-                          </Badge>
-                        </div>
+                        <Badge variant="destructive" className="text-xs animate-pulse">
+                          {candidate.suspiciousActivity} flags
+                        </Badge>
                       )}
                     </div>
+
+                    {/* Action Button */}
                     <Button 
-                      variant="outline" 
+                      variant="default" 
                       size="sm" 
-                      className="w-full"
+                      className="w-full mt-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
                       onClick={() => setSelectedCandidate(candidate)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
-                      View Details
+                      View Full Profile
                     </Button>
                   </CardContent>
                 </Card>
