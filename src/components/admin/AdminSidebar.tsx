@@ -84,43 +84,44 @@ export function AdminSidebar() {
       className={collapsed ? "w-12" : "w-56"}
       collapsible="icon"
     >
-      <SidebarTrigger className="m-2 self-end" />
+      <div className="h-full flex flex-col">
+        <SidebarTrigger className="m-2 self-end" />
 
-      <SidebarContent className="px-2">
-        {/* Header Section */}
-        {!collapsed && (
-          <div className="p-3 border-b">
-            <div className="flex items-center space-x-2 mb-4">
-              <Shield className="h-5 w-5 text-primary" />
-              <span className="font-semibold text-sm">ExamGuard Forensics</span>
-            </div>
-            
-            {/* Stats */}
-            <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-1">
-                  <Users className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Active</span>
-                </div>
-                <span className="font-medium">{activeCandidates.toLocaleString()}</span>
+        <SidebarContent className="flex-1 px-2">
+          {/* Header Section */}
+          {!collapsed && (
+            <div className="p-3 border-b mb-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <Shield className="h-5 w-5 text-primary" />
+                <span className="font-semibold text-sm">ExamGuard Forensics</span>
               </div>
               
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-1">
-                  <Activity className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">Health</span>
+              {/* Stats */}
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1">
+                    <Users className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Active</span>
+                  </div>
+                  <span className="font-medium">{activeCandidates.toLocaleString()}</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                  <div className={`w-2 h-2 rounded-full ${getHealthColor(systemHealth)}`} />
-                  <span className="font-medium">{systemHealth.toFixed(1)}%</span>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1">
+                    <Activity className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-muted-foreground">Health</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className={`w-2 h-2 rounded-full ${getHealthColor(systemHealth)}`} />
+                    <span className="font-medium">{systemHealth.toFixed(1)}%</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        
-        <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          )}
+          
+          <SidebarGroup>
+            <SidebarGroupLabel>Main</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>
@@ -140,30 +141,31 @@ export function AdminSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
-        
-        {/* User Section */}
-        {!collapsed && (
-          <div className="mt-auto p-3 border-t">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start p-2">
-                  <Avatar className="h-6 w-6 mr-2">
-                    <AvatarImage src="/avatars/admin.png" alt="Admin" />
-                    <AvatarFallback className="text-xs">AD</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">Admin</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Logout</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </SidebarContent>
+          </SidebarGroup>
+          
+          {/* User Section - Fixed at bottom */}
+          {!collapsed && (
+            <div className="mt-auto p-3 border-t">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-start p-2">
+                    <Avatar className="h-6 w-6 mr-2">
+                      <AvatarImage src="/avatars/admin.png" alt="Admin" />
+                      <AvatarFallback className="text-xs">AD</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm">Admin</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+        </SidebarContent>
+      </div>
     </Sidebar>
   );
 }

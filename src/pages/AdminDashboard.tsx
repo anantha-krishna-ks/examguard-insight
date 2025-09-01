@@ -26,13 +26,15 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-admin-bg">
       <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AdminSidebar />
+        <div className="flex min-h-screen w-full relative">
+          {/* Fixed Sidebar */}
+          <div className="fixed left-0 top-0 h-full z-40">
+            <AdminSidebar />
+          </div>
           
-          {/* Main Content Container - Fixed positioning */}
-          <div className="flex-1 flex flex-col min-w-0 relative z-10">
-            {/* Dashboard Content - With proper background and no overlap */}
-            <main className="flex-1 p-6 space-y-6 overflow-auto bg-admin-bg relative">
+          {/* Main Content - Adjusted for fixed sidebar */}
+          <div className="flex-1 flex flex-col ml-56 min-w-0">
+            <main className="flex-1 p-6 space-y-6 overflow-auto bg-admin-bg">
               <KPIStrip />
               
               <AnalyticsGrid onChartClick={handleChartClick} />
@@ -43,8 +45,8 @@ const AdminDashboard = () => {
             </main>
           </div>
           
-          {/* Alert Feed - Dedicated Right Column with proper z-index */}
-          <div className="w-72 border-l bg-card flex-shrink-0 relative z-10">
+          {/* Alert Feed - Fixed right column */}
+          <div className="fixed right-0 top-0 w-72 h-full border-l bg-card z-30">
             <AlertFeed />
           </div>
         </div>
