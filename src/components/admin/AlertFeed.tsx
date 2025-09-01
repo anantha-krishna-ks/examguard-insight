@@ -351,7 +351,7 @@ export function AlertFeed() {
       </div>
       
       {/* Alert List */}
-      <ScrollArea className="flex-1 h-full">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-3">
           {filteredAlerts.map((alert, index) => {
             const SeverityIcon = getSeverityIcon(alert.severity);
@@ -479,7 +479,7 @@ export function AlertFeed() {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
       
       {/* Footer Actions */}
       <div className="p-4 border-t bg-card">
