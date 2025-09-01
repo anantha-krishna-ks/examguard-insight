@@ -53,6 +53,17 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Admin Dashboard Colors */
+    --admin-bg: 46 15% 97%;
+    --admin-response-anomaly: 48 100% 67%;
+    --admin-sequential-pattern: 210 100% 56%;
+    --admin-answer-revision: 25 100% 60%;
+    --admin-normal-safe: 120 60% 50%;
+    --admin-critical-alert: 0 84% 60%;
+    --admin-warning: 38 92% 50%;
+    --admin-info: 204 94% 94%;
+    --admin-success: 120 60% 90%;
   }
 
   .dark {
@@ -91,6 +102,17 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Admin Dashboard Colors - Dark Mode */
+    --admin-bg: 222 84% 5%;
+    --admin-response-anomaly: 48 100% 67%;
+    --admin-sequential-pattern: 210 100% 66%;
+    --admin-answer-revision: 25 100% 60%;
+    --admin-normal-safe: 120 60% 60%;
+    --admin-critical-alert: 0 84% 60%;
+    --admin-warning: 38 92% 60%;
+    --admin-info: 204 50% 20%;
+    --admin-success: 120 40% 20%;
   }
 }
 

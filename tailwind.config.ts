@@ -61,6 +61,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				admin: {
+					bg: 'hsl(var(--admin-bg))',
+					'response-anomaly': 'hsl(var(--admin-response-anomaly))',
+					'sequential-pattern': 'hsl(var(--admin-sequential-pattern))',
+					'answer-revision': 'hsl(var(--admin-answer-revision))',
+					'normal-safe': 'hsl(var(--admin-normal-safe))',
+					'critical-alert': 'hsl(var(--admin-critical-alert))',
+					warning: 'hsl(var(--admin-warning))',
+					info: 'hsl(var(--admin-info))',
+					success: 'hsl(var(--admin-success))'
 				}
 			},
 			borderRadius: {
