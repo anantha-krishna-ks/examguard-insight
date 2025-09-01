@@ -98,7 +98,7 @@ export function KPIStrip() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {kpis.map((kpi, index) => (
         <Link key={index} to={kpi.link}>
           <Card className="h-36 hover:shadow-md transition-shadow cursor-pointer">
