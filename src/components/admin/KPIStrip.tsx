@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { 
   Users, 
   Flag, 
@@ -61,35 +62,40 @@ export function KPIStrip() {
       value: kpiData.activeCandidates.toLocaleString(),
       icon: Users,
       trend: kpiData.trends.candidates,
-      color: "text-admin-sequential-pattern"
+      color: "text-admin-sequential-pattern",
+      link: "/admin/candidates"
     },
     {
       title: "Flags (10 min)",
       value: kpiData.flags.toString(),
       icon: Flag,
       trend: kpiData.trends.flags,
-      color: "text-admin-critical-alert"
+      color: "text-admin-critical-alert",
+      link: "/admin/flags"
     },
     {
       title: "Precision (7-day)",
       value: `${kpiData.precision.toFixed(1)}%`,
       icon: Target,
       trend: kpiData.trends.precision,
-      color: "text-admin-normal-safe"
+      color: "text-admin-normal-safe",
+      link: "/admin/precision"
     },
     {
       title: "Median Response Time",
       value: `${kpiData.medianResponseTime}s`,
       icon: Clock,
       trend: kpiData.trends.responseTime,
-      color: "text-admin-response-anomaly"
+      color: "text-admin-response-anomaly",
+      link: "/admin/response-time"
     },
     {
       title: "System Health",
       value: `${kpiData.systemHealth.toFixed(1)}%`,
       icon: Activity,
       trend: 0,
-      color: "text-admin-normal-safe"
+      color: "text-admin-normal-safe",
+      link: "/admin/system-health"
     }
   ];
 
@@ -102,27 +108,29 @@ export function KPIStrip() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {kpis.map((kpi, index) => (
-        <Card key={index} className="hover:shadow-md transition-shadow">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
-                <span className="text-xs text-muted-foreground">{kpi.title}</span>
-              </div>
-              {kpi.trend !== 0 && (
-                <div className="flex items-center space-x-1">
-                  <TrendIcon trend={kpi.trend} />
-                  <span className="text-xs text-muted-foreground">
-                    {Math.abs(kpi.trend).toFixed(1)}%
-                  </span>
+        <Link key={index} to={kpi.link}>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
+                  <span className="text-xs text-muted-foreground">{kpi.title}</span>
                 </div>
-              )}
-            </div>
-            <div className="mt-2">
-              <span className="text-2xl font-bold">{kpi.value}</span>
-            </div>
-          </CardContent>
-        </Card>
+                {kpi.trend !== 0 && (
+                  <div className="flex items-center space-x-1">
+                    <TrendIcon trend={kpi.trend} />
+                    <span className="text-xs text-muted-foreground">
+                      {Math.abs(kpi.trend).toFixed(1)}%
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="mt-2">
+                <span className="text-2xl font-bold">{kpi.value}</span>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       ))}
     </div>
   );
