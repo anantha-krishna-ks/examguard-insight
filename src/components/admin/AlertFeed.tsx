@@ -263,7 +263,7 @@ export function AlertFeed() {
   }
 
   return (
-    <div className="fixed top-16 right-0 bottom-0 w-80 bg-card border-l shadow-xl z-30 animate-slide-in-right">
+    <div className="fixed top-16 right-0 bottom-0 w-80 bg-card/95 backdrop-blur-sm border-l shadow-xl z-30 animate-slide-in-right">
       {/* Header */}
       <div className="p-4 border-b bg-card/95 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-3">

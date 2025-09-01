@@ -31,15 +31,15 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="h-16 border-b bg-card flex items-center justify-between px-6">
-      <div className="flex items-center space-x-4">
+    <header className="h-16 border-b bg-card/95 backdrop-blur-sm flex items-center justify-between px-4 relative z-20">
+      <div className="flex items-center space-x-4 flex-1">
         <div className="flex items-center space-x-2">
           <Shield className="h-6 w-6 text-primary" />
           <span className="text-lg font-semibold">ExamGuard Forensics</span>
         </div>
       </div>
 
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-6 mr-80"> {/* Right margin to avoid Alert Feed overlap */}
         <div className="flex items-center space-x-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">{activeCandidates.toLocaleString()}</span>
