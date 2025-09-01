@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { AdminHeader } from "@/components/admin/AdminHeader";
+
 import { KPIStrip } from "@/components/admin/KPIStrip";
 import { AnalyticsGrid } from "@/components/admin/AnalyticsGrid";
 import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
           
           {/* Main Content Container */}
           <div className="flex-1 flex flex-col min-w-0">
-            <AdminHeader />
             
             {/* Dashboard Content */}
             <main className="flex-1 p-6 space-y-6 overflow-auto">
