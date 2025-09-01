@@ -122,8 +122,7 @@ All colors MUST be HSL.
     --admin-info: 204 94% 94%;
     --admin-success: 120 60% 90%;
   }
-
-
+}
 @layer base {
   * {
     @apply border-border;
