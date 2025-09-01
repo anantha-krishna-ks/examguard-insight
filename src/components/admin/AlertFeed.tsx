@@ -246,7 +246,7 @@ export function AlertFeed() {
 
   if (isMinimized) {
     return (
-      <div className="fixed top-24 right-4 z-50">
+      <div className="fixed top-20 right-4 z-50">
         <Button
           onClick={() => setIsMinimized(false)}
           className="w-12 h-12 rounded-full bg-admin-critical-alert hover:bg-admin-critical-alert/90 shadow-lg animate-pulse"

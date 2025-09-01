@@ -29,28 +29,24 @@ const AdminDashboard = () => {
         <div className="flex min-h-screen w-full">
           <AdminSidebar />
           
-          <div className="flex-1 flex flex-col min-w-0">
+          {/* Main Content Container - No gaps */}
+          <div className="flex-1 flex flex-col">
             <AdminHeader />
             
-            {/* Main Content Area - Full Width Layout */}
-            <div className="flex-1 flex min-h-0">
-              {/* Main Dashboard Content - Expanded to fill available space */}
-              <main className="flex-1 p-4 space-y-4 min-w-0 max-w-none">
-                <KPIStrip />
-                
-                <AnalyticsGrid onChartClick={handleChartClick} />
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <ActivityTimeline />
-                </div>
-                
-                <QuickActions />
-              </main>
+            {/* Dashboard Content - Full utilization */}
+            <main className="flex-1 p-6 space-y-6 overflow-auto">
+              <KPIStrip />
               
-              {/* Sticky Alert Feed Sidebar - Overlay Style */}
-              <AlertFeed />
-            </div>
+              <AnalyticsGrid onChartClick={handleChartClick} />
+              
+              <ActivityTimeline />
+              
+              <QuickActions />
+            </main>
           </div>
+          
+          {/* Alert Feed - Fixed overlay */}
+          <AlertFeed />
         </div>
 
         {selectedChart && (
