@@ -50,7 +50,7 @@ export function AdminSidebar() {
 
   return (
     <Sidebar
-      className={collapsed ? "w-14" : "w-60"}
+      className={collapsed ? "w-12" : "w-48"}
       collapsible="icon"
     >
       <SidebarTrigger className="m-2 self-end" />
@@ -70,7 +70,7 @@ export function AdminSidebar() {
                       className={({ isActive }) => getNavCls({ isActive })}
                     >
                       <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      {!collapsed && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

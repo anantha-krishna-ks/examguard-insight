@@ -35,7 +35,7 @@ const AdminDashboard = () => {
             {/* Main Content Area with Right Sidebar Layout */}
             <div className="flex-1 flex">
               {/* Main Dashboard Content */}
-              <main className="flex-1 p-6 space-y-6 mr-80"> {/* Right margin for alert feed */}
+              <main className="flex-1 p-4 space-y-4 mr-80"> {/* Reduced padding and maintained right margin */}
                 <KPIStrip />
                 
                 <AnalyticsGrid onChartClick={handleChartClick} />
