@@ -29,11 +29,11 @@ const AdminDashboard = () => {
         <div className="flex min-h-screen w-full">
           <AdminSidebar />
           
-          {/* Main Content Container - No gaps */}
-          <div className="flex-1 flex flex-col">
+          {/* Main Content Container */}
+          <div className="flex-1 flex flex-col min-w-0">
             <AdminHeader />
             
-            {/* Dashboard Content - Full utilization */}
+            {/* Dashboard Content */}
             <main className="flex-1 p-6 space-y-6 overflow-auto">
               <KPIStrip />
               
@@ -45,8 +45,10 @@ const AdminDashboard = () => {
             </main>
           </div>
           
-          {/* Alert Feed - Fixed overlay */}
-          <AlertFeed />
+          {/* Alert Feed - Dedicated Right Column */}
+          <div className="w-80 border-l bg-card">
+            <AlertFeed />
+          </div>
         </div>
 
         {selectedChart && (

@@ -263,9 +263,9 @@ export function AlertFeed() {
   }
 
   return (
-    <div className="fixed top-16 right-0 bottom-0 w-80 bg-card/95 backdrop-blur-sm border-l shadow-xl z-30 animate-slide-in-right">
+    <div className="h-full flex flex-col bg-card">
       {/* Header */}
-      <div className="p-4 border-b bg-card/95 backdrop-blur-sm">
+      <div className="p-4 border-b bg-card">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
             <Bell className="h-5 w-5 text-admin-critical-alert" />
@@ -482,7 +482,7 @@ export function AlertFeed() {
       </ScrollArea>
       
       {/* Footer Actions */}
-      <div className="p-4 border-t bg-card/95 backdrop-blur-sm">
+      <div className="p-4 border-t bg-card">
         <div className="flex space-x-2">
           <Button variant="outline" size="sm" className="flex-1">
             <ExternalLink className="h-4 w-4 mr-2" />

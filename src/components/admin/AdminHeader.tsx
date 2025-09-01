@@ -39,7 +39,7 @@ export function AdminHeader() {
         </div>
       </div>
 
-      <div className="flex items-center space-x-6 pr-80"> {/* Right padding to avoid Alert Feed */}
+      <div className="flex items-center space-x-6">
         <div className="flex items-center space-x-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">{activeCandidates.toLocaleString()}</span>
