@@ -32,21 +32,25 @@ const AdminDashboard = () => {
           <div className="flex-1 flex flex-col">
             <AdminHeader />
             
-            <main className="flex-1 p-6 space-y-6">
-              <KPIStrip />
+            {/* Main Content Area with Right Sidebar Layout */}
+            <div className="flex-1 flex">
+              {/* Main Dashboard Content */}
+              <main className="flex-1 p-6 space-y-6 mr-80"> {/* Right margin for alert feed */}
+                <KPIStrip />
+                
+                <AnalyticsGrid onChartClick={handleChartClick} />
+                
+                <div className="grid grid-cols-1 gap-6">
+                  <ActivityTimeline />
+                </div>
+                
+                <QuickActions />
+              </main>
               
-              <AnalyticsGrid onChartClick={handleChartClick} />
-              
-              <div className="grid grid-cols-1 gap-6">
-                <ActivityTimeline />
-              </div>
-              
-              <QuickActions />
-            </main>
+              {/* Sticky Alert Feed Sidebar */}
+              <AlertFeed />
+            </div>
           </div>
-          
-          {/* Sticky Alert Feed */}
-          <AlertFeed />
         </div>
 
         {selectedChart && (
