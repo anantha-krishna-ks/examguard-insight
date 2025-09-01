@@ -345,7 +345,7 @@ export function AlertFeed() {
       
       {/* Alert List */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-4 space-y-3">
+        <div className="p-3 space-y-2">
           {filteredAlerts.map((alert, index) => {
             const SeverityIcon = getSeverityIcon(alert.severity);
             const isNew = index < 2; // Mark first 2 as new
@@ -357,7 +357,7 @@ export function AlertFeed() {
                   isNew ? 'ring-2 ring-admin-critical-alert/30' : ''
                 }`}
               >
-                <CardContent className="p-4">
+                <CardContent className="p-3">
                   {/* Alert Header */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3 flex-1">

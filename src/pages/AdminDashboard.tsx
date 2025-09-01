@@ -46,7 +46,7 @@ const AdminDashboard = () => {
           </div>
           
           {/* Alert Feed - Dedicated Right Column */}
-          <div className="w-80 border-l bg-card">
+          <div className="w-72 border-l bg-card">
             <AlertFeed />
           </div>
         </div>
