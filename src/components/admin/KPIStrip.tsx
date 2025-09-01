@@ -109,15 +109,15 @@ export function KPIStrip() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
       {kpis.map((kpi, index) => (
         <Link key={index} to={kpi.link}>
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardContent className="p-4">
+          <Card className="h-24 hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-4 h-full flex flex-col justify-between">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
-                  <span className="text-xs text-muted-foreground">{kpi.title}</span>
+                <div className="flex items-center space-x-2 min-w-0 flex-1">
+                  <kpi.icon className={`h-4 w-4 flex-shrink-0 ${kpi.color}`} />
+                  <span className="text-xs text-muted-foreground truncate">{kpi.title}</span>
                 </div>
                 {kpi.trend !== 0 && (
-                  <div className="flex items-center space-x-1">
+                  <div className="flex items-center space-x-1 flex-shrink-0">
                     <TrendIcon trend={kpi.trend} />
                     <span className="text-xs text-muted-foreground">
                       {Math.abs(kpi.trend).toFixed(1)}%
@@ -126,7 +126,7 @@ export function KPIStrip() {
                 )}
               </div>
               <div className="mt-2">
-                <span className="text-2xl font-bold">{kpi.value}</span>
+                <span className="text-xl font-bold leading-tight">{kpi.value}</span>
               </div>
             </CardContent>
           </Card>
