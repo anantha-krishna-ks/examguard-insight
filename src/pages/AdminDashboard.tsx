@@ -32,8 +32,8 @@ const AdminDashboard = () => {
             <AdminSidebar />
           </div>
           
-          {/* Main Content - Adjusted for fixed sidebar */}
-          <div className="flex-1 flex flex-col ml-56 min-w-0">
+          {/* Main Content - Adjusted for fixed sidebar and alert feed */}
+          <div className="flex-1 flex flex-col ml-56 mr-72 min-w-0">
             <main className="flex-1 p-6 space-y-6 overflow-auto bg-admin-bg">
               <KPIStrip />
               
