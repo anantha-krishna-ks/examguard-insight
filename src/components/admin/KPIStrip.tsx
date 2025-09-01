@@ -89,14 +89,6 @@ export function KPIStrip() {
       color: "text-admin-response-anomaly",
       link: "/admin/response-time"
     },
-    {
-      title: "System Health",
-      value: `${kpiData.systemHealth.toFixed(1)}%`,
-      icon: Activity,
-      trend: 0,
-      color: "text-admin-normal-safe",
-      link: "/admin/system-health"
-    }
   ];
 
   const TrendIcon = ({ trend }: { trend: number }) => {
