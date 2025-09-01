@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { Search, Filter, Users, MapPin, Building2, Eye, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Filter, Users, MapPin, Building2, Eye, Clock, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import {
 import { CandidateDetailModal } from "@/components/admin/CandidateDetailModal";
 
 const Candidate360Page = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedOrganization, setSelectedOrganization] = useState<string>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("all");
@@ -54,6 +56,29 @@ const Candidate360Page = () => {
   return (
     <div className="min-h-screen bg-admin-bg">
       <div className="p-6 space-y-6">
+        {/* Back Navigation */}
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/admin')}
+            className="flex items-center space-x-2 hover:bg-accent/50 transition-colors duration-200"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Dashboard</span>
+          </Button>
+          <div className="h-6 w-px bg-border" />
+          <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <span 
+              className="hover:text-foreground cursor-pointer transition-colors"
+              onClick={() => navigate('/admin')}
+            >
+              Admin Dashboard
+            </span>
+            <span>/</span>
+            <span className="text-foreground font-medium">Candidate 360</span>
+          </nav>
+        </div>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
