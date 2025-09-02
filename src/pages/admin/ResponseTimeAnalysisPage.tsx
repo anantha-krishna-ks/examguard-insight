@@ -88,29 +88,24 @@ export default function ResponseTimeAnalysisPage() {
   const [osThreshold, setOsThreshold] = useState("2");
   const [studentGroup, setStudentGroup] = useState("OrganizationName");
   const [selectedStudent, setSelectedStudent] = useState("Student-3611");
-  const [selectedOrganization, setSelectedOrganization] = useState("");
-  const [showStudentDetails, setShowStudentDetails] = useState(false);
-  const [showGraphs, setShowGraphs] = useState(false);
+
+  // Button handlers
+  const handleExport = () => {
+    toast.success("Exporting data to Excel...", {
+      description: "Download will begin shortly"
+    });
+  };
 
   const handleViewOrganization = (orgName: string) => {
-    setSelectedOrganization(orgName);
-    setShowStudentDetails(true);
     toast.info(`Viewing details for ${orgName}`, {
-      description: "Loading organization student details..."
+      description: "Loading organization analytics..."
     });
   };
 
   const handleViewStudentGraph = (studentId: string) => {
     setSelectedStudent(studentId);
-    setShowGraphs(true);
-    toast.info(`Loading graphs for ${studentId}`, {
-      description: "Displaying OS graph and Item Response Frequency..."
-    });
-  };
-
-  const handleExport = () => {
-    toast.success("Exporting data to Excel...", {
-      description: "Download will begin shortly"
+    toast.info(`Loading graph for ${studentId}`, {
+      description: "Analyzing response patterns..."
     });
   };
 
@@ -150,7 +145,28 @@ export default function ResponseTimeAnalysisPage() {
         </Button>
       </div>
 
-      {/* Tabs for analysis types */}
+      {/* Test Selection */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="test-select" className="text-sm font-medium">Select Test</Label>
+              <Select value={selectedTest} onValueChange={setSelectedTest}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select test" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PoSWHP">PoSWHP</SelectItem>
+                  <SelectItem value="Test2">Test 2</SelectItem>
+                  <SelectItem value="Test3">Test 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tabs */}
       <Tabs defaultValue="student-response" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="student-response">Student Response latency</TabsTrigger>
@@ -160,36 +176,9 @@ export default function ResponseTimeAnalysisPage() {
         </TabsList>
 
         <TabsContent value="student-response" className="space-y-6">
-          {/* Test Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Test Selection</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="test-select" className="text-sm font-medium">Select Test</Label>
-                  <Select value={selectedTest} onValueChange={setSelectedTest}>
-                    <SelectTrigger className="w-48">
-                      <SelectValue placeholder="Select test" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="PoSWHP">PoSWHP</SelectItem>
-                      <SelectItem value="Test2">Test 2</SelectItem>
-                      <SelectItem value="Test3">Test 3</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Forensic Method and Settings */}
           <Card>
-            <CardHeader>
-              <CardTitle>Analysis Configuration</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Forensic Method:</Label>
@@ -233,129 +222,131 @@ export default function ResponseTimeAnalysisPage() {
             </CardContent>
           </Card>
 
-          {/* Bubble Chart */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle className="text-lg">Organization Risk Analysis</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Bubble size represents total students • X-axis: Anomaly Students • Y-axis: Risk Level (%)
-                  </p>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+            {/* Bubble Chart - Full Width */}
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-lg">Organization Risk Analysis</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Bubble size represents total students • X-axis: Anomaly Students • Y-axis: Risk Level (%)
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4 text-xs">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                      <span>Low Risk</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-600"></div>
+                      <span>Medium Risk</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-red-600"></div>
+                      <span>High Risk</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-4 text-xs">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
-                    <span>Low Risk</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-600"></div>
-                    <span>Medium Risk</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-red-600"></div>
-                    <span>High Risk</span>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={450}>
-                <ScatterChart 
-                  data={bubbleData}
-                  margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
-                >
-                  <defs>
-                    {bubbleData.map((_, index) => (
-                      <radialGradient key={`bubbleGradient${index + 1}`} id={`bubbleGradient${index + 1}`} cx="30%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor={
-                          index === 0 ? "#ef4444" : // High risk - red
-                          index === 1 ? "#10b981" : // Low risk - green
-                          index === 2 ? "#f59e0b" : // Medium risk - amber
-                          index === 3 ? "#10b981" : // Low risk - green
-                          index === 4 ? "#f59e0b" : // Medium risk - amber
-                          "#ef4444" // High risk - red
-                        } stopOpacity={0.9}/>
-                        <stop offset="50%" stopColor={
-                          index === 0 ? "#dc2626" : 
-                          index === 1 ? "#059669" : 
-                          index === 2 ? "#d97706" : 
-                          index === 3 ? "#059669" : 
-                          index === 4 ? "#d97706" : 
-                          "#dc2626"
-                        } stopOpacity={0.7}/>
-                        <stop offset="100%" stopColor={
-                          index === 0 ? "#b91c1c" : 
-                          index === 1 ? "#047857" : 
-                          index === 2 ? "#b45309" : 
-                          index === 3 ? "#047857" : 
-                          index === 4 ? "#b45309" : 
-                          "#b91c1c"
-                        } stopOpacity={0.5}/>
-                      </radialGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
-                  <XAxis 
-                    type="number" 
-                    dataKey="anomalyStudents" 
-                    domain={[0, 450]}
-                    label={{ value: 'Anomaly Students', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle' } }}
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis 
-                    type="number" 
-                    dataKey="riskLevel" 
-                    domain={[0, 100]}
-                    label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-                    stroke="hsl(var(--muted-foreground))"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload[0]) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm border-border">
-                            <p className="font-semibold text-sm mb-2">{data.name}</p>
-                            <div className="space-y-1 text-xs">
-                              <p><span className="font-medium">Anomaly Students:</span> {data.anomalyStudents}</p>
-                              <p><span className="font-medium">Total Students:</span> {data.totalStudents}</p>
-                              <p><span className="font-medium">Risk Level:</span> {data.riskLevel}%</p>
-                              <p><span className="font-medium">Anomaly Rate:</span> {((data.anomalyStudents / data.totalStudents) * 100).toFixed(1)}%</p>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={450}>
+                  <ScatterChart 
+                    data={bubbleData}
+                    margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
+                  >
+                    <defs>
+                      {bubbleData.map((_, index) => (
+                        <radialGradient key={`bubbleGradient${index + 1}`} id={`bubbleGradient${index + 1}`} cx="30%" cy="30%" r="70%">
+                          <stop offset="0%" stopColor={
+                            index === 0 ? "#ef4444" : // High risk - red
+                            index === 1 ? "#10b981" : // Low risk - green
+                            index === 2 ? "#f59e0b" : // Medium risk - amber
+                            index === 3 ? "#10b981" : // Low risk - green
+                            index === 4 ? "#f59e0b" : // Medium risk - amber
+                            "#ef4444" // High risk - red
+                          } stopOpacity={0.9}/>
+                          <stop offset="50%" stopColor={
+                            index === 0 ? "#dc2626" : 
+                            index === 1 ? "#059669" : 
+                            index === 2 ? "#d97706" : 
+                            index === 3 ? "#059669" : 
+                            index === 4 ? "#d97706" : 
+                            "#dc2626"
+                          } stopOpacity={0.7}/>
+                          <stop offset="100%" stopColor={
+                            index === 0 ? "#b91c1c" : 
+                            index === 1 ? "#047857" : 
+                            index === 2 ? "#b45309" : 
+                            index === 3 ? "#047857" : 
+                            index === 4 ? "#b45309" : 
+                            "#b91c1c"
+                          } stopOpacity={0.5}/>
+                        </radialGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
+                    <XAxis 
+                      type="number" 
+                      dataKey="anomalyStudents" 
+                      domain={[0, 450]}
+                      label={{ value: 'Anomaly Students', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle' } }}
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fontSize: 12 }}
+                    />
+                    <YAxis 
+                      type="number" 
+                      dataKey="riskLevel" 
+                      domain={[0, 100]}
+                      label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fontSize: 12 }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm border-border">
+                              <p className="font-semibold text-sm mb-2">{data.name}</p>
+                              <div className="space-y-1 text-xs">
+                                <p><span className="font-medium">Anomaly Students:</span> {data.anomalyStudents}</p>
+                                <p><span className="font-medium">Total Students:</span> {data.totalStudents}</p>
+                                <p><span className="font-medium">Risk Level:</span> {data.riskLevel}%</p>
+                                <p><span className="font-medium">Anomaly Rate:</span> {((data.anomalyStudents / data.totalStudents) * 100).toFixed(1)}%</p>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Scatter dataKey="totalStudents" className="animate-scale-in">
-                    {bubbleData.map((entry, index) => (
-                      <Cell 
-                        key={`bubble-${index}`} 
-                        fill={`url(#bubbleGradient${index + 1})`}
-                        stroke={
-                          entry.riskLevel >= 70 ? "#dc2626" : // High risk - red border
-                          entry.riskLevel >= 50 ? "#d97706" : // Medium risk - amber border
-                          "#059669" // Low risk - green border
+                          );
                         }
-                        strokeWidth={2}
-                        className="hover:opacity-80 transition-all duration-300 cursor-pointer"
-                      />
-                    ))}
-                  </Scatter>
-                </ScatterChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+                        return null;
+                      }}
+                    />
+                    <Scatter dataKey="totalStudents" className="animate-scale-in">
+                      {bubbleData.map((entry, index) => (
+                        <Cell 
+                          key={`bubble-${index}`} 
+                          fill={`url(#bubbleGradient${index + 1})`}
+                          stroke={
+                            entry.riskLevel >= 70 ? "#dc2626" : // High risk - red border
+                            entry.riskLevel >= 50 ? "#d97706" : // Medium risk - amber border
+                            "#059669" // Low risk - green border
+                          }
+                          strokeWidth={2}
+                          className="hover:opacity-80 transition-all duration-300 cursor-pointer"
+                        />
+                      ))}
+                    </Scatter>
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Organizations Table */}
+          {/* Organization Table */}
           <Card>
             <CardHeader>
               <CardTitle>Organizations Overview</CardTitle>
-              <p className="text-sm text-muted-foreground">Click "View Organizations" to see detailed student data</p>
             </CardHeader>
             <CardContent>
               <Table>
@@ -400,10 +391,9 @@ export default function ResponseTimeAnalysisPage() {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => handleViewOrganization(org.name)}
-                          className="hover-scale flex items-center space-x-1"
+                          className="hover-scale"
                         >
                           <Eye className="h-4 w-4" />
-                          <span>View Organizations</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -414,192 +404,178 @@ export default function ResponseTimeAnalysisPage() {
           </Card>
 
           {/* Selected Organization Details */}
-          {showStudentDetails && selectedOrganization && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Selected: Excel Soft Technologies Pvt.Ltd</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sl No.</TableHead>
+                    <TableHead>Student ID</TableHead>
+                    <TableHead>Total Items</TableHead>
+                    <TableHead>Total Anomaly Items</TableHead>
+                    <TableHead>Total Score</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {studentData.map((student) => (
+                    <TableRow key={student.slNo}>
+                      <TableCell>{student.slNo}</TableCell>
+                      <TableCell>{student.studentId}</TableCell>
+                      <TableCell>{student.totalItems}</TableCell>
+                      <TableCell>{student.totalAnomalyItems}</TableCell>
+                      <TableCell>{student.totalScore}</TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="link" 
+                          size="sm" 
+                          onClick={() => handleViewStudentGraph(student.studentId)}
+                          className="text-primary hover-scale story-link"
+                        >
+                          view graph
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Selected Student Analysis */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Anomaly Items Overview */}
             <Card>
               <CardHeader>
-                <CardTitle>Organization Student Details</CardTitle>
-                <p className="text-sm text-muted-foreground">Selected: <span className="font-medium">{selectedOrganization}</span></p>
+                <CardTitle>Selected Student: {selectedStudent}</CardTitle>
+                <p className="text-sm text-muted-foreground">Anomaly Items Overview</p>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Sl No.</TableHead>
-                      <TableHead>Student ID</TableHead>
-                      <TableHead>Total Items</TableHead>
-                      <TableHead>Total Anomaly Items</TableHead>
-                      <TableHead>Total Score</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {studentData.map((student) => (
-                      <TableRow key={student.slNo}>
-                        <TableCell>{student.slNo}</TableCell>
-                        <TableCell>{student.studentId}</TableCell>
-                        <TableCell>{student.totalItems}</TableCell>
-                        <TableCell>{student.totalAnomalyItems}</TableCell>
-                        <TableCell>{student.totalScore}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="link" 
-                            size="sm" 
-                            onClick={() => handleViewStudentGraph(student.studentId)}
-                            className="text-primary hover-scale story-link"
-                          >
-                            View Graph
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <div className="mb-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm">Z-Score</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500"></div>
+                    <span className="text-sm">Actual Outliers</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <ScatterChart data={anomalyOverviewData}>
+                    <defs>
+                      <radialGradient id={scatterGradient1} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                      </radialGradient>
+                      <radialGradient id={scatterGradient2} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#fca5a5" stopOpacity={0.8}/>
+                        <stop offset="100%" stopColor="#ef4444" stopOpacity={0.9}/>
+                      </radialGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
+                    <XAxis 
+                      dataKey="item" 
+                      type="number"
+                      domain={[0, 25]}
+                      label={{ value: 'Item', position: 'insideBottom', offset: -5 }}
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <YAxis 
+                      dataKey="zScore"
+                      label={{ value: 'Z-Score', angle: -90, position: 'insideLeft' }}
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card p-3 border rounded-lg shadow-lg animate-fade-in">
+                              <p className="font-medium">Item: {data.item}</p>
+                              <p>Z-Score: {data.zScore}</p>
+                              <p>Outliers: {data.actualOutliers}</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Scatter dataKey="zScore" className="animate-scale-in">
+                      {anomalyOverviewData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.isOutlier ? `url(#${scatterGradient2})` : `url(#${scatterGradient1})`} 
+                        />
+                      ))}
+                    </Scatter>
+                    <ReferenceLine y={2} stroke="#fbbf24" strokeDasharray="5 5" opacity={0.7} />
+                  </ScatterChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
-          )}
 
-          {/* Student Analysis Graphs */}
-          {showGraphs && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Student Analysis Dashboard</CardTitle>
-                  <p className="text-sm text-muted-foreground">Analyzing: <span className="font-medium">{selectedStudent}</span></p>
-                </CardHeader>
-              </Card>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* OS Graph - Anomaly Items Overview */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>OS Graph - Anomaly Items Overview</CardTitle>
-                    <p className="text-sm text-muted-foreground">Z-Score analysis with outlier detection</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-4 flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                        <span className="text-sm">Z-Score</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-red-500"></div>
-                        <span className="text-sm">Actual Outliers</span>
-                      </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <ScatterChart data={anomalyOverviewData}>
-                        <defs>
-                          <radialGradient id={scatterGradient1} cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
-                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.9}/>
-                          </radialGradient>
-                          <radialGradient id={scatterGradient2} cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stopColor="#fca5a5" stopOpacity={0.8}/>
-                            <stop offset="100%" stopColor="#ef4444" stopOpacity={0.9}/>
-                          </radialGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
-                        <XAxis 
-                          dataKey="item" 
-                          type="number"
-                          domain={[0, 25]}
-                          label={{ value: 'Item', position: 'insideBottom', offset: -5 }}
-                          stroke="hsl(var(--muted-foreground))"
-                        />
-                        <YAxis 
-                          dataKey="zScore"
-                          label={{ value: 'Z-Score', angle: -90, position: 'insideLeft' }}
-                          stroke="hsl(var(--muted-foreground))"
-                        />
-                        <Tooltip 
-                          content={({ active, payload }) => {
-                            if (active && payload && payload[0]) {
-                              const data = payload[0].payload;
-                              return (
-                                <div className="bg-card p-3 border rounded-lg shadow-lg animate-fade-in">
-                                  <p className="font-medium">Item: {data.item}</p>
-                                  <p>Z-Score: {data.zScore}</p>
-                                  <p>Outliers: {data.actualOutliers}</p>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Scatter dataKey="zScore" className="animate-scale-in">
-                          {anomalyOverviewData.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={entry.isOutlier ? `url(#${scatterGradient2})` : `url(#${scatterGradient1})`} 
-                            />
-                          ))}
-                        </Scatter>
-                        <ReferenceLine y={2} stroke="#fbbf24" strokeDasharray="5 5" opacity={0.7} />
-                      </ScatterChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-
-                {/* Item Response Frequency */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Item Response Frequency</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Item No.: 6, Item Response Time (Sec): 395, Item Percentile(%): 99.96, Outlier Score: &gt;20.00
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-4 flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-cyan-400"></div>
-                        <span className="text-sm">Bar Dataset</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 border-2 border-red-500"></div>
-                        <span className="text-sm">Marker</span>
-                      </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={responseFrequencyData}>
-                        <defs>
-                          <linearGradient id={barGradientId} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#0891b2" stopOpacity={0.6}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
-                        <XAxis 
-                          dataKey="range" 
-                          label={{ value: 'Item Response', position: 'insideBottom', offset: -5 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          stroke="hsl(var(--muted-foreground))"
-                        />
-                        <YAxis 
-                          label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft' }}
-                          stroke="hsl(var(--muted-foreground))"
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--card))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '8px'
-                          }}
-                        />
-                        <Bar 
-                          dataKey="frequency" 
-                          fill={`url(#${barGradientId})`}
-                          className="animate-fade-in"
-                          radius={[4, 4, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
+            {/* Item Response Frequency */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Item Response Frequency</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Item No.: 6, Item Response Time (Sec): 395, Item Percentile(%): 99.96, Outlier Score: &gt;20.00
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-cyan-400"></div>
+                    <span className="text-sm">Bar Dataset</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 border-2 border-red-500"></div>
+                    <span className="text-sm">Marker</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={responseFrequencyData}>
+                    <defs>
+                      <linearGradient id={barGradientId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#0891b2" stopOpacity={0.6}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
+                    <XAxis 
+                      dataKey="range" 
+                      label={{ value: 'Item Response', position: 'insideBottom', offset: -5 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <YAxis 
+                      label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft' }}
+                      stroke="hsl(var(--muted-foreground))"
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar 
+                      dataKey="frequency" 
+                      fill={`url(#${barGradientId})`}
+                      className="animate-fade-in"
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="response-change">
