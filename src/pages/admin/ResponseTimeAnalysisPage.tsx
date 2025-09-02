@@ -26,12 +26,14 @@ import {
   ReferenceLine
 } from "recharts";
 
-// Mock data for bubble chart (organizational data)
+// Mock data for bubble chart (organizational data with proper bubble sizing)
 const bubbleData = [
-  { name: "Excel Soft Technologies Pvt.Ltd", value: 406, x: 50, y: 50, z: 80, fill: "hsl(var(--chart-1))" },
-  { name: "Tech Solutions Inc", value: 120, x: 30, y: 70, z: 40, fill: "hsl(var(--chart-2))" },
-  { name: "Digital Innovations", value: 250, x: 70, y: 30, z: 60, fill: "hsl(var(--chart-3))" },
-  { name: "Software Dynamics", value: 85, x: 25, y: 40, z: 25, fill: "hsl(var(--chart-4))" }
+  { name: "Excel Soft Technologies Pvt.Ltd", anomalyStudents: 406, totalStudents: 1200, riskLevel: 85, x: 406, y: 85 },
+  { name: "Tech Solutions Inc", anomalyStudents: 120, totalStudents: 800, riskLevel: 45, x: 120, y: 45 },
+  { name: "Digital Innovations", anomalyStudents: 250, totalStudents: 1000, riskLevel: 65, x: 250, y: 65 },
+  { name: "Software Dynamics", anomalyStudents: 85, totalStudents: 600, riskLevel: 35, x: 85, y: 35 },
+  { name: "Alpha Tech Corp", anomalyStudents: 180, totalStudents: 900, riskLevel: 55, x: 180, y: 55 },
+  { name: "Beta Systems", anomalyStudents: 320, totalStudents: 1100, riskLevel: 75, x: 320, y: 75 }
 ];
 
 // Mock data for organization table
@@ -221,72 +223,117 @@ export default function ResponseTimeAnalysisPage() {
           </Card>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Bubble Chart */}
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+            {/* Bubble Chart - Full Width */}
             <Card>
               <CardHeader>
-                <CardTitle>Bubble Chart</CardTitle>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-lg">Organization Risk Analysis</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Bubble size represents total students • X-axis: Anomaly Students • Y-axis: Risk Level (%)
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4 text-xs">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                      <span>Low Risk</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-600"></div>
+                      <span>Medium Risk</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-red-600"></div>
+                      <span>High Risk</span>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <ScatterChart data={bubbleData}>
+                <ResponsiveContainer width="100%" height={450}>
+                  <ScatterChart 
+                    data={bubbleData}
+                    margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
+                  >
                     <defs>
-                      <radialGradient id={bubbleGradient1} cx="30%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.9}/>
-                        <stop offset="50%" stopColor="#3b82f6" stopOpacity={0.7}/>
-                        <stop offset="100%" stopColor="#1e40af" stopOpacity={0.5}/>
-                      </radialGradient>
-                      <radialGradient id={bubbleGradient2} cx="30%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor="#34d399" stopOpacity={0.9}/>
-                        <stop offset="50%" stopColor="#10b981" stopOpacity={0.7}/>
-                        <stop offset="100%" stopColor="#047857" stopOpacity={0.5}/>
-                      </radialGradient>
-                      <radialGradient id={bubbleGradient3} cx="30%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.9}/>
-                        <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.7}/>
-                        <stop offset="100%" stopColor="#d97706" stopOpacity={0.5}/>
-                      </radialGradient>
-                      <radialGradient id={bubbleGradient4} cx="30%" cy="30%" r="70%">
-                        <stop offset="0%" stopColor="#f472b6" stopOpacity={0.9}/>
-                        <stop offset="50%" stopColor="#ec4899" stopOpacity={0.7}/>
-                        <stop offset="100%" stopColor="#be185d" stopOpacity={0.5}/>
-                      </radialGradient>
+                      {bubbleData.map((_, index) => (
+                        <radialGradient key={`bubbleGradient${index + 1}`} id={`bubbleGradient${index + 1}`} cx="30%" cy="30%" r="70%">
+                          <stop offset="0%" stopColor={
+                            index === 0 ? "#ef4444" : // High risk - red
+                            index === 1 ? "#10b981" : // Low risk - green
+                            index === 2 ? "#f59e0b" : // Medium risk - amber
+                            index === 3 ? "#10b981" : // Low risk - green
+                            index === 4 ? "#f59e0b" : // Medium risk - amber
+                            "#ef4444" // High risk - red
+                          } stopOpacity={0.9}/>
+                          <stop offset="50%" stopColor={
+                            index === 0 ? "#dc2626" : 
+                            index === 1 ? "#059669" : 
+                            index === 2 ? "#d97706" : 
+                            index === 3 ? "#059669" : 
+                            index === 4 ? "#d97706" : 
+                            "#dc2626"
+                          } stopOpacity={0.7}/>
+                          <stop offset="100%" stopColor={
+                            index === 0 ? "#b91c1c" : 
+                            index === 1 ? "#047857" : 
+                            index === 2 ? "#b45309" : 
+                            index === 3 ? "#047857" : 
+                            index === 4 ? "#b45309" : 
+                            "#b91c1c"
+                          } stopOpacity={0.5}/>
+                        </radialGradient>
+                      ))}
                     </defs>
-                    <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--muted))" opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                     <XAxis 
                       type="number" 
-                      dataKey="x" 
-                      domain={[0, 100]}
-                      hide
+                      dataKey="anomalyStudents" 
+                      domain={[0, 450]}
+                      label={{ value: 'Anomaly Students', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle' } }}
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fontSize: 12 }}
                     />
                     <YAxis 
                       type="number" 
-                      dataKey="y" 
+                      dataKey="riskLevel" 
                       domain={[0, 100]}
-                      hide
+                      label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+                      stroke="hsl(var(--muted-foreground))"
+                      tick={{ fontSize: 12 }}
                     />
                     <Tooltip 
                       content={({ active, payload }) => {
                         if (active && payload && payload[0]) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm">
-                              <p className="font-semibold text-sm mb-1">{data.name}</p>
-                              <p className="text-muted-foreground text-xs">Anomaly Students: {data.value}</p>
+                            <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm border-border">
+                              <p className="font-semibold text-sm mb-2">{data.name}</p>
+                              <div className="space-y-1 text-xs">
+                                <p><span className="font-medium">Anomaly Students:</span> {data.anomalyStudents}</p>
+                                <p><span className="font-medium">Total Students:</span> {data.totalStudents}</p>
+                                <p><span className="font-medium">Risk Level:</span> {data.riskLevel}%</p>
+                                <p><span className="font-medium">Anomaly Rate:</span> {((data.anomalyStudents / data.totalStudents) * 100).toFixed(1)}%</p>
+                              </div>
                             </div>
                           );
                         }
                         return null;
                       }}
                     />
-                    <Scatter dataKey="z" className="animate-scale-in">
+                    <Scatter dataKey="totalStudents" className="animate-scale-in">
                       {bubbleData.map((entry, index) => (
                         <Cell 
                           key={`bubble-${index}`} 
                           fill={`url(#bubbleGradient${index + 1})`}
-                          stroke={index === 0 ? "#1e40af" : index === 1 ? "#047857" : index === 2 ? "#d97706" : "#be185d"}
+                          stroke={
+                            entry.riskLevel >= 70 ? "#dc2626" : // High risk - red border
+                            entry.riskLevel >= 50 ? "#d97706" : // Medium risk - amber border
+                            "#059669" // Low risk - green border
+                          }
                           strokeWidth={2}
-                          className="hover:opacity-80 transition-opacity duration-200"
+                          className="hover:opacity-80 transition-all duration-300 cursor-pointer"
                         />
                       ))}
                     </Scatter>
@@ -294,42 +341,67 @@ export default function ResponseTimeAnalysisPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
-
-            {/* Organization Table */}
-            <Card>
-              <CardContent className="pt-6">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Sl No.</TableHead>
-                      <TableHead>OrganizationName</TableHead>
-                      <TableHead>Anomaly Students</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {organizationData.map((org) => (
-                      <TableRow key={org.slNo}>
-                        <TableCell>{org.slNo}</TableCell>
-                        <TableCell>{org.organizationName}</TableCell>
-                        <TableCell>{org.anomalyStudents}</TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleViewOrganization(org.organizationName)}
-                            className="hover-scale"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
           </div>
+
+          {/* Organization Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Organizations Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sl No.</TableHead>
+                    <TableHead>Organization Name</TableHead>
+                    <TableHead>Anomaly Students</TableHead>
+                    <TableHead>Total Students</TableHead>
+                    <TableHead>Risk Level</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {bubbleData.map((org, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell className="font-medium">{org.name}</TableCell>
+                      <TableCell>
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                          {org.anomalyStudents}
+                        </span>
+                      </TableCell>
+                      <TableCell>{org.totalStudents}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-2">
+                          <div className="flex-1 bg-muted rounded-full h-2">
+                            <div 
+                              className={`h-2 rounded-full ${
+                                org.riskLevel >= 70 ? 'bg-red-500' :
+                                org.riskLevel >= 50 ? 'bg-amber-500' :
+                                'bg-green-500'
+                              }`}
+                              style={{ width: `${org.riskLevel}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium w-12">{org.riskLevel}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleViewOrganization(org.name)}
+                          className="hover-scale"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
 
           {/* Selected Organization Details */}
           <Card>
