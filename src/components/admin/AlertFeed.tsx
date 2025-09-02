@@ -345,7 +345,7 @@ export function AlertFeed() {
       
       {/* Alert List */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-2 space-y-1.5">
+        <div className="p-2 space-y-3">
           {filteredAlerts.map((alert, index) => {
             const SeverityIcon = getSeverityIcon(alert.severity);
             const isNew = index < 2; // Mark first 2 as new
