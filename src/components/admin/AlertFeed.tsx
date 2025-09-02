@@ -345,7 +345,7 @@ export function AlertFeed() {
       
       {/* Alert List */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-3 space-y-2">
+        <div className="p-2 space-y-1.5">
           {filteredAlerts.map((alert, index) => {
             const SeverityIcon = getSeverityIcon(alert.severity);
             const isNew = index < 2; // Mark first 2 as new
@@ -353,80 +353,82 @@ export function AlertFeed() {
             return (
               <Card 
                 key={alert.id} 
-                className={`hover:shadow-md transition-all duration-200 hover-scale cursor-pointer ${
-                  isNew ? 'ring-2 ring-admin-critical-alert/30' : ''
-                }`}
+                className={`hover:shadow-sm transition-all duration-200 hover-scale cursor-pointer border-l-4 ${
+                  alert.severity === 'critical' ? 'border-l-admin-critical-alert' :
+                  alert.severity === 'high' ? 'border-l-admin-answer-revision' :
+                  alert.severity === 'medium' ? 'border-l-admin-warning' : 'border-l-admin-info'
+                } ${isNew ? 'ring-1 ring-admin-critical-alert/20 bg-admin-critical-alert/5' : ''}`}
               >
-                <CardContent className="p-3">
-                  {/* Alert Header */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center space-x-3 flex-1">
-                      <div className={`p-2 rounded-full ${getSeverityColor(alert.severity)} flex items-center justify-center`}>
-                        <SeverityIcon className="h-4 w-4" />
+                <CardContent className="p-2.5">
+                  {/* Compact Header */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2 flex-1">
+                      <div className={`p-1 rounded ${getSeverityColor(alert.severity)} flex items-center justify-center`}>
+                        <SeverityIcon className="h-3 w-3" />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-sm">{alert.id}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-1.5">
+                          <span className="font-medium text-xs truncate">{alert.id}</span>
                           {isNew && (
-                            <Badge className="bg-admin-critical-alert text-white text-xs animate-pulse">
+                            <Badge className="bg-admin-critical-alert text-white text-[10px] px-1 py-0 animate-fade-in">
                               NEW
                             </Badge>
                           )}
-                          <Badge className={getStatusColor(alert.status)}>
+                          <Badge className={`text-[10px] px-1.5 py-0 ${getStatusColor(alert.status)}`}>
                             {alert.status}
                           </Badge>
                         </div>
-                        <p className="text-xs text-muted-foreground">{alert.time}</p>
+                        <p className="text-[10px] text-muted-foreground">{alert.time}</p>
                       </div>
                     </div>
                     
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-accent">
+                          <MoreVertical className="h-3 w-3" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleInvestigate(alert)}>
-                          <Eye className="mr-2 h-4 w-4" />
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => handleInvestigate(alert)} className="text-xs">
+                          <Eye className="mr-2 h-3 w-3" />
                           Investigate
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleCreateCase(alert)}>
-                          <FileText className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem onClick={() => handleCreateCase(alert)} className="text-xs">
+                          <FileText className="mr-2 h-3 w-3" />
                           Create Case
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleMessageProctor(alert)}>
-                          <MessageSquare className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem onClick={() => handleMessageProctor(alert)} className="text-xs">
+                          <MessageSquare className="mr-2 h-3 w-3" />
                           Message Proctor
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleAlertAction(alert.id, 'resolved')}>
-                          <CheckCircle className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem onClick={() => handleAlertAction(alert.id, 'resolved')} className="text-xs">
+                          <CheckCircle className="mr-2 h-3 w-3" />
                           Mark Resolved
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleAlertAction(alert.id, 'dismissed')}>
-                          <XCircle className="mr-2 h-4 w-4" />
+                        <DropdownMenuItem onClick={() => handleAlertAction(alert.id, 'dismissed')} className="text-xs">
+                          <XCircle className="mr-2 h-3 w-3" />
                           Dismiss
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                   
-                  {/* Alert Content */}
-                  <div className="space-y-2">
+                  {/* Compact Content */}
+                  <div className="space-y-1.5">
                     <div>
-                      <p className="font-medium text-sm mb-1">{alert.title}</p>
-                      <p className="text-xs text-muted-foreground">{alert.candidateName}</p>
-                      <p className="text-xs text-muted-foreground">{alert.description}</p>
+                      <p className="font-medium text-xs mb-0.5 leading-tight">{alert.title}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{alert.candidateName}</p>
+                      <p className="text-[10px] text-muted-foreground line-clamp-2 leading-tight">{alert.description}</p>
                       {alert.section && (
-                        <p className="text-xs text-muted-foreground mt-1">📍 {alert.section}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">📍 {alert.section}</p>
                       )}
                     </div>
                     
-                    {/* Confidence Bar */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs font-medium">{alert.confidence}%</span>
-                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                    {/* Compact Confidence Bar */}
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-[10px] font-medium min-w-[28px]">{alert.confidence}%</span>
+                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                         <div 
                           className={`h-full transition-all duration-500 ${
                             alert.confidence > 85 ? 'bg-admin-critical-alert' :
@@ -437,24 +439,32 @@ export function AlertFeed() {
                       </div>
                     </div>
                     
-                    {/* Quick Actions */}
+                    {/* Compact Quick Actions */}
                     {alert.actionable && alert.status === 'open' && (
-                      <div className="flex space-x-2 pt-2 border-t border-border/30">
+                      <div className="flex space-x-1.5 pt-1.5 border-t border-border/20">
                         <Button 
                           size="sm" 
-                          className="flex-1 h-7 text-xs"
+                          className="flex-1 h-6 text-[10px] px-2"
                           onClick={() => handleInvestigate(alert)}
                         >
-                          <Eye className="h-3 w-3 mr-1" />
+                          <Eye className="h-2.5 w-2.5 mr-1" />
                           View
                         </Button>
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="flex-1 h-7 text-xs"
+                          className="flex-1 h-6 text-[10px] px-2"
                           onClick={() => handleAlertAction(alert.id, 'investigating')}
                         >
-                          Start Investigation
+                          Investigate
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-6 w-6 p-0"
+                          onClick={() => handleAlertAction(alert.id, 'resolved')}
+                        >
+                          <CheckCircle className="h-2.5 w-2.5 text-green-600" />
                         </Button>
                       </div>
                     )}
