@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 import { 
   BarChart3, 
   TrendingUp, 
@@ -57,6 +58,7 @@ const personFitData = [
 ];
 
 export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
+  const navigate = useNavigate();
   const getSimilarityColor = (similarity: number) => {
     if (similarity > 0.9) return "#ef4444"; // Critical
     if (similarity > 0.8) return "#f97316"; // Warning
@@ -67,7 +69,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Response Time-Based Anomaly */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onChartClick('responseTimeAnomaly', responseAnomalyData)}>
+            onClick={() => navigate('/admin/response-time-analysis')}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center space-x-2">
             <BarChart3 className="h-4 w-4 text-admin-response-anomaly" />

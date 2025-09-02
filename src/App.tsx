@@ -10,6 +10,7 @@ import ActiveCandidatesPage from "./pages/admin/ActiveCandidatesPage";
 import FlagsPage from "./pages/admin/FlagsPage";
 import PrecisionPage from "./pages/admin/PrecisionPage";
 import ResponseTimePage from "./pages/admin/ResponseTimePage";
+import ResponseTimeAnalysisPage from "./pages/admin/ResponseTimeAnalysisPage";
 import SystemHealthPage from "./pages/admin/SystemHealthPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import CasesPage from "./pages/admin/CasesPage";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/admin/flags" element={<FlagsPage />} />
           <Route path="/admin/precision" element={<PrecisionPage />} />
           <Route path="/admin/response-time" element={<ResponseTimePage />} />
+          <Route path="/admin/response-time-analysis" element={<ResponseTimeAnalysisPage />} />
           <Route path="/admin/system-health" element={<SystemHealthPage />} />
           <Route path="/admin/settings" element={<SettingsPage />} />
           <Route path="/admin/cases" element={<CasesPage />} />
