@@ -175,21 +175,21 @@ export function AlertFeed() {
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-admin-critical-alert text-white';
-      case 'high': return 'bg-admin-answer-revision text-white';
-      case 'medium': return 'bg-admin-warning text-black';
-      case 'low': return 'bg-admin-info text-black';
-      default: return 'bg-muted';
+      case 'critical': return 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300';
+      case 'high': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300';
+      case 'medium': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300';
+      case 'low': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-admin-critical-alert text-white';
-      case 'investigating': return 'bg-admin-warning text-black';
-      case 'resolved': return 'bg-admin-normal-safe text-white';
-      case 'dismissed': return 'bg-muted text-black';
-      default: return 'bg-muted';
+      case 'open': return 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300';
+      case 'investigating': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300';
+      case 'resolved': return 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300';
+      case 'dismissed': return 'bg-gray-100 text-gray-700 dark:bg-gray-900/20 dark:text-gray-300';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -353,11 +353,11 @@ export function AlertFeed() {
             return (
               <Card 
                 key={alert.id} 
-                className={`hover:shadow-sm transition-all duration-200 hover-scale cursor-pointer border-l-4 ${
-                  alert.severity === 'critical' ? 'border-l-admin-critical-alert' :
-                  alert.severity === 'high' ? 'border-l-admin-answer-revision' :
-                  alert.severity === 'medium' ? 'border-l-admin-warning' : 'border-l-admin-info'
-                } ${isNew ? 'ring-1 ring-admin-critical-alert/20 bg-admin-critical-alert/5' : ''}`}
+                className={`hover:shadow-md transition-all duration-300 cursor-pointer border-l-2 bg-card/50 backdrop-blur-sm ${
+                  alert.severity === 'critical' ? 'border-l-red-200 dark:border-l-red-900/30' :
+                  alert.severity === 'high' ? 'border-l-orange-200 dark:border-l-orange-900/30' :
+                  alert.severity === 'medium' ? 'border-l-yellow-200 dark:border-l-yellow-900/30' : 'border-l-blue-200 dark:border-l-blue-900/30'
+                } ${isNew ? 'ring-1 ring-primary/10 bg-primary/5' : ''} hover:bg-card/80`}
               >
                 <CardContent className="p-2.5">
                   {/* Compact Header */}
@@ -369,11 +369,11 @@ export function AlertFeed() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-1.5">
                           <span className="font-medium text-xs truncate">{alert.id}</span>
-                          {isNew && (
-                            <Badge className="bg-admin-critical-alert text-white text-[10px] px-1 py-0 animate-fade-in">
-                              NEW
-                            </Badge>
-                          )}
+                           {isNew && (
+                             <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 text-[10px] px-1 py-0 animate-fade-in">
+                               NEW
+                             </Badge>
+                           )}
                           <Badge className={`text-[10px] px-1.5 py-0 ${getStatusColor(alert.status)}`}>
                             {alert.status}
                           </Badge>
@@ -429,11 +429,11 @@ export function AlertFeed() {
                     <div className="flex items-center space-x-1.5">
                       <span className="text-[10px] font-medium min-w-[28px]">{alert.confidence}%</span>
                       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full transition-all duration-500 ${
-                            alert.confidence > 85 ? 'bg-admin-critical-alert' :
-                            alert.confidence > 70 ? 'bg-admin-warning' : 'bg-admin-info'
-                          }`}
+                         <div 
+                           className={`h-full transition-all duration-500 ${
+                             alert.confidence > 85 ? 'bg-red-200 dark:bg-red-800/40' :
+                             alert.confidence > 70 ? 'bg-yellow-200 dark:bg-yellow-800/40' : 'bg-blue-200 dark:bg-blue-800/40'
+                           }`}
                           style={{ width: `${alert.confidence}%` }}
                         />
                       </div>
