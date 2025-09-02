@@ -7,8 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Download, Eye } from "lucide-react";
+import { ArrowLeft, Download, Eye, BarChart3, TrendingUp, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   BarChart,
   Bar,
@@ -21,7 +22,8 @@ import {
   ResponsiveContainer,
   Cell,
   PieChart,
-  Pie
+  Pie,
+  ReferenceLine
 } from "recharts";
 
 // Mock data for bubble chart (organizational data)
@@ -82,6 +84,32 @@ export default function ResponseTimeAnalysisPage() {
   const [studentGroup, setStudentGroup] = useState("OrganizationName");
   const [selectedStudent, setSelectedStudent] = useState("Student-3611");
 
+  // Button handlers
+  const handleExport = () => {
+    toast.success("Exporting data to Excel...", {
+      description: "Download will begin shortly"
+    });
+  };
+
+  const handleViewOrganization = (orgName: string) => {
+    toast.info(`Viewing details for ${orgName}`, {
+      description: "Loading organization analytics..."
+    });
+  };
+
+  const handleViewStudentGraph = (studentId: string) => {
+    setSelectedStudent(studentId);
+    toast.info(`Loading graph for ${studentId}`, {
+      description: "Analyzing response patterns..."
+    });
+  };
+
+  // Custom gradient colors for charts
+  const gradientId = "colorGradient";
+  const barGradientId = "barGradient";
+  const scatterGradient1 = "scatterGradient1";
+  const scatterGradient2 = "scatterGradient2";
+
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
       {/* Header */}
@@ -98,7 +126,11 @@ export default function ResponseTimeAnalysisPage() {
           </Button>
           <h1 className="text-2xl font-bold">Student Response Latency Analysis</h1>
         </div>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button 
+          variant="outline" 
+          onClick={handleExport}
+          className="flex items-center space-x-2 hover-scale"
+        >
           <Download className="h-4 w-4" />
           <span>Export</span>
         </Button>
@@ -191,15 +223,29 @@ export default function ResponseTimeAnalysisPage() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
+                    <defs>
+                      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.9}/>
+                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.4}/>
+                      </linearGradient>
+                    </defs>
                     <Pie
                       data={bubbleData}
                       cx="50%"
                       cy="50%"
                       outerRadius={120}
-                      fill="hsl(var(--chart-1))"
+                      fill={`url(#${gradientId})`}
                       dataKey="value"
+                      className="animate-scale-in"
                     />
-                    <Tooltip formatter={(value) => [`${value} students`, 'Anomaly Students']} />
+                    <Tooltip 
+                      formatter={(value) => [`${value} students`, 'Anomaly Students']}
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -224,7 +270,12 @@ export default function ResponseTimeAnalysisPage() {
                         <TableCell>{org.organizationName}</TableCell>
                         <TableCell>{org.anomalyStudents}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleViewOrganization(org.organizationName)}
+                            className="hover-scale"
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -262,7 +313,12 @@ export default function ResponseTimeAnalysisPage() {
                       <TableCell>{student.totalAnomalyItems}</TableCell>
                       <TableCell>{student.totalScore}</TableCell>
                       <TableCell>
-                        <Button variant="link" size="sm" className="text-blue-600">
+                        <Button 
+                          variant="link" 
+                          size="sm" 
+                          onClick={() => handleViewStudentGraph(student.studentId)}
+                          className="text-primary hover-scale story-link"
+                        >
                           view graph
                         </Button>
                       </TableCell>
@@ -294,24 +350,36 @@ export default function ResponseTimeAnalysisPage() {
                 </div>
                 <ResponsiveContainer width="100%" height={250}>
                   <ScatterChart data={anomalyOverviewData}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <defs>
+                      <radialGradient id={scatterGradient1} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.9}/>
+                      </radialGradient>
+                      <radialGradient id={scatterGradient2} cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#fca5a5" stopOpacity={0.8}/>
+                        <stop offset="100%" stopColor="#ef4444" stopOpacity={0.9}/>
+                      </radialGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                     <XAxis 
                       dataKey="item" 
                       type="number"
                       domain={[0, 25]}
                       label={{ value: 'Item', position: 'insideBottom', offset: -5 }}
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis 
                       dataKey="zScore"
                       label={{ value: 'Z-Score', angle: -90, position: 'insideLeft' }}
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <Tooltip 
                       content={({ active, payload }) => {
                         if (active && payload && payload[0]) {
                           const data = payload[0].payload;
                           return (
-                            <div className="bg-card p-3 border rounded shadow">
-                              <p>Item: {data.item}</p>
+                            <div className="bg-card p-3 border rounded-lg shadow-lg animate-fade-in">
+                              <p className="font-medium">Item: {data.item}</p>
                               <p>Z-Score: {data.zScore}</p>
                               <p>Outliers: {data.actualOutliers}</p>
                             </div>
@@ -320,14 +388,15 @@ export default function ResponseTimeAnalysisPage() {
                         return null;
                       }}
                     />
-                    <Scatter dataKey="zScore">
+                    <Scatter dataKey="zScore" className="animate-scale-in">
                       {anomalyOverviewData.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={entry.isOutlier ? "#ef4444" : "#3b82f6"} 
+                          fill={entry.isOutlier ? `url(#${scatterGradient2})` : `url(#${scatterGradient1})`} 
                         />
                       ))}
                     </Scatter>
+                    <ReferenceLine y={2} stroke="#fbbf24" strokeDasharray="5 5" opacity={0.7} />
                   </ScatterChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -354,19 +423,38 @@ export default function ResponseTimeAnalysisPage() {
                 </div>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={responseFrequencyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <defs>
+                      <linearGradient id={barGradientId} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#0891b2" stopOpacity={0.6}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
                     <XAxis 
                       dataKey="range" 
                       label={{ value: 'Item Response', position: 'insideBottom', offset: -5 }}
                       angle={-45}
                       textAnchor="end"
                       height={60}
+                      stroke="hsl(var(--muted-foreground))"
                     />
                     <YAxis 
                       label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft' }}
+                      stroke="hsl(var(--muted-foreground))"
                     />
-                    <Tooltip />
-                    <Bar dataKey="frequency" fill="hsl(var(--chart-1))" />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar 
+                      dataKey="frequency" 
+                      fill={`url(#${barGradientId})`}
+                      className="animate-fade-in"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
