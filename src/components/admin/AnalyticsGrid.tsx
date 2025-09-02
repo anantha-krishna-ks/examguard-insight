@@ -65,13 +65,13 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Test Progress */}
+      {/* Response Time-Based Anomaly */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onChartClick('testProgress', responseAnomalyData)}>
+            onClick={() => onChartClick('responseTimeAnomaly', responseAnomalyData)}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center space-x-2">
             <BarChart3 className="h-4 w-4 text-admin-response-anomaly" />
-            <CardTitle className="text-sm font-medium">Test Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">Response Time-Based Anomaly</CardTitle>
           </div>
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
         </CardHeader>

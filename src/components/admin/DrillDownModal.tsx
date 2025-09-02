@@ -44,8 +44,8 @@ export function DrillDownModal({ chartType, data, onClose }: DrillDownModalProps
 
   const getModalTitle = () => {
     switch (chartType) {
-      case 'responseTime': return 'Response Time Analysis';
-      case 'wrongRight': return 'Answer Revision Patterns';
+      case 'responseTimeAnomaly': return 'Response Time-Based Anomaly Analysis';
+      case 'behavioralAnomaly': return 'Behavioural Pattern Anomaly Analysis';
       case 'similarity': return 'Similarity Investigation';
       case 'personFit': return 'Person-Fit Model Results';
       default: return 'Detailed Analysis';
@@ -54,8 +54,8 @@ export function DrillDownModal({ chartType, data, onClose }: DrillDownModalProps
 
   const getModalDescription = () => {
     switch (chartType) {
-      case 'responseTime': return 'Drill down into response time patterns by question difficulty and individual candidates';
-      case 'wrongRight': return 'Analyze wrong-to-right answer changes and identify suspicious revision patterns';
+      case 'responseTimeAnomaly': return 'Analyze response time anomalies and identify suspicious timing patterns across test sessions';
+      case 'behavioralAnomaly': return 'Investigate sequential patterns and answer revision behaviors that indicate potential misconduct';
       case 'similarity': return 'Investigate similarity clusters and potential collusion between candidates';
       case 'personFit': return 'Examine person-fit model violations and probability anomalies';
       default: return 'Detailed view of the selected analytics';
@@ -64,34 +64,38 @@ export function DrillDownModal({ chartType, data, onClose }: DrillDownModalProps
 
   const renderDetailedChart = () => {
     switch (chartType) {
-      case 'responseTime':
+      case 'responseTimeAnomaly':
         return (
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="difficulty" />
+              <XAxis dataKey="test" />
               <YAxis />
-              <Tooltip />
-              <Bar dataKey="avgTime" fill="hsl(var(--admin-response-anomaly))" />
+              <Tooltip 
+                formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name]}
+                labelFormatter={(label) => `Response Time Analysis: ${label}`}
+              />
+              <Bar dataKey="notStarted" stackId="stack" fill="#f59e0b" name="Not Started" />
+              <Bar dataKey="inProgress" stackId="stack" fill="#10b981" name="In Progress" />
+              <Bar dataKey="completed" stackId="stack" fill="hsl(var(--admin-response-anomaly))" name="Completed" />
             </BarChart>
           </ResponsiveContainer>
         );
       
-      case 'wrongRight':
+      case 'behavioralAnomaly':
         return (
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
+            <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
+              <XAxis dataKey="test" />
               <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="changes" 
-                stroke="hsl(var(--admin-answer-revision))"
-                strokeWidth={3}
+              <Tooltip 
+                formatter={(value: number, name: string) => [value, name]}
+                labelFormatter={(label) => `Behavioral Analysis: ${label}`}
               />
-            </LineChart>
+              <Bar dataKey="sequentialPattern" fill="hsl(var(--admin-sequential-pattern))" name="Sequential Pattern Anomalies" />
+              <Bar dataKey="answerRevision" fill="hsl(var(--admin-answer-revision))" name="Answer Revision Anomalies" />
+            </BarChart>
           </ResponsiveContainer>
         );
       
