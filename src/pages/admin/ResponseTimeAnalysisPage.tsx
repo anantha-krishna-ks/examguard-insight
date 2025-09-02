@@ -2,88 +2,140 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, TrendingUp, Target, Users } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
-  ScatterChart,
-  Scatter,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
-  LineChart,
-  Line
+  Cell
 } from "recharts";
 
-// Mock data for OS Curve and item time frequency distribution
-const osCurveData = [
-  { percentile: 0, responseTime: 12, frequency: 2 },
-  { percentile: 10, responseTime: 25, frequency: 8 },
-  { percentile: 20, responseTime: 35, frequency: 15 },
-  { percentile: 30, responseTime: 42, frequency: 23 },
-  { percentile: 40, responseTime: 48, frequency: 31 },
-  { percentile: 50, responseTime: 55, frequency: 45 },
-  { percentile: 60, responseTime: 62, frequency: 38 },
-  { percentile: 70, responseTime: 68, frequency: 28 },
-  { percentile: 80, responseTime: 75, frequency: 18 },
-  { percentile: 90, responseTime: 85, frequency: 8 },
-  { percentile: 100, responseTime: 120, frequency: 3 },
+type ViewLevel = "test" | "location" | "testcenter";
+type FilterType = "all" | "flagged" | "unflagged";
+
+// Mock data for different levels
+const testLevelData = [
+  { name: 'Test 1', notStarted: 5.43, inProgress: 78.26, completed: 16.30 },
+  { name: 'Test 2', notStarted: 13.81, inProgress: 69.06, completed: 17.13 },
+  { name: 'Test 3', notStarted: 0.00, inProgress: 90.91, completed: 9.09 },
 ];
 
-// Mock data for mean and standard deviation per item
-const itemStatsData = [
-  { item: "Q1", mean: 45.2, stdDev: 12.3, difficulty: "Easy" },
-  { item: "Q2", mean: 62.8, stdDev: 18.7, difficulty: "Medium" },
-  { item: "Q3", mean: 78.5, stdDev: 25.1, difficulty: "Hard" },
-  { item: "Q4", mean: 38.9, stdDev: 8.4, difficulty: "Easy" },
-  { item: "Q5", mean: 95.2, stdDev: 32.6, difficulty: "Expert" },
-  { item: "Q6", mean: 55.7, stdDev: 15.2, difficulty: "Medium" },
-  { item: "Q7", mean: 42.1, stdDev: 11.8, difficulty: "Easy" },
-  { item: "Q8", mean: 88.3, stdDev: 28.9, difficulty: "Hard" },
+const locationLevelData = [
+  { name: 'New York', notStarted: 8.2, inProgress: 75.4, completed: 16.4 },
+  { name: 'California', notStarted: 12.1, inProgress: 71.2, completed: 16.7 },
+  { name: 'Texas', notStarted: 6.8, inProgress: 79.3, completed: 13.9 },
+  { name: 'Florida', notStarted: 15.2, inProgress: 68.1, completed: 16.7 },
 ];
 
-// Mock data for Response Time vs Difficulty with answer correctness
-const difficultyResponseData = [
-  { responseTime: 25, difficulty: 1, correct: true, candidate: "C001" },
-  { responseTime: 32, difficulty: 1, correct: true, candidate: "C002" },
-  { responseTime: 28, difficulty: 1, correct: false, candidate: "C003" },
-  { responseTime: 45, difficulty: 2, correct: true, candidate: "C001" },
-  { responseTime: 58, difficulty: 2, correct: false, candidate: "C002" },
-  { responseTime: 52, difficulty: 2, correct: true, candidate: "C003" },
-  { responseTime: 75, difficulty: 3, correct: true, candidate: "C001" },
-  { responseTime: 82, difficulty: 3, correct: false, candidate: "C002" },
-  { responseTime: 95, difficulty: 3, correct: false, candidate: "C003" },
-  { responseTime: 120, difficulty: 4, correct: false, candidate: "C001" },
-  { responseTime: 115, difficulty: 4, correct: true, candidate: "C002" },
-  { responseTime: 105, difficulty: 4, correct: false, candidate: "C003" },
+const testCenterLevelData = [
+  { name: 'NYC Center A', notStarted: 7.1, inProgress: 76.8, completed: 16.1 },
+  { name: 'NYC Center B', notStarted: 9.3, inProgress: 74.0, completed: 16.7 },
+  { name: 'NYC Center C', notStarted: 8.8, inProgress: 75.2, completed: 16.0 },
 ];
 
-const difficultyLabels = {
-  1: "Easy",
-  2: "Medium", 
-  3: "Hard",
-  4: "Expert"
+const candidateData = [
+  { id: 'C001', name: 'John Doe', email: 'john@example.com', status: 'Completed', flagged: false, anomalyScore: 0.23 },
+  { id: 'C002', name: 'Jane Smith', email: 'jane@example.com', status: 'In Progress', flagged: true, anomalyScore: 0.87 },
+  { id: 'C003', name: 'Bob Johnson', email: 'bob@example.com', status: 'Completed', flagged: true, anomalyScore: 0.92 },
+  { id: 'C004', name: 'Alice Brown', email: 'alice@example.com', status: 'Not Started', flagged: false, anomalyScore: 0.15 },
+  { id: 'C005', name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Completed', flagged: true, anomalyScore: 0.78 },
+];
+
+const levelLabels = {
+  test: "Test",
+  location: "Location", 
+  testcenter: "Test Center"
 };
+
+const sliderMarks = [
+  { value: 0, label: "Test" },
+  { value: 50, label: "Location" },
+  { value: 100, label: "Test Center" }
+];
 
 export default function ResponseTimeAnalysisPage() {
   const navigate = useNavigate();
-  const [selectedCandidate, setSelectedCandidate] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [viewLevel, setViewLevel] = useState<ViewLevel>("test");
+  const [sliderValue, setSliderValue] = useState([0]);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [selectedTestCenter, setSelectedTestCenter] = useState<string | null>(null);
+  const [showCandidates, setShowCandidates] = useState(false);
+  const [candidateFilter, setCandidateFilter] = useState<FilterType>("all");
+  const [clickedSegment, setClickedSegment] = useState<string | null>(null);
 
-  const filteredItemStats = itemStatsData.filter(item => 
-    item.item.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.difficulty.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const getCurrentData = () => {
+    if (viewLevel === "test") return testLevelData;
+    if (viewLevel === "location") return locationLevelData;
+    return testCenterLevelData;
+  };
 
-  const getCorrectColor = (correct: boolean) => correct ? "#22c55e" : "#ef4444";
+  const handleSliderChange = (value: number[]) => {
+    setSliderValue(value);
+    const newLevel = value[0] <= 25 ? "test" : value[0] <= 75 ? "location" : "testcenter";
+    setViewLevel(newLevel);
+    setSelectedLocation(null);
+    setSelectedTestCenter(null);
+    setShowCandidates(false);
+    setClickedSegment(null);
+  };
+
+  const handleBarClick = (data: any, segment?: string) => {
+    if (viewLevel === "location" && !selectedLocation) {
+      setSelectedLocation(data.name);
+      setViewLevel("testcenter");
+      setSliderValue([100]);
+    } else if (viewLevel === "testcenter") {
+      setSelectedTestCenter(data.name);
+      setShowCandidates(true);
+      if (segment === "completed") {
+        setClickedSegment("completed");
+        setCandidateFilter("flagged");
+      } else {
+        setClickedSegment(null);
+        setCandidateFilter("all");
+      }
+    }
+  };
+
+  const getFilteredCandidates = () => {
+    let filtered = candidateData;
+    
+    if (candidateFilter === "flagged") {
+      filtered = filtered.filter(c => c.flagged);
+    } else if (candidateFilter === "unflagged") {
+      filtered = filtered.filter(c => !c.flagged);
+    }
+    
+    return filtered;
+  };
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-card p-3 border rounded shadow">
+          <p className="font-medium">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }}>
+              {entry.name}: {entry.value.toFixed(2)}%
+            </p>
+          ))}
+          {viewLevel !== "test" && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Click to drill down
+            </p>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -100,181 +152,202 @@ export default function ResponseTimeAnalysisPage() {
             <span>Back to Dashboard</span>
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Response Time Analysis</h1>
-            <p className="text-muted-foreground">Detailed forensic analysis of response time patterns</p>
+            <h1 className="text-3xl font-bold">Response Time-Based Anomaly Analysis</h1>
+            <p className="text-muted-foreground">
+              Hierarchical drill-down analysis at {levelLabels[viewLevel]} level
+              {selectedLocation && ` - ${selectedLocation}`}
+              {selectedTestCenter && ` - ${selectedTestCenter}`}
+            </p>
           </div>
         </div>
         <Badge variant="outline" className="text-admin-response-anomaly border-admin-response-anomaly">
-          Post-Test Forensics
+          Response Anomalies
         </Badge>
       </div>
 
-      {/* Filters */}
+      {/* Level Selector Slider */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search items or difficulty..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Filter className="h-5 w-5" />
+            <span>Analysis Level</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="px-4">
+              <Slider
+                value={sliderValue}
+                onValueChange={handleSliderChange}
+                max={100}
+                step={1}
+                className="w-full"
               />
             </div>
-            <Select value={selectedCandidate} onValueChange={setSelectedCandidate}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select candidate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Candidates</SelectItem>
-                <SelectItem value="C001">Candidate C001</SelectItem>
-                <SelectItem value="C002">Candidate C002</SelectItem>
-                <SelectItem value="C003">Candidate C003</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* OS Curve and Frequency Distribution */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-admin-response-anomaly" />
-            <CardTitle>OS Curve & Item Time Frequency Distribution</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* OS Curve */}
-            <div>
-              <h4 className="text-sm font-medium mb-4">OS Curve (Cumulative Distribution)</h4>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={osCurveData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="percentile" label={{ value: 'Percentile', position: 'insideBottom', offset: -5 }} />
-                  <YAxis label={{ value: 'Response Time (s)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip formatter={(value: number, name: string) => [`${value}s`, 'Response Time']} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="responseTime" 
-                    stroke="hsl(var(--admin-response-anomaly))" 
-                    fill="hsl(var(--admin-response-anomaly) / 0.3)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Frequency Distribution */}
-            <div>
-              <h4 className="text-sm font-medium mb-4">Time Frequency Distribution</h4>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={osCurveData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="responseTime" label={{ value: 'Response Time (s)', position: 'insideBottom', offset: -5 }} />
-                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Bar dataKey="frequency" fill="hsl(var(--admin-sequential-pattern))" />
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="flex justify-between text-sm text-muted-foreground px-2">
+              <span className={viewLevel === "test" ? "font-medium text-foreground" : ""}>Test</span>
+              <span className={viewLevel === "location" ? "font-medium text-foreground" : ""}>Location</span>
+              <span className={viewLevel === "testcenter" ? "font-medium text-foreground" : ""}>Test Center</span>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Mean and Standard Deviation */}
+      {/* Main Chart */}
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-admin-answer-revision" />
-            <CardTitle>Item-wise Response Time Statistics</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-admin-response-anomaly" />
+              <CardTitle>
+                Response Time Anomaly - {levelLabels[viewLevel]} Level
+                {selectedLocation && ` (${selectedLocation})`}
+              </CardTitle>
+            </div>
+            {clickedSegment && (
+              <Badge variant="destructive">
+                Showing flagged candidates from completed segment
+              </Badge>
+            )}
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
-            <Input
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={filteredItemStats}>
+            <BarChart data={getCurrentData()}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="item" />
-              <YAxis label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip 
-                formatter={(value: number, name: string) => [
-                  `${value.toFixed(1)}s`, 
-                  name === 'mean' ? 'Mean' : 'Std Deviation'
-                ]} 
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar 
+                dataKey="notStarted" 
+                stackId="stack" 
+                fill="#f59e0b" 
+                name="Not Started"
+                onClick={(data) => handleBarClick(data)}
+                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
               />
-              <Bar dataKey="mean" fill="hsl(var(--admin-answer-revision))" name="mean" />
-              <Bar dataKey="stdDev" fill="hsl(var(--admin-answer-revision) / 0.6)" name="stdDev" />
+              <Bar 
+                dataKey="inProgress" 
+                stackId="stack" 
+                fill="#10b981" 
+                name="In Progress"
+                onClick={(data) => handleBarClick(data)}
+                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
+              />
+              <Bar 
+                dataKey="completed" 
+                stackId="stack" 
+                fill="#ef4444" 
+                name="Completed"
+                onClick={(data) => handleBarClick(data, "completed")}
+                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
+              />
             </BarChart>
           </ResponsiveContainer>
+          <div className="mt-4 flex justify-between text-xs text-muted-foreground">
+            <span>Percent Student Test Completion</span>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
+                <span>Not Started</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span>In Progress</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <span>Completed (Click red segment for flagged candidates)</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Response Time vs Difficulty with Correctness */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Target className="h-5 w-5 text-admin-critical-alert" />
-            <CardTitle>Response Time vs Difficulty (Answer Correctness)</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm">Correct Answer</span>
+      {/* Candidate List */}
+      {showCandidates && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-admin-sequential-pattern" />
+                <CardTitle>
+                  Candidate Information - {selectedTestCenter}
+                </CardTitle>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Select value={candidateFilter} onValueChange={(value: FilterType) => setCandidateFilter(value)}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Candidates</SelectItem>
+                    <SelectItem value="flagged">Flagged Only</SelectItem>
+                    <SelectItem value="unflagged">Unflagged Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-sm">Wrong Answer</span>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">Candidate ID</th>
+                    <th className="text-left p-2">Name</th>
+                    <th className="text-left p-2">Email</th>
+                    <th className="text-left p-2">Status</th>
+                    <th className="text-left p-2">Anomaly Score</th>
+                    <th className="text-left p-2">Flag Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getFilteredCandidates().map((candidate) => (
+                    <tr key={candidate.id} className="border-b hover:bg-muted/50">
+                      <td className="p-2 font-mono text-sm">{candidate.id}</td>
+                      <td className="p-2">{candidate.name}</td>
+                      <td className="p-2 text-muted-foreground">{candidate.email}</td>
+                      <td className="p-2">
+                        <Badge 
+                          variant={candidate.status === 'Completed' ? 'default' : 
+                                  candidate.status === 'In Progress' ? 'secondary' : 'outline'}
+                        >
+                          {candidate.status}
+                        </Badge>
+                      </td>
+                      <td className="p-2">
+                        <span className={candidate.anomalyScore > 0.7 ? 'text-red-500 font-medium' : 
+                                       candidate.anomalyScore > 0.4 ? 'text-yellow-500' : 'text-green-500'}>
+                          {candidate.anomalyScore.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="p-2">
+                        {candidate.flagged ? (
+                          <div className="flex items-center space-x-1 text-red-500">
+                            <Eye className="h-4 w-4" />
+                            <span className="text-sm">Flagged</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-1 text-green-500">
+                            <EyeOff className="h-4 w-4" />
+                            <span className="text-sm">Normal</span>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {getFilteredCandidates().length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No candidates found matching the current filter.
+                </div>
+              )}
             </div>
-          </div>
-          <ResponsiveContainer width="100%" height={400}>
-            <ScatterChart data={difficultyResponseData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="difficulty" 
-                type="number"
-                domain={[0.5, 4.5]}
-                ticks={[1, 2, 3, 4]}
-                tickFormatter={(value) => difficultyLabels[value as keyof typeof difficultyLabels]}
-                label={{ value: 'Difficulty Level', position: 'insideBottom', offset: -5 }}
-              />
-              <YAxis 
-                dataKey="responseTime"
-                label={{ value: 'Response Time (s)', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload[0]) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-card p-3 border rounded shadow">
-                        <p>Candidate: {data.candidate}</p>
-                        <p>Difficulty: {difficultyLabels[data.difficulty as keyof typeof difficultyLabels]}</p>
-                        <p>Response Time: {data.responseTime}s</p>
-                        <p>Answer: {data.correct ? 'Correct' : 'Wrong'}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Scatter dataKey="responseTime">
-                {difficultyResponseData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getCorrectColor(entry.correct)} />
-                ))}
-              </Scatter>
-            </ScatterChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
