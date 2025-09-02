@@ -182,7 +182,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3">
                   <Label htmlFor="successiveCount" className="min-w-0 text-sm">
-                    Anomaly successive response count
+                    Anomaly response count
                   </Label>
                   <Input
                     id="successiveCount"
