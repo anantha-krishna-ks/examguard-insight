@@ -80,7 +80,10 @@ export default function ResponseTimeAnalysisPage() {
   };
 
   const handleBarClick = (data: any, segment?: string) => {
-    if (viewLevel === "location" && !selectedLocation) {
+    if (viewLevel === "test") {
+      // Drill down from test to location level
+      setViewLevel("location");
+    } else if (viewLevel === "location" && !selectedLocation) {
       setSelectedLocation(data.name);
       setViewLevel("testcenter");
     } else if (viewLevel === "testcenter") {
@@ -118,11 +121,9 @@ export default function ResponseTimeAnalysisPage() {
               {entry.name}: {entry.value.toFixed(2)}%
             </p>
           ))}
-          {viewLevel !== "test" && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Click to drill down
-            </p>
-          )}
+          <p className="text-xs text-muted-foreground mt-1">
+            Click to drill down
+          </p>
         </div>
       );
     }
@@ -207,7 +208,7 @@ export default function ResponseTimeAnalysisPage() {
                 fill="#f59e0b" 
                 name="Not Started"
                 onClick={(data) => handleBarClick(data)}
-                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
+                style={{ cursor: "pointer" }}
               />
               <Bar 
                 dataKey="inProgress" 
@@ -215,7 +216,7 @@ export default function ResponseTimeAnalysisPage() {
                 fill="#10b981" 
                 name="In Progress"
                 onClick={(data) => handleBarClick(data)}
-                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
+                style={{ cursor: "pointer" }}
               />
               <Bar 
                 dataKey="completed" 
@@ -223,7 +224,7 @@ export default function ResponseTimeAnalysisPage() {
                 fill="#ef4444" 
                 name="Completed"
                 onClick={(data) => handleBarClick(data, "completed")}
-                style={{ cursor: viewLevel !== "test" ? "pointer" : "default" }}
+                style={{ cursor: "pointer" }}
               />
             </BarChart>
           </ResponsiveContainer>
