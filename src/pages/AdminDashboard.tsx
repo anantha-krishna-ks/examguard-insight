@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-
+import { DashboardFilters } from "@/components/admin/DashboardFilters";
 import { KPIStrip } from "@/components/admin/KPIStrip";
 import { AnalyticsGrid } from "@/components/admin/AnalyticsGrid";
 import { ActivityTimeline } from "@/components/admin/ActivityTimeline";
@@ -63,6 +63,8 @@ const AdminDashboardContent = ({
         collapsed ? 'ml-12' : 'ml-56'
       } mr-72 min-w-0`}>
         <main className="flex-1 p-6 space-y-6 overflow-auto bg-admin-bg">
+          <DashboardFilters />
+          
           <KPIStrip />
           
           <AnalyticsGrid onChartClick={onChartClick} />
