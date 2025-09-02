@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, TrendingUp, Target, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowLeft, Download, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   ScatterChart,
@@ -19,71 +20,67 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  LineChart,
-  Line
+  PieChart,
+  Pie
 } from "recharts";
 
-// Mock data for OS Curve and item time frequency distribution
-const osCurveData = [
-  { percentile: 0, responseTime: 12, frequency: 2 },
-  { percentile: 10, responseTime: 25, frequency: 8 },
-  { percentile: 20, responseTime: 35, frequency: 15 },
-  { percentile: 30, responseTime: 42, frequency: 23 },
-  { percentile: 40, responseTime: 48, frequency: 31 },
-  { percentile: 50, responseTime: 55, frequency: 45 },
-  { percentile: 60, responseTime: 62, frequency: 38 },
-  { percentile: 70, responseTime: 68, frequency: 28 },
-  { percentile: 80, responseTime: 75, frequency: 18 },
-  { percentile: 90, responseTime: 85, frequency: 8 },
-  { percentile: 100, responseTime: 120, frequency: 3 },
+// Mock data for bubble chart (organizational data)
+const bubbleData = [
+  { name: "Excel Soft Technologies Pvt.Ltd", value: 406, fill: "hsl(var(--chart-1))" }
 ];
 
-// Mock data for mean and standard deviation per item
-const itemStatsData = [
-  { item: "Q1", mean: 45.2, stdDev: 12.3, difficulty: "Easy" },
-  { item: "Q2", mean: 62.8, stdDev: 18.7, difficulty: "Medium" },
-  { item: "Q3", mean: 78.5, stdDev: 25.1, difficulty: "Hard" },
-  { item: "Q4", mean: 38.9, stdDev: 8.4, difficulty: "Easy" },
-  { item: "Q5", mean: 95.2, stdDev: 32.6, difficulty: "Expert" },
-  { item: "Q6", mean: 55.7, stdDev: 15.2, difficulty: "Medium" },
-  { item: "Q7", mean: 42.1, stdDev: 11.8, difficulty: "Easy" },
-  { item: "Q8", mean: 88.3, stdDev: 28.9, difficulty: "Hard" },
+// Mock data for organization table
+const organizationData = [
+  { 
+    slNo: 1, 
+    organizationName: "Excel Soft Technologies Pvt.Ltd", 
+    anomalyStudents: 406 
+  }
 ];
 
-// Mock data for Response Time vs Difficulty with answer correctness
-const difficultyResponseData = [
-  { responseTime: 25, difficulty: 1, correct: true, candidate: "C001" },
-  { responseTime: 32, difficulty: 1, correct: true, candidate: "C002" },
-  { responseTime: 28, difficulty: 1, correct: false, candidate: "C003" },
-  { responseTime: 45, difficulty: 2, correct: true, candidate: "C001" },
-  { responseTime: 58, difficulty: 2, correct: false, candidate: "C002" },
-  { responseTime: 52, difficulty: 2, correct: true, candidate: "C003" },
-  { responseTime: 75, difficulty: 3, correct: true, candidate: "C001" },
-  { responseTime: 82, difficulty: 3, correct: false, candidate: "C002" },
-  { responseTime: 95, difficulty: 3, correct: false, candidate: "C003" },
-  { responseTime: 120, difficulty: 4, correct: false, candidate: "C001" },
-  { responseTime: 115, difficulty: 4, correct: true, candidate: "C002" },
-  { responseTime: 105, difficulty: 4, correct: false, candidate: "C003" },
+// Mock data for student details table
+const studentData = [
+  { slNo: 38, studentId: "Student-3713", totalItems: 15, totalAnomalyItems: 1, totalScore: 14 },
+  { slNo: 39, studentId: "Student-3715", totalItems: 15, totalAnomalyItems: 7, totalScore: 12 },
+  { slNo: 40, studentId: "Student-3718", totalItems: 15, totalAnomalyItems: 3, totalScore: 12 },
+  { slNo: 41, studentId: "Student-3719", totalItems: 15, totalAnomalyItems: 2, totalScore: 14 },
+  { slNo: 42, studentId: "Student-3720", totalItems: 15, totalAnomalyItems: 8, totalScore: 14 },
+  { slNo: 43, studentId: "Student-3721", totalItems: 15, totalAnomalyItems: 1, totalScore: 12 },
+  { slNo: 44, studentId: "Student-3729", totalItems: 15, totalAnomalyItems: 2, totalScore: 13 },
 ];
 
-const difficultyLabels = {
-  1: "Easy",
-  2: "Medium", 
-  3: "Hard",
-  4: "Expert"
-};
+// Mock data for anomaly items overview (Z-Score scatter plot)
+const anomalyOverviewData = [
+  { item: 1, zScore: 0.5, actualOutliers: 0, isOutlier: false },
+  { item: 2, zScore: 0.7, actualOutliers: 0, isOutlier: false },
+  { item: 3, zScore: 0.9, actualOutliers: 0, isOutlier: false },
+  { item: 4, zScore: 1.2, actualOutliers: 0, isOutlier: false },
+  { item: 5, zScore: 0.8, actualOutliers: 0, isOutlier: false },
+  { item: 6, zScore: 2.1, actualOutliers: 1, isOutlier: true }, // Red star - outlier
+  { item: 7, zScore: 0.6, actualOutliers: 0, isOutlier: false },
+];
+
+// Mock data for item response frequency
+const responseFrequencyData = [
+  { range: "1-44", frequency: 42 },
+  { range: "45-88", frequency: 35 },
+  { range: "89-132", frequency: 28 },
+  { range: "133-176", frequency: 20 },
+  { range: "177-220", frequency: 12 },
+  { range: "221-264", frequency: 8 },
+  { range: "265-308", frequency: 5 },
+  { range: "309-352", frequency: 3 },
+  { range: "353-396", frequency: 2 },
+  { range: "397-440", frequency: 1 },
+];
 
 export default function ResponseTimeAnalysisPage() {
   const navigate = useNavigate();
-  const [selectedCandidate, setSelectedCandidate] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredItemStats = itemStatsData.filter(item => 
-    item.item.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.difficulty.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const getCorrectColor = (correct: boolean) => correct ? "#22c55e" : "#ef4444";
+  const [selectedTest, setSelectedTest] = useState("PoSWHP");
+  const [forensicMethod, setForensicMethod] = useState("outlier");
+  const [osThreshold, setOsThreshold] = useState("2");
+  const [studentGroup, setStudentGroup] = useState("OrganizationName");
+  const [selectedStudent, setSelectedStudent] = useState("Student-3611");
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -99,182 +96,308 @@ export default function ResponseTimeAnalysisPage() {
             <ArrowLeft className="h-4 w-4" />
             <span>Back to Dashboard</span>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Response Time Analysis</h1>
-            <p className="text-muted-foreground">Detailed forensic analysis of response time patterns</p>
-          </div>
+          <h1 className="text-2xl font-bold">Student Response Latency Analysis</h1>
         </div>
-        <Badge variant="outline" className="text-admin-response-anomaly border-admin-response-anomaly">
-          Post-Test Forensics
-        </Badge>
+        <Button variant="outline" className="flex items-center space-x-2">
+          <Download className="h-4 w-4" />
+          <span>Export</span>
+        </Button>
       </div>
 
-      {/* Filters */}
+      {/* Test Selection */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <Input
-                placeholder="Search items or difficulty..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="test-select" className="text-sm font-medium">Select Test</Label>
+              <Select value={selectedTest} onValueChange={setSelectedTest}>
+                <SelectTrigger className="w-48">
+                  <SelectValue placeholder="Select test" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PoSWHP">PoSWHP</SelectItem>
+                  <SelectItem value="Test2">Test 2</SelectItem>
+                  <SelectItem value="Test3">Test 3</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={selectedCandidate} onValueChange={setSelectedCandidate}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select candidate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Candidates</SelectItem>
-                <SelectItem value="C001">Candidate C001</SelectItem>
-                <SelectItem value="C002">Candidate C002</SelectItem>
-                <SelectItem value="C003">Candidate C003</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* OS Curve and Frequency Distribution */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-admin-response-anomaly" />
-            <CardTitle>OS Curve & Item Time Frequency Distribution</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* OS Curve */}
-            <div>
-              <h4 className="text-sm font-medium mb-4">OS Curve (Cumulative Distribution)</h4>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={osCurveData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="percentile" label={{ value: 'Percentile', position: 'insideBottom', offset: -5 }} />
-                  <YAxis label={{ value: 'Response Time (s)', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip formatter={(value: number, name: string) => [`${value}s`, 'Response Time']} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="responseTime" 
-                    stroke="hsl(var(--admin-response-anomaly))" 
-                    fill="hsl(var(--admin-response-anomaly) / 0.3)" 
+      {/* Tabs */}
+      <Tabs defaultValue="student-response" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="student-response">Student Response latency</TabsTrigger>
+          <TabsTrigger value="response-change">Response Change Statistics</TabsTrigger>
+          <TabsTrigger value="answer-similarity">Answer Similarity Analysis</TabsTrigger>
+          <TabsTrigger value="person-fit">Person-fit Statistics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="student-response" className="space-y-6">
+          {/* Forensic Method and Settings */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Forensic Method:</Label>
+                  <RadioGroup value={forensicMethod} onValueChange={setForensicMethod}>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="outlier" id="outlier" />
+                      <Label htmlFor="outlier">Outlier Score</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="response-time" id="response-time" />
+                      <Label htmlFor="response-time">Response Time Statistics</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label htmlFor="os-threshold" className="text-sm font-medium">OS Threshold</Label>
+                  <Input 
+                    id="os-threshold"
+                    value={osThreshold} 
+                    onChange={(e) => setOsThreshold(e.target.value)}
+                    className="w-20"
                   />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+                </div>
 
-            {/* Frequency Distribution */}
-            <div>
-              <h4 className="text-sm font-medium mb-4">Time Frequency Distribution</h4>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={osCurveData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="responseTime" label={{ value: 'Response Time (s)', position: 'insideBottom', offset: -5 }} />
-                  <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} />
-                  <Tooltip />
-                  <Bar dataKey="frequency" fill="hsl(var(--admin-sequential-pattern))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+                <div>
+                  <Label htmlFor="student-group" className="text-sm font-medium">Student Group</Label>
+                  <Select value={studentGroup} onValueChange={setStudentGroup}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="-- Select --">-- Select --</SelectItem>
+                      <SelectItem value="OrganizationName">OrganizationName</SelectItem>
+                      <SelectItem value="LocationName">LocationName</SelectItem>
+                      <SelectItem value="DepartmentName">DepartmentName</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Mean and Standard Deviation */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-admin-answer-revision" />
-            <CardTitle>Item-wise Response Time Statistics</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
-            <Input
-              placeholder="Search items..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={filteredItemStats}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="item" />
-              <YAxis label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft' }} />
-              <Tooltip 
-                formatter={(value: number, name: string) => [
-                  `${value.toFixed(1)}s`, 
-                  name === 'mean' ? 'Mean' : 'Std Deviation'
-                ]} 
-              />
-              <Bar dataKey="mean" fill="hsl(var(--admin-answer-revision))" name="mean" />
-              <Bar dataKey="stdDev" fill="hsl(var(--admin-answer-revision) / 0.6)" name="stdDev" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Bubble Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Bubble Chart</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={bubbleData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={120}
+                      fill="hsl(var(--chart-1))"
+                      dataKey="value"
+                    />
+                    <Tooltip formatter={(value) => [`${value} students`, 'Anomaly Students']} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
 
-      {/* Response Time vs Difficulty with Correctness */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Target className="h-5 w-5 text-admin-critical-alert" />
-            <CardTitle>Response Time vs Difficulty (Answer Correctness)</CardTitle>
+            {/* Organization Table */}
+            <Card>
+              <CardContent className="pt-6">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Sl No.</TableHead>
+                      <TableHead>OrganizationName</TableHead>
+                      <TableHead>Anomaly Students</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {organizationData.map((org) => (
+                      <TableRow key={org.slNo}>
+                        <TableCell>{org.slNo}</TableCell>
+                        <TableCell>{org.organizationName}</TableCell>
+                        <TableCell>{org.anomalyStudents}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm">Correct Answer</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-sm">Wrong Answer</span>
-            </div>
+
+          {/* Selected Organization Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Selected: Excel Soft Technologies Pvt.Ltd</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sl No.</TableHead>
+                    <TableHead>Student ID</TableHead>
+                    <TableHead>Total Items</TableHead>
+                    <TableHead>Total Anomaly Items</TableHead>
+                    <TableHead>Total Score</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {studentData.map((student) => (
+                    <TableRow key={student.slNo}>
+                      <TableCell>{student.slNo}</TableCell>
+                      <TableCell>{student.studentId}</TableCell>
+                      <TableCell>{student.totalItems}</TableCell>
+                      <TableCell>{student.totalAnomalyItems}</TableCell>
+                      <TableCell>{student.totalScore}</TableCell>
+                      <TableCell>
+                        <Button variant="link" size="sm" className="text-blue-600">
+                          view graph
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          {/* Selected Student Analysis */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Anomaly Items Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Selected Student: {selectedStudent}</CardTitle>
+                <p className="text-sm text-muted-foreground">Anomaly Items Overview</p>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm">Z-Score</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500"></div>
+                    <span className="text-sm">Actual Outliers</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <ScatterChart data={anomalyOverviewData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="item" 
+                      type="number"
+                      domain={[0, 25]}
+                      label={{ value: 'Item', position: 'insideBottom', offset: -5 }}
+                    />
+                    <YAxis 
+                      dataKey="zScore"
+                      label={{ value: 'Z-Score', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card p-3 border rounded shadow">
+                              <p>Item: {data.item}</p>
+                              <p>Z-Score: {data.zScore}</p>
+                              <p>Outliers: {data.actualOutliers}</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Scatter dataKey="zScore">
+                      {anomalyOverviewData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.isOutlier ? "#ef4444" : "#3b82f6"} 
+                        />
+                      ))}
+                    </Scatter>
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Item Response Frequency */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Item Response Frequency</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Item No.: 6, Item Response Time (Sec): 395, Item Percentile(%): 99.96, Outlier Score: &gt;20.00
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-cyan-400"></div>
+                    <span className="text-sm">Bar Dataset</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 border-2 border-red-500"></div>
+                    <span className="text-sm">Marker</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={responseFrequencyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      dataKey="range" 
+                      label={{ value: 'Item Response', position: 'insideBottom', offset: -5 }}
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis 
+                      label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip />
+                    <Bar dataKey="frequency" fill="hsl(var(--chart-1))" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
           </div>
-          <ResponsiveContainer width="100%" height={400}>
-            <ScatterChart data={difficultyResponseData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="difficulty" 
-                type="number"
-                domain={[0.5, 4.5]}
-                ticks={[1, 2, 3, 4]}
-                tickFormatter={(value) => difficultyLabels[value as keyof typeof difficultyLabels]}
-                label={{ value: 'Difficulty Level', position: 'insideBottom', offset: -5 }}
-              />
-              <YAxis 
-                dataKey="responseTime"
-                label={{ value: 'Response Time (s)', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload[0]) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-card p-3 border rounded shadow">
-                        <p>Candidate: {data.candidate}</p>
-                        <p>Difficulty: {difficultyLabels[data.difficulty as keyof typeof difficultyLabels]}</p>
-                        <p>Response Time: {data.responseTime}s</p>
-                        <p>Answer: {data.correct ? 'Correct' : 'Wrong'}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Scatter dataKey="responseTime">
-                {difficultyResponseData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getCorrectColor(entry.correct)} />
-                ))}
-              </Scatter>
-            </ScatterChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+        </TabsContent>
+
+        <TabsContent value="response-change">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">Response Change Statistics content will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="answer-similarity">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">Answer Similarity Analysis content will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="person-fit">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-muted-foreground">Person-fit Statistics content will be displayed here.</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
