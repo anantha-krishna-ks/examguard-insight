@@ -83,30 +83,63 @@ const responseFrequencyData = [
 
 export default function ResponseTimeAnalysisPage() {
   const navigate = useNavigate();
-  const [selectedTest, setSelectedTest] = useState("PoSWHP");
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedTest, setSelectedTest] = useState("");
   const [forensicMethod, setForensicMethod] = useState("outlier");
   const [osThreshold, setOsThreshold] = useState("2");
-  const [studentGroup, setStudentGroup] = useState("OrganizationName");
+  const [studentGroup, setStudentGroup] = useState("");
   const [selectedStudent, setSelectedStudent] = useState("Student-3611");
+  const [selectedOrganization, setSelectedOrganization] = useState("");
+  const [showGraphs, setShowGraphs] = useState(false);
 
-  // Button handlers
+  // Step navigation handlers
+  const handleTestSelect = (testName: string) => {
+    setSelectedTest(testName);
+    setCurrentStep(2);
+    toast.success(`Test "${testName}" selected`, {
+      description: "Now select a student group"
+    });
+  };
+
+  const handleStudentGroupSelect = (group: string) => {
+    setStudentGroup(group);
+    setCurrentStep(3);
+    toast.success(`Student group "${group}" selected`, {
+      description: "Loading bubble chart and table..."
+    });
+  };
+
+  const handleViewOrganization = (orgName: string) => {
+    setSelectedOrganization(orgName);
+    setCurrentStep(4);
+    toast.info(`Viewing details for ${orgName}`, {
+      description: "Loading organization student details..."
+    });
+  };
+
+  const handleViewStudentGraph = (studentId: string) => {
+    setSelectedStudent(studentId);
+    setShowGraphs(true);
+    setCurrentStep(5);
+    toast.info(`Loading graphs for ${studentId}`, {
+      description: "Displaying OS graph and Item Response Frequency..."
+    });
+  };
+
   const handleExport = () => {
     toast.success("Exporting data to Excel...", {
       description: "Download will begin shortly"
     });
   };
 
-  const handleViewOrganization = (orgName: string) => {
-    toast.info(`Viewing details for ${orgName}`, {
-      description: "Loading organization analytics..."
-    });
-  };
-
-  const handleViewStudentGraph = (studentId: string) => {
-    setSelectedStudent(studentId);
-    toast.info(`Loading graph for ${studentId}`, {
-      description: "Analyzing response patterns..."
-    });
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      if (currentStep === 5) setShowGraphs(false);
+      if (currentStep === 4) setSelectedOrganization("");
+      if (currentStep === 3) setStudentGroup("");
+      if (currentStep === 2) setSelectedTest("");
+    }
   };
 
   // Custom gradient colors for charts
@@ -145,40 +178,70 @@ export default function ResponseTimeAnalysisPage() {
         </Button>
       </div>
 
-      {/* Test Selection */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="test-select" className="text-sm font-medium">Select Test</Label>
-              <Select value={selectedTest} onValueChange={setSelectedTest}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select test" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PoSWHP">PoSWHP</SelectItem>
-                  <SelectItem value="Test2">Test 2</SelectItem>
-                  <SelectItem value="Test3">Test 3</SelectItem>
-                </SelectContent>
-              </Select>
+      {/* Step Navigation Breadcrumb */}
+      {currentStep > 1 && (
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleBack}
+                className="flex items-center space-x-1 px-2"
+              >
+                <ArrowLeft className="h-3 w-3" />
+                <span>Back</span>
+              </Button>
+              <span className="text-muted-foreground">Step {currentStep} of 5:</span>
+              <span className="font-medium">
+                {currentStep === 2 && "Select Student Group"}
+                {currentStep === 3 && "View Analysis Overview"}
+                {currentStep === 4 && `Organization Details: ${selectedOrganization}`}
+                {currentStep === 5 && `Student Analysis: ${selectedStudent}`}
+              </span>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Tabs */}
-      <Tabs defaultValue="student-response" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="student-response">Student Response latency</TabsTrigger>
-          <TabsTrigger value="response-change">Response Change Statistics</TabsTrigger>
-          <TabsTrigger value="answer-similarity">Answer Similarity Analysis</TabsTrigger>
-          <TabsTrigger value="person-fit">Person-fit Statistics</TabsTrigger>
-        </TabsList>
+      {/* Step 1: Test Selection */}
+      {currentStep === 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Step 1: Select Test</CardTitle>
+            <p className="text-sm text-muted-foreground">Choose a test to begin the analysis</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {["PoSWHP", "Test 2", "Test 3"].map((test) => (
+                  <Button 
+                    key={test}
+                    variant="outline"
+                    onClick={() => handleTestSelect(test)}
+                    className="h-16 text-left justify-start hover-scale"
+                  >
+                    <div>
+                      <p className="font-medium">{test}</p>
+                      <p className="text-xs text-muted-foreground">Click to select</p>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        <TabsContent value="student-response" className="space-y-6">
-          {/* Forensic Method and Settings */}
-          <Card>
-            <CardContent className="pt-6">
+      {/* Step 2: Student Group Selection */}
+      {currentStep === 2 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Step 2: Select Student Group</CardTitle>
+            <p className="text-sm text-muted-foreground">Selected Test: <span className="font-medium">{selectedTest}</span></p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Forensic Method:</Label>
@@ -206,147 +269,151 @@ export default function ResponseTimeAnalysisPage() {
 
                 <div>
                   <Label htmlFor="student-group" className="text-sm font-medium">Student Group</Label>
-                  <Select value={studentGroup} onValueChange={setStudentGroup}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="-- Select --">-- Select --</SelectItem>
-                      <SelectItem value="OrganizationName">OrganizationName</SelectItem>
-                      <SelectItem value="LocationName">LocationName</SelectItem>
-                      <SelectItem value="DepartmentName">DepartmentName</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="space-y-2">
+                    {["OrganizationName", "LocationName", "DepartmentName"].map((group) => (
+                      <Button 
+                        key={group}
+                        variant="outline"
+                        onClick={() => handleStudentGroupSelect(group)}
+                        className="w-full justify-start hover-scale"
+                      >
+                        {group}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 3: Bubble Chart and Organizations Table */}
+      {currentStep === 3 && (
+        <div className="space-y-6">
+          {/* Bubble Chart */}
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="text-lg">Organization Risk Analysis</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Bubble size represents total students • X-axis: Anomaly Students • Y-axis: Risk Level (%)
+                  </p>
+                </div>
+                <div className="flex items-center space-x-4 text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                    <span>Low Risk</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-600"></div>
+                    <span>Medium Risk</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-red-600"></div>
+                    <span>High Risk</span>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={450}>
+                <ScatterChart 
+                  data={bubbleData}
+                  margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
+                >
+                  <defs>
+                    {bubbleData.map((_, index) => (
+                      <radialGradient key={`bubbleGradient${index + 1}`} id={`bubbleGradient${index + 1}`} cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor={
+                          index === 0 ? "#ef4444" : // High risk - red
+                          index === 1 ? "#10b981" : // Low risk - green
+                          index === 2 ? "#f59e0b" : // Medium risk - amber
+                          index === 3 ? "#10b981" : // Low risk - green
+                          index === 4 ? "#f59e0b" : // Medium risk - amber
+                          "#ef4444" // High risk - red
+                        } stopOpacity={0.9}/>
+                        <stop offset="50%" stopColor={
+                          index === 0 ? "#dc2626" : 
+                          index === 1 ? "#059669" : 
+                          index === 2 ? "#d97706" : 
+                          index === 3 ? "#059669" : 
+                          index === 4 ? "#d97706" : 
+                          "#dc2626"
+                        } stopOpacity={0.7}/>
+                        <stop offset="100%" stopColor={
+                          index === 0 ? "#b91c1c" : 
+                          index === 1 ? "#047857" : 
+                          index === 2 ? "#b45309" : 
+                          index === 3 ? "#047857" : 
+                          index === 4 ? "#b45309" : 
+                          "#b91c1c"
+                        } stopOpacity={0.5}/>
+                      </radialGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
+                  <XAxis 
+                    type="number" 
+                    dataKey="anomalyStudents" 
+                    domain={[0, 450]}
+                    label={{ value: 'Anomaly Students', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle' } }}
+                    stroke="hsl(var(--muted-foreground))"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    type="number" 
+                    dataKey="riskLevel" 
+                    domain={[0, 100]}
+                    label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+                    stroke="hsl(var(--muted-foreground))"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload[0]) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm border-border">
+                            <p className="font-semibold text-sm mb-2">{data.name}</p>
+                            <div className="space-y-1 text-xs">
+                              <p><span className="font-medium">Anomaly Students:</span> {data.anomalyStudents}</p>
+                              <p><span className="font-medium">Total Students:</span> {data.totalStudents}</p>
+                              <p><span className="font-medium">Risk Level:</span> {data.riskLevel}%</p>
+                              <p><span className="font-medium">Anomaly Rate:</span> {((data.anomalyStudents / data.totalStudents) * 100).toFixed(1)}%</p>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Scatter dataKey="totalStudents" className="animate-scale-in">
+                    {bubbleData.map((entry, index) => (
+                      <Cell 
+                        key={`bubble-${index}`} 
+                        fill={`url(#bubbleGradient${index + 1})`}
+                        stroke={
+                          entry.riskLevel >= 70 ? "#dc2626" : // High risk - red border
+                          entry.riskLevel >= 50 ? "#d97706" : // Medium risk - amber border
+                          "#059669" // Low risk - green border
+                        }
+                        strokeWidth={2}
+                        className="hover:opacity-80 transition-all duration-300 cursor-pointer"
+                      />
+                    ))}
+                  </Scatter>
+                </ScatterChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            {/* Bubble Chart - Full Width */}
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle className="text-lg">Organization Risk Analysis</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Bubble size represents total students • X-axis: Anomaly Students • Y-axis: Risk Level (%)
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4 text-xs">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
-                      <span>Low Risk</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-600"></div>
-                      <span>Medium Risk</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-gradient-to-br from-red-400 to-red-600"></div>
-                      <span>High Risk</span>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={450}>
-                  <ScatterChart 
-                    data={bubbleData}
-                    margin={{ top: 20, right: 20, bottom: 60, left: 60 }}
-                  >
-                    <defs>
-                      {bubbleData.map((_, index) => (
-                        <radialGradient key={`bubbleGradient${index + 1}`} id={`bubbleGradient${index + 1}`} cx="30%" cy="30%" r="70%">
-                          <stop offset="0%" stopColor={
-                            index === 0 ? "#ef4444" : // High risk - red
-                            index === 1 ? "#10b981" : // Low risk - green
-                            index === 2 ? "#f59e0b" : // Medium risk - amber
-                            index === 3 ? "#10b981" : // Low risk - green
-                            index === 4 ? "#f59e0b" : // Medium risk - amber
-                            "#ef4444" // High risk - red
-                          } stopOpacity={0.9}/>
-                          <stop offset="50%" stopColor={
-                            index === 0 ? "#dc2626" : 
-                            index === 1 ? "#059669" : 
-                            index === 2 ? "#d97706" : 
-                            index === 3 ? "#059669" : 
-                            index === 4 ? "#d97706" : 
-                            "#dc2626"
-                          } stopOpacity={0.7}/>
-                          <stop offset="100%" stopColor={
-                            index === 0 ? "#b91c1c" : 
-                            index === 1 ? "#047857" : 
-                            index === 2 ? "#b45309" : 
-                            index === 3 ? "#047857" : 
-                            index === 4 ? "#b45309" : 
-                            "#b91c1c"
-                          } stopOpacity={0.5}/>
-                        </radialGradient>
-                      ))}
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.3} />
-                    <XAxis 
-                      type="number" 
-                      dataKey="anomalyStudents" 
-                      domain={[0, 450]}
-                      label={{ value: 'Anomaly Students', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle' } }}
-                      stroke="hsl(var(--muted-foreground))"
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis 
-                      type="number" 
-                      dataKey="riskLevel" 
-                      domain={[0, 100]}
-                      label={{ value: 'Risk Level (%)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-                      stroke="hsl(var(--muted-foreground))"
-                      tick={{ fontSize: 12 }}
-                    />
-                    <Tooltip 
-                      content={({ active, payload }) => {
-                        if (active && payload && payload[0]) {
-                          const data = payload[0].payload;
-                          return (
-                            <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm border-border">
-                              <p className="font-semibold text-sm mb-2">{data.name}</p>
-                              <div className="space-y-1 text-xs">
-                                <p><span className="font-medium">Anomaly Students:</span> {data.anomalyStudents}</p>
-                                <p><span className="font-medium">Total Students:</span> {data.totalStudents}</p>
-                                <p><span className="font-medium">Risk Level:</span> {data.riskLevel}%</p>
-                                <p><span className="font-medium">Anomaly Rate:</span> {((data.anomalyStudents / data.totalStudents) * 100).toFixed(1)}%</p>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Scatter dataKey="totalStudents" className="animate-scale-in">
-                      {bubbleData.map((entry, index) => (
-                        <Cell 
-                          key={`bubble-${index}`} 
-                          fill={`url(#bubbleGradient${index + 1})`}
-                          stroke={
-                            entry.riskLevel >= 70 ? "#dc2626" : // High risk - red border
-                            entry.riskLevel >= 50 ? "#d97706" : // Medium risk - amber border
-                            "#059669" // Low risk - green border
-                          }
-                          strokeWidth={2}
-                          className="hover:opacity-80 transition-all duration-300 cursor-pointer"
-                        />
-                      ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Organization Table */}
+          {/* Organizations Table */}
           <Card>
             <CardHeader>
               <CardTitle>Organizations Overview</CardTitle>
+              <p className="text-sm text-muted-foreground">Click "View Organizations" to see detailed student data</p>
             </CardHeader>
             <CardContent>
               <Table>
@@ -391,9 +458,10 @@ export default function ResponseTimeAnalysisPage() {
                           variant="ghost" 
                           size="sm" 
                           onClick={() => handleViewOrganization(org.name)}
-                          className="hover-scale"
+                          className="hover-scale flex items-center space-x-1"
                         >
                           <Eye className="h-4 w-4" />
+                          <span>View Organizations</span>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -402,56 +470,70 @@ export default function ResponseTimeAnalysisPage() {
               </Table>
             </CardContent>
           </Card>
+        </div>
+      )}
 
-          {/* Selected Organization Details */}
+      {/* Step 4: Selected Organization Details */}
+      {currentStep === 4 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Organization Student Details</CardTitle>
+            <p className="text-sm text-muted-foreground">Selected: <span className="font-medium">{selectedOrganization}</span></p>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Sl No.</TableHead>
+                  <TableHead>Student ID</TableHead>
+                  <TableHead>Total Items</TableHead>
+                  <TableHead>Total Anomaly Items</TableHead>
+                  <TableHead>Total Score</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {studentData.map((student) => (
+                  <TableRow key={student.slNo}>
+                    <TableCell>{student.slNo}</TableCell>
+                    <TableCell>{student.studentId}</TableCell>
+                    <TableCell>{student.totalItems}</TableCell>
+                    <TableCell>{student.totalAnomalyItems}</TableCell>
+                    <TableCell>{student.totalScore}</TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        onClick={() => handleViewStudentGraph(student.studentId)}
+                        className="text-primary hover-scale story-link"
+                      >
+                        View Graph
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Step 5: Student Analysis Graphs */}
+      {currentStep === 5 && showGraphs && (
+        <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Selected: Excel Soft Technologies Pvt.Ltd</CardTitle>
+              <CardTitle>Student Analysis Dashboard</CardTitle>
+              <p className="text-sm text-muted-foreground">Analyzing: <span className="font-medium">{selectedStudent}</span></p>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Sl No.</TableHead>
-                    <TableHead>Student ID</TableHead>
-                    <TableHead>Total Items</TableHead>
-                    <TableHead>Total Anomaly Items</TableHead>
-                    <TableHead>Total Score</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {studentData.map((student) => (
-                    <TableRow key={student.slNo}>
-                      <TableCell>{student.slNo}</TableCell>
-                      <TableCell>{student.studentId}</TableCell>
-                      <TableCell>{student.totalItems}</TableCell>
-                      <TableCell>{student.totalAnomalyItems}</TableCell>
-                      <TableCell>{student.totalScore}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="link" 
-                          size="sm" 
-                          onClick={() => handleViewStudentGraph(student.studentId)}
-                          className="text-primary hover-scale story-link"
-                        >
-                          view graph
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
           </Card>
 
-          {/* Selected Student Analysis */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Anomaly Items Overview */}
+            {/* OS Graph - Anomaly Items Overview */}
             <Card>
               <CardHeader>
-                <CardTitle>Selected Student: {selectedStudent}</CardTitle>
-                <p className="text-sm text-muted-foreground">Anomaly Items Overview</p>
+                <CardTitle>OS Graph - Anomaly Items Overview</CardTitle>
+                <p className="text-sm text-muted-foreground">Z-Score analysis with outlier detection</p>
               </CardHeader>
               <CardContent>
                 <div className="mb-4 flex items-center space-x-4">
@@ -464,7 +546,7 @@ export default function ResponseTimeAnalysisPage() {
                     <span className="text-sm">Actual Outliers</span>
                   </div>
                 </div>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={300}>
                   <ScatterChart data={anomalyOverviewData}>
                     <defs>
                       <radialGradient id={scatterGradient1} cx="50%" cy="50%" r="50%">
@@ -537,7 +619,7 @@ export default function ResponseTimeAnalysisPage() {
                     <span className="text-sm">Marker</span>
                   </div>
                 </div>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={responseFrequencyData}>
                     <defs>
                       <linearGradient id={barGradientId} x1="0" y1="0" x2="0" y2="1">
@@ -576,6 +658,20 @@ export default function ResponseTimeAnalysisPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      )}
+
+      {/* Tabs for other analysis types */}
+      <Tabs defaultValue="student-response" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="student-response">Student Response latency</TabsTrigger>
+          <TabsTrigger value="response-change">Response Change Statistics</TabsTrigger>
+          <TabsTrigger value="answer-similarity">Answer Similarity Analysis</TabsTrigger>
+          <TabsTrigger value="person-fit">Person-fit Statistics</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="student-response" className="space-y-6">
+          {/* Current step content is shown above */}
         </TabsContent>
 
         <TabsContent value="response-change">
