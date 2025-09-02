@@ -28,7 +28,10 @@ import {
 
 // Mock data for bubble chart (organizational data)
 const bubbleData = [
-  { name: "Excel Soft Technologies Pvt.Ltd", value: 406, fill: "hsl(var(--chart-1))" }
+  { name: "Excel Soft Technologies Pvt.Ltd", value: 406, x: 50, y: 50, z: 80, fill: "hsl(var(--chart-1))" },
+  { name: "Tech Solutions Inc", value: 120, x: 30, y: 70, z: 40, fill: "hsl(var(--chart-2))" },
+  { name: "Digital Innovations", value: 250, x: 70, y: 30, z: 60, fill: "hsl(var(--chart-3))" },
+  { name: "Software Dynamics", value: 85, x: 25, y: 40, z: 25, fill: "hsl(var(--chart-4))" }
 ];
 
 // Mock data for organization table
@@ -109,6 +112,10 @@ export default function ResponseTimeAnalysisPage() {
   const barGradientId = "barGradient";
   const scatterGradient1 = "scatterGradient1";
   const scatterGradient2 = "scatterGradient2";
+  const bubbleGradient1 = "bubbleGradient1";
+  const bubbleGradient2 = "bubbleGradient2";
+  const bubbleGradient3 = "bubbleGradient3";
+  const bubbleGradient4 = "bubbleGradient4";
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -222,31 +229,68 @@ export default function ResponseTimeAnalysisPage() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
+                  <ScatterChart data={bubbleData}>
                     <defs>
-                      <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.9}/>
-                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.4}/>
-                      </linearGradient>
+                      <radialGradient id={bubbleGradient1} cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.9}/>
+                        <stop offset="50%" stopColor="#3b82f6" stopOpacity={0.7}/>
+                        <stop offset="100%" stopColor="#1e40af" stopOpacity={0.5}/>
+                      </radialGradient>
+                      <radialGradient id={bubbleGradient2} cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor="#34d399" stopOpacity={0.9}/>
+                        <stop offset="50%" stopColor="#10b981" stopOpacity={0.7}/>
+                        <stop offset="100%" stopColor="#047857" stopOpacity={0.5}/>
+                      </radialGradient>
+                      <radialGradient id={bubbleGradient3} cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.9}/>
+                        <stop offset="50%" stopColor="#f59e0b" stopOpacity={0.7}/>
+                        <stop offset="100%" stopColor="#d97706" stopOpacity={0.5}/>
+                      </radialGradient>
+                      <radialGradient id={bubbleGradient4} cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stopColor="#f472b6" stopOpacity={0.9}/>
+                        <stop offset="50%" stopColor="#ec4899" stopOpacity={0.7}/>
+                        <stop offset="100%" stopColor="#be185d" stopOpacity={0.5}/>
+                      </radialGradient>
                     </defs>
-                    <Pie
-                      data={bubbleData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={120}
-                      fill={`url(#${gradientId})`}
-                      dataKey="value"
-                      className="animate-scale-in"
+                    <CartesianGrid strokeDasharray="2 2" stroke="hsl(var(--muted))" opacity={0.2} />
+                    <XAxis 
+                      type="number" 
+                      dataKey="x" 
+                      domain={[0, 100]}
+                      hide
+                    />
+                    <YAxis 
+                      type="number" 
+                      dataKey="y" 
+                      domain={[0, 100]}
+                      hide
                     />
                     <Tooltip 
-                      formatter={(value) => [`${value} students`, 'Anomaly Students']}
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px'
+                      content={({ active, payload }) => {
+                        if (active && payload && payload[0]) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card p-4 border rounded-lg shadow-lg animate-fade-in backdrop-blur-sm">
+                              <p className="font-semibold text-sm mb-1">{data.name}</p>
+                              <p className="text-muted-foreground text-xs">Anomaly Students: {data.value}</p>
+                            </div>
+                          );
+                        }
+                        return null;
                       }}
                     />
-                  </PieChart>
+                    <Scatter dataKey="z" className="animate-scale-in">
+                      {bubbleData.map((entry, index) => (
+                        <Cell 
+                          key={`bubble-${index}`} 
+                          fill={`url(#bubbleGradient${index + 1})`}
+                          stroke={index === 0 ? "#1e40af" : index === 1 ? "#047857" : index === 2 ? "#d97706" : "#be185d"}
+                          strokeWidth={2}
+                          className="hover:opacity-80 transition-opacity duration-200"
+                        />
+                      ))}
+                    </Scatter>
+                  </ScatterChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
