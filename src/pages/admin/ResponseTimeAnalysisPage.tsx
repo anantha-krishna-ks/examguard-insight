@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -54,16 +54,11 @@ const levelLabels = {
   testcenter: "Test Center"
 };
 
-const sliderMarks = [
-  { value: 0, label: "Test" },
-  { value: 50, label: "Location" },
-  { value: 100, label: "Test Center" }
-];
 
 export default function ResponseTimeAnalysisPage() {
   const navigate = useNavigate();
   const [viewLevel, setViewLevel] = useState<ViewLevel>("test");
-  const [sliderValue, setSliderValue] = useState([0]);
+  
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [selectedTestCenter, setSelectedTestCenter] = useState<string | null>(null);
   const [showCandidates, setShowCandidates] = useState(false);
@@ -76,10 +71,8 @@ export default function ResponseTimeAnalysisPage() {
     return testCenterLevelData;
   };
 
-  const handleSliderChange = (value: number[]) => {
-    setSliderValue(value);
-    const newLevel = value[0] <= 25 ? "test" : value[0] <= 75 ? "location" : "testcenter";
-    setViewLevel(newLevel);
+  const handleLevelChange = (level: ViewLevel) => {
+    setViewLevel(level);
     setSelectedLocation(null);
     setSelectedTestCenter(null);
     setShowCandidates(false);
@@ -90,7 +83,6 @@ export default function ResponseTimeAnalysisPage() {
     if (viewLevel === "location" && !selectedLocation) {
       setSelectedLocation(data.name);
       setViewLevel("testcenter");
-      setSliderValue([100]);
     } else if (viewLevel === "testcenter") {
       setSelectedTestCenter(data.name);
       setShowCandidates(true);
@@ -165,7 +157,7 @@ export default function ResponseTimeAnalysisPage() {
         </Badge>
       </div>
 
-      {/* Level Selector Slider */}
+      {/* Level Selector Tabs */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
@@ -174,22 +166,13 @@ export default function ResponseTimeAnalysisPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="px-4">
-              <Slider
-                value={sliderValue}
-                onValueChange={handleSliderChange}
-                max={100}
-                step={1}
-                className="w-full"
-              />
-            </div>
-            <div className="flex justify-between text-sm text-muted-foreground px-2">
-              <span className={viewLevel === "test" ? "font-medium text-foreground" : ""}>Test</span>
-              <span className={viewLevel === "location" ? "font-medium text-foreground" : ""}>Location</span>
-              <span className={viewLevel === "testcenter" ? "font-medium text-foreground" : ""}>Test Center</span>
-            </div>
-          </div>
+          <Tabs value={viewLevel} onValueChange={handleLevelChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="test">Test</TabsTrigger>
+              <TabsTrigger value="location">Location</TabsTrigger>
+              <TabsTrigger value="testcenter">Test Center</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </CardContent>
       </Card>
 
