@@ -12,6 +12,7 @@ import PrecisionPage from "./pages/admin/PrecisionPage";
 import ResponseTimePage from "./pages/admin/ResponseTimePage";
 import SystemHealthPage from "./pages/admin/SystemHealthPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import CasesPage from "./pages/admin/CasesPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/admin/response-time" element={<ResponseTimePage />} />
           <Route path="/admin/system-health" element={<SystemHealthPage />} />
           <Route path="/admin/settings" element={<SettingsPage />} />
+          <Route path="/admin/cases" element={<CasesPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
