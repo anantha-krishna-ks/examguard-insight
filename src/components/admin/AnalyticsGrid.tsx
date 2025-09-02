@@ -28,20 +28,16 @@ interface AnalyticsGridProps {
 }
 
 // Mock data for charts
-const responseTimeData = [
-  { difficulty: 'Easy', avgTime: 25, count: 450 },
-  { difficulty: 'Medium', avgTime: 45, count: 320 },
-  { difficulty: 'Hard', avgTime: 75, count: 180 },
-  { difficulty: 'Expert', avgTime: 120, count: 95 },
+const responseAnomalyData = [
+  { test: 'Test 1', notStarted: 5.43, inProgress: 78.26, completed: 16.30 },
+  { test: 'Test 2', notStarted: 13.81, inProgress: 69.06, completed: 17.13 },
+  { test: 'Test 3', notStarted: 0.00, inProgress: 90.91, completed: 9.09 },
 ];
 
-const wrongRightData = [
-  { time: '09:00', changes: 5 },
-  { time: '09:30', changes: 12 },
-  { time: '10:00', changes: 23 },
-  { time: '10:30', changes: 18 },
-  { time: '11:00', changes: 31 },
-  { time: '11:30', changes: 15 },
+const behavioralAnomalyData = [
+  { test: 'Test 1', sequentialPattern: 152, answerRevision: 26 },
+  { test: 'Test 2', sequentialPattern: 206, answerRevision: 51 },
+  { test: 'Test 3', sequentialPattern: 97, answerRevision: 5 },
 ];
 
 const similarityData = [
@@ -69,28 +65,33 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Response Time vs Difficulty */}
+      {/* Test Progress */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onChartClick('responseTime', responseTimeData)}>
+            onClick={() => onChartClick('testProgress', responseAnomalyData)}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center space-x-2">
             <BarChart3 className="h-4 w-4 text-admin-response-anomaly" />
-            <CardTitle className="text-sm font-medium">Response Time vs Difficulty</CardTitle>
+            <CardTitle className="text-sm font-medium">Test Progress</CardTitle>
           </div>
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={responseTimeData}>
+            <BarChart data={responseAnomalyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="difficulty" />
+              <XAxis dataKey="test" />
               <YAxis />
-              <Tooltip />
-              <Bar dataKey="avgTime" fill="hsl(var(--admin-response-anomaly))" />
+              <Tooltip 
+                formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name]}
+                labelFormatter={(label) => `Tests in Progress: ${label}`}
+              />
+              <Bar dataKey="notStarted" stackId="stack" fill="#f59e0b" name="Not Started" />
+              <Bar dataKey="inProgress" stackId="stack" fill="#10b981" name="In Progress" />
+              <Bar dataKey="completed" stackId="stack" fill="#ef4444" name="Completed" />
             </BarChart>
           </ResponsiveContainer>
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>Live data from {responseTimeData.reduce((acc, curr) => acc + curr.count, 0)} responses</span>
+            <span>Percent Student Test Completion</span>
             <Badge variant="outline" className="text-admin-response-anomaly border-admin-response-anomaly">
               Response Anomalies
             </Badge>
@@ -98,34 +99,32 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
         </CardContent>
       </Card>
 
-      {/* Wrong → Right Timeline */}
+      {/* Behavioural Pattern Anomaly */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onChartClick('wrongRight', wrongRightData)}>
+            onClick={() => onChartClick('behavioralAnomaly', behavioralAnomalyData)}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center space-x-2">
             <TrendingUp className="h-4 w-4 text-admin-answer-revision" />
-            <CardTitle className="text-sm font-medium">Wrong → Right Spike Timeline</CardTitle>
+            <CardTitle className="text-sm font-medium">Behavioural Pattern Anomaly</CardTitle>
           </div>
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={wrongRightData}>
+            <BarChart data={behavioralAnomalyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
+              <XAxis dataKey="test" />
               <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="changes" 
-                stroke="hsl(var(--admin-answer-revision))"
-                strokeWidth={2}
-                dot={{ fill: "hsl(var(--admin-answer-revision))" }}
+              <Tooltip 
+                formatter={(value: number, name: string) => [value, name]}
+                labelFormatter={(label) => `Test: ${label}`}
               />
-            </LineChart>
+              <Bar dataKey="sequentialPattern" fill="#2563eb" name="Sequential Pattern Numbers" />
+              <Bar dataKey="answerRevision" fill="#ea580c" name="Answer Revision Numbers" />
+            </BarChart>
           </ResponsiveContainer>
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-            <span>Last 3 hours activity</span>
+            <span>Anomaly Student Numbers</span>
             <Badge variant="outline" className="text-admin-answer-revision border-admin-answer-revision">
               Answer Revisions
             </Badge>

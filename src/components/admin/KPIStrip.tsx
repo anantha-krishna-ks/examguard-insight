@@ -15,14 +15,14 @@ import {
 interface KPIData {
   activeCandidates: number;
   flags: number;
-  precision: number;
-  medianResponseTime: number;
+  numberOfTests: number;
+  numberOfTestCentres: number;
   systemHealth: number;
   trends: {
     candidates: number;
     flags: number;
-    precision: number;
-    responseTime: number;
+    tests: number;
+    testCentres: number;
   };
 }
 
@@ -30,14 +30,14 @@ export function KPIStrip() {
   const [kpiData, setKpiData] = useState<KPIData>({
     activeCandidates: 1247,
     flags: 23,
-    precision: 94.2,
-    medianResponseTime: 45,
+    numberOfTests: 156,
+    numberOfTestCentres: 28,
     systemHealth: 99.8,
     trends: {
       candidates: 2.3,
       flags: -12.5,
-      precision: 1.8,
-      responseTime: -3.2,
+      tests: 4.2,
+      testCentres: 1.5,
     }
   });
 
@@ -48,8 +48,8 @@ export function KPIStrip() {
         ...prev,
         activeCandidates: prev.activeCandidates + Math.floor(Math.random() * 5) - 2,
         flags: Math.max(0, prev.flags + Math.floor(Math.random() * 3) - 1),
-        precision: Math.max(80, Math.min(100, prev.precision + (Math.random() - 0.5) * 0.5)),
-        medianResponseTime: Math.max(20, prev.medianResponseTime + Math.floor(Math.random() * 6) - 3),
+        numberOfTests: Math.max(100, prev.numberOfTests + Math.floor(Math.random() * 3) - 1),
+        numberOfTestCentres: Math.max(20, prev.numberOfTestCentres + Math.floor(Math.random() * 2) - 1),
       }));
     }, 8000);
 
@@ -74,20 +74,20 @@ export function KPIStrip() {
       link: "/admin/flags"
     },
     {
-      title: "Precision (7-day)",
-      value: `${kpiData.precision.toFixed(1)}%`,
+      title: "No of Tests",
+      value: kpiData.numberOfTests.toString(),
       icon: Target,
-      trend: kpiData.trends.precision,
+      trend: kpiData.trends.tests,
       color: "text-admin-normal-safe",
-      link: "/admin/precision"
+      link: "/admin/cases"
     },
     {
-      title: "Median Response Time",
-      value: `${kpiData.medianResponseTime}s`,
+      title: "No of Test Centres",
+      value: kpiData.numberOfTestCentres.toString(),
       icon: Clock,
-      trend: kpiData.trends.responseTime,
+      trend: kpiData.trends.testCentres,
       color: "text-admin-response-anomaly",
-      link: "/admin/response-time"
+      link: "/admin/test-centres"
     },
   ];
 
