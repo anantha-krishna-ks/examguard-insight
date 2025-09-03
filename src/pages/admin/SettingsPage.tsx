@@ -177,7 +177,7 @@ export default function SettingsPage() {
                 Response Time Statistics
               </Label>
               <p className="text-sm text-muted-foreground mb-3">
-                Flag candidates based on successive anomalous responses within a time interval.
+                Flag candidates based on anomalous responses within a time interval.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3">
