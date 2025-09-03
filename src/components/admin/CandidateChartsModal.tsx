@@ -538,6 +538,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
 
             </div>
             
+            
             {/* Response Time vs Difficulty */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
