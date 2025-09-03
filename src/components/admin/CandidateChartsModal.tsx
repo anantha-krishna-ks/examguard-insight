@@ -35,17 +35,20 @@ interface CandidateChartsModalProps {
 
 // Mock data for OS Curve
 const osCurveData = [
-  { time: 0, probability: 0 },
-  { time: 30, probability: 0.15 },
-  { time: 60, probability: 0.35 },
-  { time: 90, probability: 0.55 },
-  { time: 120, probability: 0.75 },
-  { time: 150, probability: 0.85 },
-  { time: 180, probability: 0.92 },
-  { time: 210, probability: 0.96 },
-  { time: 240, probability: 0.98 },
-  { time: 270, probability: 0.99 },
-  { time: 300, probability: 1.0 }
+  { time: -15, probability: 0.02 },
+  { time: -10, probability: 0.05 },
+  { time: -5, probability: 0.12 },
+  { time: 0, probability: 0.25 },
+  { time: 5, probability: 0.45 },
+  { time: 10, probability: 0.65 },
+  { time: 15, probability: 0.80 },
+  { time: 20, probability: 0.92 },
+  { time: 25, probability: 0.98 }
+];
+
+// Anomaly data points
+const anomalyData = [
+  { time: 6, probability: 0.55, itemNo: 6 }
 ];
 
 // Mock data for item time frequency distribution
@@ -274,14 +277,13 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
                         domain={[-15, 25]}
-                        label={{ value: 'Time Range', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                        ticks={[-15, -10, -5, 0, 5, 10, 15, 20, 25]}
                       />
                       <YAxis 
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
                         domain={[0, 1]}
                         tickCount={11}
-                        label={{ value: 'Probability', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                       />
                       <Tooltip content={<CustomTooltip />} />
                        <Line 
@@ -293,6 +295,21 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                          dot={{ fill: "#3b82f6", strokeWidth: 2, r: 6, stroke: "white" }}
                          activeDot={{ r: 8, fill: "#6366f1", stroke: "white", strokeWidth: 3 }}
                        />
+                       <defs>
+                         <circle id="anomalyMarker" r="8" fill="#ef4444" stroke="#dc2626" strokeWidth="3" />
+                       </defs>
+                       {anomalyData.map((anomaly, index) => (
+                         <circle
+                           key={`anomaly-${index}`}
+                           cx={20 + ((anomaly.time + 15) / 40) * 600}
+                           cy={30 + (1 - anomaly.probability) * 260}
+                           r="8"
+                           fill="#ef4444"
+                           stroke="#dc2626"
+                           strokeWidth="3"
+                           transform="rotate(45)"
+                         />
+                       ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -339,11 +356,12 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         radius={[4, 4, 0, 0]}
                         stroke="#dc2626"
                         strokeWidth={1}
-                      />
-                    </BarChart>
+                       />
+                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
+
             </div>
             
             {/* Response Time vs Difficulty */}
