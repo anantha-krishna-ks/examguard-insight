@@ -92,6 +92,14 @@ const scoreProfileData = [
   { position: 12, score: 1, difficulty: 3.4, cluster: 'end' },
 ];
 
+// Mock data for Behavioral Pattern Distribution (Violin Plot style)
+const behavioralDistributionData = [
+  { region: 'HYDERABAD', scores: [18, 19, 22, 24, 26, 25, 23, 21, 20, 24, 25], outlier: 27.5, color: '#10b981' },
+  { region: 'MALAYSIA', scores: [20, 21, 23, 25, 27, 26, 24, 22, 25, 26, 27], outlier: 25.8, color: '#6b7280' },
+  { region: 'MYSORE', scores: [16, 17, 19, 21, 23, 22, 20, 18, 21, 22, 23], outlier: 26.2, color: '#ef4444' },
+  { region: 'NOIDA', scores: [22, 23, 25, 27, 29, 28, 26, 24, 27, 28, 29], outlier: 25.1, color: '#f97316' },
+];
+
 // Mock data for Inter-Test Taker Similarity
 const similarityData = [
   { candidateA: 'C001', candidateB: 'C002', similarity: 0.92, responseString: 'ABCDABCD...' },
@@ -412,7 +420,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
               </CardContent>
             </Card>
 
-            {/* Score Profile Anomaly Panel */}
+            {/* Behavioral Pattern Distribution - Violin Plot */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
@@ -420,36 +428,144 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                     <div className="p-2 rounded-lg bg-red-500/10">
                       <BarChart3 className="h-5 w-5 text-red-500" />
                     </div>
-                    <CardTitle className="text-lg">Score Profile Anomaly Panel</CardTitle>
+                    <CardTitle className="text-lg">Behavioral Pattern Distribution</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="text-xs">IRT-based person-fit</Badge>
+                  <Badge variant="secondary" className="text-xs">Regional WR Scores - Violin Plot</Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <ScatterChart data={scoreProfileData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis dataKey="position" fontSize={12} />
-                    <YAxis dataKey="score" fontSize={12} domain={[0, 1]} />
-                    <Tooltip content={<ScatterTooltip />} />
-                    <Scatter dataKey="score" fill="#ef4444">
-                      {scoreProfileData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.cluster === 'end' && entry.score === 1 ? "#ef4444" : "#3b82f6"} 
-                        />
+                <div className="relative">
+                  <ResponsiveContainer width="100%" height={400}>
+                    <svg width="100%" height="100%" viewBox="0 0 800 400">
+                      {/* Background Grid */}
+                      <defs>
+                        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(var(--border))" strokeWidth="0.5" opacity="0.3"/>
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#grid)" />
+                      
+                      {/* Y-axis */}
+                      <line x1="80" y1="50" x2="80" y2="350" stroke="hsl(var(--muted-foreground))" strokeWidth="1"/>
+                      
+                      {/* Y-axis labels */}
+                      {[15, 20, 25, 30, 35].map((value, index) => (
+                        <g key={value}>
+                          <line x1="75" y1={350 - (value - 15) * 15} x2="80" y2={350 - (value - 15) * 15} stroke="hsl(var(--muted-foreground))" strokeWidth="1"/>
+                          <text x="70" y={355 - (value - 15) * 15} textAnchor="end" fontSize="12" fill="hsl(var(--muted-foreground))">{value}</text>
+                        </g>
                       ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
+                      
+                      {/* Title */}
+                      <text x="400" y="30" textAnchor="middle" fontSize="16" fontWeight="bold" fill="hsl(var(--foreground))">
+                        Student WR Scores - Violin Plot
+                      </text>
+                      
+                      {/* Violin shapes for each region */}
+                      {behavioralDistributionData.map((region, regionIndex) => {
+                        const xCenter = 150 + regionIndex * 150;
+                        const maxWidth = 60;
+                        
+                        // Create violin shape points
+                        const violinPoints = [];
+                        
+                        // Left side of violin (density distribution)
+                        for (let y = 50; y <= 350; y += 10) {
+                          const scoreValue = 15 + ((350 - y) / 15);
+                          const density = region.scores.filter(s => Math.abs(s - scoreValue) < 2).length / region.scores.length;
+                          const width = density * maxWidth;
+                          violinPoints.push(`${xCenter - width},${y}`);
+                        }
+                        
+                        // Right side of violin (reverse)
+                        for (let y = 350; y >= 50; y -= 10) {
+                          const scoreValue = 15 + ((350 - y) / 15);
+                          const density = region.scores.filter(s => Math.abs(s - scoreValue) < 2).length / region.scores.length;
+                          const width = density * maxWidth;
+                          violinPoints.push(`${xCenter + width},${y}`);
+                        }
+                        
+                        return (
+                          <g key={region.region}>
+                            {/* Violin shape */}
+                            <polygon
+                              points={violinPoints.join(' ')}
+                              fill={region.color}
+                              fillOpacity="0.6"
+                              stroke={region.color}
+                              strokeWidth="2"
+                            />
+                            
+                            {/* Box plot inside violin */}
+                            <rect
+                              x={xCenter - 8}
+                              y={350 - (Math.max(...region.scores) - 15) * 15}
+                              width="16"
+                              height={(Math.max(...region.scores) - Math.min(...region.scores)) * 15}
+                              fill="rgba(0,0,0,0.3)"
+                              stroke="hsl(var(--foreground))"
+                              strokeWidth="1"
+                            />
+                            
+                            {/* Median line */}
+                            <line
+                              x1={xCenter - 8}
+                              y1={350 - (region.scores.sort((a,b) => a-b)[Math.floor(region.scores.length/2)] - 15) * 15}
+                              x2={xCenter + 8}
+                              y2={350 - (region.scores.sort((a,b) => a-b)[Math.floor(region.scores.length/2)] - 15) * 15}
+                              stroke="hsl(var(--foreground))"
+                              strokeWidth="2"
+                            />
+                            
+                            {/* Outlier point */}
+                            <circle
+                              cx={xCenter}
+                              cy={350 - (region.outlier - 15) * 15}
+                              r="4"
+                              fill="#ef4444"
+                              stroke="#dc2626"
+                              strokeWidth="2"
+                            />
+                            
+                            {/* Region label */}
+                            <text
+                              x={xCenter}
+                              y="380"
+                              textAnchor="middle"
+                              fontSize="12"
+                              fill="hsl(var(--muted-foreground))"
+                            >
+                              {region.region}
+                            </text>
+                          </g>
+                        );
+                      })}
+                      
+                      {/* Legend */}
+                      <g transform="translate(650, 80)">
+                        {behavioralDistributionData.map((region, index) => (
+                          <g key={region.region} transform={`translate(0, ${index * 25})`}>
+                            <rect x="0" y="0" width="15" height="15" fill={region.color} />
+                            <text x="20" y="12" fontSize="12" fill="hsl(var(--foreground))">{region.region}</text>
+                          </g>
+                        ))}
+                      </g>
+                      
+                      {/* Y-axis label */}
+                      <text x="25" y="200" textAnchor="middle" fontSize="14" fill="hsl(var(--muted-foreground))" transform="rotate(-90, 25, 200)">
+                        WR Score
+                      </text>
+                    </svg>
+                  </ResponsiveContainer>
+                </div>
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium">Low Variability:</span>
-                    <p className="text-red-600">Clustered correctness at test end detected</p>
+                    <span className="font-medium">Distribution Analysis:</span>
+                    <p className="text-muted-foreground">NOIDA shows highest median WR scores</p>
                   </div>
                   <div>
-                    <span className="font-medium">Person-Fit Statistic:</span>
-                    <p className="text-muted-foreground">lz = -2.34 (flagged)</p>
+                    <span className="font-medium">Outlier Detection:</span>
+                    <p className="text-red-600">4 outliers detected across regions</p>
                   </div>
                 </div>
               </CardContent>
