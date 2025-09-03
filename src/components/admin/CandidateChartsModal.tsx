@@ -23,7 +23,9 @@ import {
   Bar,
   ScatterChart,
   Scatter,
-  Cell
+  Cell,
+  Legend,
+  ReferenceDot
 } from "recharts";
 import { BarChart3, TrendingUp, Clock, Download, Printer, Maximize2, FileText, Image, FileSpreadsheet } from "lucide-react";
 
@@ -33,22 +35,26 @@ interface CandidateChartsModalProps {
   onClose: () => void;
 }
 
-// Mock data for OS Curve
+// Mock data for OS Curve - Perfect S-curve shape
 const osCurveData = [
-  { time: -15, probability: 0.02 },
-  { time: -10, probability: 0.05 },
-  { time: -5, probability: 0.12 },
+  { time: -15, probability: 0.01 },
+  { time: -10, probability: 0.02 },
+  { time: -5, probability: 0.05 },
+  { time: -2, probability: 0.12 },
   { time: 0, probability: 0.25 },
-  { time: 5, probability: 0.45 },
-  { time: 10, probability: 0.65 },
-  { time: 15, probability: 0.80 },
-  { time: 20, probability: 0.92 },
-  { time: 25, probability: 0.98 }
+  { time: 2, probability: 0.45 },
+  { time: 4, probability: 0.65 },
+  { time: 6, probability: 0.80 },
+  { time: 8, probability: 0.90 },
+  { time: 10, probability: 0.95 },
+  { time: 15, probability: 0.98 },
+  { time: 20, probability: 0.99 },
+  { time: 25, probability: 1.0 }
 ];
 
 // Anomaly data points
 const anomalyData = [
-  { time: 6, probability: 0.55, itemNo: 6 }
+  { time: 6, probability: 0.05, itemNo: 6, outlierScore: 20.004859271615384 }
 ];
 
 // Mock data for item time frequency distribution
@@ -124,6 +130,27 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
           ))}
         </div>
       );
+    }
+    return null;
+  };
+
+  const AnomalyTooltip = ({ active, payload, coordinate }: any) => {
+    if (active && coordinate) {
+      const anomaly = anomalyData.find(a => 
+        Math.abs(coordinate.x - (20 + ((a.time + 15) / 40) * 600)) < 20 &&
+        Math.abs(coordinate.y - (30 + (1 - a.probability) * 260)) < 20
+      );
+      
+      if (anomaly) {
+        return (
+          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+            <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
+            <p className="text-sm text-muted-foreground">
+              Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
+            </p>
+          </div>
+        );
+      }
     }
     return null;
   };
@@ -259,6 +286,17 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
+                  {/* Legend */}
+                  <div className="mb-4 flex items-center justify-center space-x-6">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-6 h-1 bg-blue-500 rounded"></div>
+                      <span className="text-sm font-medium">S-Curve</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                      <span className="text-sm font-medium">Actual Outliers</span>
+                    </div>
+                  </div>
                   <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
                        <defs>
@@ -285,31 +323,41 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         domain={[0, 1]}
                         tickCount={11}
                       />
-                      <Tooltip content={<CustomTooltip />} />
-                       <Line 
-                         type="monotone" 
-                         dataKey="probability" 
-                         stroke="url(#osStroke)" 
-                         strokeWidth={4}
-                         fill="url(#osGradient)"
-                         dot={{ fill: "#3b82f6", strokeWidth: 2, r: 6, stroke: "white" }}
-                         activeDot={{ r: 8, fill: "#6366f1", stroke: "white", strokeWidth: 3 }}
+                       <Tooltip 
+                         content={({ active, payload, coordinate }: any) => {
+                           if (active && coordinate) {
+                             const anomaly = anomalyData[0]; // Since we only have one anomaly
+                             return (
+                               <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                                 <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
+                                 <p className="text-sm text-muted-foreground">
+                                   Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
+                                 </p>
+                               </div>
+                             );
+                           }
+                           return null;
+                         }}
                        />
-                       <defs>
-                         <circle id="anomalyMarker" r="8" fill="#ef4444" stroke="#dc2626" strokeWidth="3" />
-                       </defs>
-                       {anomalyData.map((anomaly, index) => (
-                         <circle
-                           key={`anomaly-${index}`}
-                           cx={20 + ((anomaly.time + 15) / 40) * 600}
-                           cy={30 + (1 - anomaly.probability) * 260}
-                           r="8"
-                           fill="#ef4444"
-                           stroke="#dc2626"
-                           strokeWidth="3"
-                           transform="rotate(45)"
-                         />
-                       ))}
+                        <Line 
+                          type="monotone" 
+                          dataKey="probability" 
+                          stroke="#3b82f6" 
+                          strokeWidth={3}
+                          dot={false}
+                          name="S-Curve"
+                        />
+                        {anomalyData.map((anomaly, index) => (
+                          <ReferenceDot
+                            key={`anomaly-${index}`}
+                            x={anomaly.time}
+                            y={anomaly.probability}
+                            r={6}
+                            fill="#ef4444"
+                            stroke="#dc2626"
+                            strokeWidth={2}
+                          />
+                        ))}
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
