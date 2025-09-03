@@ -205,11 +205,11 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
         </DialogHeader>
 
         <Tabs defaultValue="forensics" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-2 bg-card border border-border/50 shadow-sm rounded-lg p-1">
-            <TabsTrigger value="forensics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 shadow-lg rounded-xl p-1.5 backdrop-blur-sm">
+            <TabsTrigger value="forensics" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50">
               Post Test Forensics
             </TabsTrigger>
-            <TabsTrigger value="performance" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger value="performance" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50">
               Performance Analysis
             </TabsTrigger>
           </TabsList>
@@ -232,11 +232,15 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                 <CardContent className="pt-0">
                   <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                      <defs>
-                        <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                        </linearGradient>
+                       <defs>
+                         <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
+                           <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                           <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                         </linearGradient>
+                         <linearGradient id="osStroke" x1="0" y1="0" x2="1" y2="0">
+                           <stop offset="0%" stopColor="#3b82f6"/>
+                           <stop offset="100%" stopColor="#6366f1"/>
+                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                       <XAxis 
@@ -251,15 +255,15 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         label={{ value: 'Probability', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                       />
                       <Tooltip content={<CustomTooltip />} />
-                      <Line 
-                        type="monotone" 
-                        dataKey="probability" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={3}
-                        fill="url(#osGradient)"
-                        dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 5, stroke: "hsl(var(--background))" }}
-                        activeDot={{ r: 7, fill: "hsl(var(--primary))", stroke: "hsl(var(--background))", strokeWidth: 3 }}
-                      />
+                       <Line 
+                         type="monotone" 
+                         dataKey="probability" 
+                         stroke="url(#osStroke)" 
+                         strokeWidth={4}
+                         fill="url(#osGradient)"
+                         dot={{ fill: "#3b82f6", strokeWidth: 2, r: 6, stroke: "white" }}
+                         activeDot={{ r: 8, fill: "#6366f1", stroke: "white", strokeWidth: 3 }}
+                       />
                     </LineChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -281,11 +285,11 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                 <CardContent className="pt-0">
                   <ResponsiveContainer width="100%" height={320}>
                     <BarChart data={timeFrequencyData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                      <defs>
-                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.6}/>
-                        </linearGradient>
+                       <defs>
+                         <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                           <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                           <stop offset="95%" stopColor="#059669" stopOpacity={0.7}/>
+                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                       <XAxis 
@@ -307,7 +311,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         dataKey="frequency" 
                         fill="url(#barGradient)" 
                         radius={[4, 4, 0, 0]}
-                        stroke="hsl(var(--primary))"
+                        stroke="#059669"
                         strokeWidth={1}
                       />
                     </BarChart>
