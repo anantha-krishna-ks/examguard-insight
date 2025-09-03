@@ -281,262 +281,263 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
 
           {/* Graphs Section */}
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* OS Curve */}
-              <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <TrendingUp className="h-5 w-5 text-primary" />
-                      </div>
-                      <CardTitle className="text-lg">OS Curve Analysis</CardTitle>
+            {/* OS Curve Analysis - Full Width */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
-                    <Badge variant="secondary" className="text-xs">S-Curve with Anomalies</Badge>
+                    <CardTitle className="text-lg">OS Curve Analysis</CardTitle>
                   </div>
-                  <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                    <p className="font-semibold mb-1">Anomaly Detected - Item No: 6</p>
-                    <p>Item Response Time: 395 sec | Percentile Rank: 99.96% | Outlier Score: 20.00</p>
+                  <Badge variant="secondary" className="text-xs">S-Curve with Anomalies</Badge>
+                </div>
+                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
+                  <p className="font-semibold mb-1">Anomaly Detected - Item No: 6</p>
+                  <p>Item Response Time: 395 sec | Percentile Rank: 99.96% | Outlier Score: 20.00</p>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {/* Legend */}
+                <div className="mb-4 flex items-center justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-1 bg-blue-500 rounded"></div>
+                    <span className="text-sm font-medium">S-Curve</span>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {/* Legend */}
-                  <div className="mb-4 flex items-center justify-center space-x-6">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-6 h-1 bg-blue-500 rounded"></div>
-                      <span className="text-sm font-medium">S-Curve</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
-                      <span className="text-sm font-medium">Actual Outliers</span>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                    <span className="text-sm font-medium">Actual Outliers</span>
                   </div>
-                  <ResponsiveContainer width="100%" height={320}>
-                    <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                       <defs>
-                         <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
-                           <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                           <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
-                         </linearGradient>
-                         <linearGradient id="osStroke" x1="0" y1="0" x2="1" y2="0">
-                           <stop offset="0%" stopColor="#3b82f6"/>
-                           <stop offset="100%" stopColor="#6366f1"/>
-                         </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                      <XAxis 
-                        dataKey="time" 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        domain={[-15, 25]}
-                        ticks={[-15, -10, -5, 0, 5, 10, 15, 20, 25]}
+                </div>
+                <ResponsiveContainer width="100%" height={320}>
+                  <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                     <defs>
+                       <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                       </linearGradient>
+                       <linearGradient id="osStroke" x1="0" y1="0" x2="1" y2="0">
+                         <stop offset="0%" stopColor="#3b82f6"/>
+                         <stop offset="100%" stopColor="#6366f1"/>
+                       </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="time" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      domain={[-15, 25]}
+                      ticks={[-15, -10, -5, 0, 5, 10, 15, 20, 25]}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      domain={[0, 1]}
+                      tickCount={11}
+                    />
+                     <Tooltip 
+                       content={({ active, payload, coordinate }: any) => {
+                         if (active && coordinate) {
+                           const anomaly = anomalyData[0]; // Since we only have one anomaly
+                           return (
+                             <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                               <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
+                               <p className="text-sm text-muted-foreground">
+                                 Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
+                               </p>
+                             </div>
+                           );
+                         }
+                         return null;
+                       }}
+                     />
+                      <Line 
+                        type="monotone" 
+                        dataKey="probability" 
+                        stroke="#3b82f6" 
+                        strokeWidth={3}
+                        dot={false}
+                        name="S-Curve"
                       />
-                      <YAxis 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        domain={[0, 1]}
-                        tickCount={11}
-                      />
-                       <Tooltip 
-                         content={({ active, payload, coordinate }: any) => {
-                           if (active && coordinate) {
-                             const anomaly = anomalyData[0]; // Since we only have one anomaly
-                             return (
-                               <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-                                 <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
-                                 <p className="text-sm text-muted-foreground">
-                                   Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
-                                 </p>
-                               </div>
-                             );
-                           }
-                           return null;
-                         }}
-                       />
-                        <Line 
-                          type="monotone" 
-                          dataKey="probability" 
-                          stroke="#3b82f6" 
-                          strokeWidth={3}
-                          dot={false}
-                          name="S-Curve"
+                      {anomalyData.map((anomaly, index) => (
+                        <ReferenceDot
+                          key={`anomaly-${index}`}
+                          x={anomaly.time}
+                          y={anomaly.probability}
+                          r={6}
+                          fill="#ef4444"
+                          stroke="#dc2626"
+                          strokeWidth={2}
                         />
-                        {anomalyData.map((anomaly, index) => (
-                          <ReferenceDot
-                            key={`anomaly-${index}`}
-                            x={anomaly.time}
-                            y={anomaly.probability}
-                            r={6}
-                            fill="#ef4444"
-                            stroke="#dc2626"
-                            strokeWidth={2}
-                          />
-                        ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                  
-                  {/* Individual Anomaly Analysis within OS Curve */}
-                  {anomalyData.length > 0 && (
-                    <div className="mt-8 space-y-6">
-                      <div className="flex items-center space-x-2">
-                        <div className="p-2 rounded-lg bg-red-500/10">
-                          <BarChart3 className="h-4 w-4 text-red-500" />
-                        </div>
-                        <h4 className="text-lg font-semibold">Individual Anomaly Analysis</h4>
-                      </div>
-                      
-                      {anomalyData.map((anomaly, index) => {
-                        const responseTime = 395; // Mock response time for item 6
-                        const percentileRank = 99.96;
-                        const chartData = generateAnomalyFrequencyData(anomaly.itemNo, responseTime);
-                        
-                        return (
-                          <div key={`anomaly-chart-${index}`} className="border border-border/30 rounded-lg p-4 bg-muted/20">
-                            <div className="bg-muted/50 rounded-lg p-3 mb-4">
-                              <h5 className="font-semibold text-foreground text-sm">
-                                Item No: {anomaly.itemNo}, Item Response Time (Sec): {responseTime}, 
-                                Item PercentileRank (%): {percentileRank}, Outlier Score: {anomaly.outlierScore.toFixed(2)}
-                              </h5>
-                            </div>
-                            
-                            {/* Legend */}
-                            <div className="flex items-center justify-center space-x-8 mb-4">
-                              <div className="flex items-center space-x-2">
-                                <div className="w-4 h-3 bg-cyan-400 border border-cyan-500"></div>
-                                <span className="text-xs font-medium">Bar Dataset</span>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
-                                <span className="text-xs font-medium">Marker</span>
-                              </div>
-                            </div>
-                            
-                            <ResponsiveContainer width="100%" height={300}>
-                              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                                <XAxis 
-                                  dataKey="timeRange" 
-                                  stroke="hsl(var(--muted-foreground))"
-                                  fontSize={11}
-                                  angle={-45}
-                                  textAnchor="end"
-                                  height={80}
-                                  label={{ value: 'Item Response', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                                />
-                                <YAxis 
-                                  stroke="hsl(var(--muted-foreground))"
-                                  fontSize={11}
-                                  label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                                />
-                                <Tooltip 
-                                  content={({ active, payload, label }: any) => {
-                                    if (active && payload && payload.length) {
-                                      const data = payload[0].payload;
-                                      return (
-                                        <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-                                          <p className="font-semibold text-foreground mb-2">{label}</p>
-                                          <p className="text-sm text-muted-foreground">
-                                            Frequency: <span className="font-medium text-foreground">{data.frequency}</span>
-                                          </p>
-                                          {data.isAnomaly && (
-                                            <p className="text-sm text-red-500 font-medium">Anomaly Detected</p>
-                                          )}
-                                        </div>
-                                      );
-                                    }
-                                    return null;
-                                  }}
-                                />
-                                <Bar 
-                                  dataKey="frequency" 
-                                  fill="#22d3ee"
-                                  stroke="#06b6d4"
-                                  strokeWidth={1}
-                                  radius={[2, 2, 0, 0]}
-                                />
-                                {chartData.map((entry, barIndex) => 
-                                  entry.isAnomaly ? (
-                                    <ReferenceDot
-                                      key={`marker-${barIndex}`}
-                                      x={entry.timeRange}
-                                      y={entry.frequency}
-                                      r={0}
-                                      fill="transparent"
-                                      shape={(props: any) => {
-                                        const { cx, cy } = props;
-                                        return (
-                                          <rect
-                                            x={cx - 8}
-                                            y={cy - 8}
-                                            width={16}
-                                            height={16}
-                                            fill="#ef4444"
-                                            stroke="#dc2626"
-                                            strokeWidth={2}
-                                          />
-                                        );
-                                      }}
-                                    />
-                                  ) : null
-                                )}
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Rapid Guessing Detection */}
-              <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
+                      ))}
+                  </LineChart>
+                </ResponsiveContainer>
+                
+                {/* Individual Anomaly Analysis within OS Curve */}
+                {anomalyData.length > 0 && (
+                  <div className="mt-8 space-y-6">
                     <div className="flex items-center space-x-2">
                       <div className="p-2 rounded-lg bg-red-500/10">
-                        <Clock className="h-5 w-5 text-red-500" />
+                        <BarChart3 className="h-4 w-4 text-red-500" />
                       </div>
-                      <CardTitle className="text-lg">Rapid Guessing Detection</CardTitle>
+                      <h4 className="text-lg font-semibold">Individual Anomaly Analysis</h4>
                     </div>
-                    <Badge variant="destructive" className="text-xs">Flagged Responses</Badge>
+                    
+                    <div className="max-h-96 overflow-y-auto space-y-6">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        {anomalyData.map((anomaly, index) => {
+                          const responseTime = 395; // Mock response time for item 6
+                          const percentileRank = 99.96;
+                          const chartData = generateAnomalyFrequencyData(anomaly.itemNo, responseTime);
+                          
+                          return (
+                            <div key={`anomaly-chart-${index}`} className="border border-border/30 rounded-lg p-4 bg-muted/20">
+                              <div className="bg-muted/50 rounded-lg p-3 mb-4">
+                                <h5 className="font-semibold text-foreground text-sm">
+                                  Item No: {anomaly.itemNo}, Item Response Time (Sec): {responseTime}, 
+                                  Item PercentileRank (%): {percentileRank}, Outlier Score: {anomaly.outlierScore.toFixed(2)}
+                                </h5>
+                              </div>
+                              
+                              {/* Legend */}
+                              <div className="flex items-center justify-center space-x-8 mb-4">
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-4 h-3 bg-cyan-400 border border-cyan-500"></div>
+                                  <span className="text-xs font-medium">Bar Dataset</span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                                  <span className="text-xs font-medium">Marker</span>
+                                </div>
+                              </div>
+                              
+                              <ResponsiveContainer width="100%" height={300}>
+                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                                  <XAxis 
+                                    dataKey="timeRange" 
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={11}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={80}
+                                    label={{ value: 'Item Response', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                                  />
+                                  <YAxis 
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={11}
+                                    label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                                  />
+                                  <Tooltip 
+                                    content={({ active, payload, label }: any) => {
+                                      if (active && payload && payload.length) {
+                                        const data = payload[0].payload;
+                                        return (
+                                          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                                            <p className="font-semibold text-foreground mb-2">{label}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Frequency: <span className="font-medium text-foreground">{data.frequency}</span>
+                                            </p>
+                                            {data.isAnomaly && (
+                                              <p className="text-sm text-red-500 font-medium">Anomaly Detected</p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+                                      return null;
+                                    }}
+                                  />
+                                  <Bar 
+                                    dataKey="frequency" 
+                                    fill="#22d3ee"
+                                    stroke="#06b6d4"
+                                    strokeWidth={1}
+                                    radius={[2, 2, 0, 0]}
+                                  />
+                                  {chartData.map((entry, barIndex) => 
+                                    entry.isAnomaly ? (
+                                      <ReferenceDot
+                                        key={`marker-${barIndex}`}
+                                        x={entry.timeRange}
+                                        y={entry.frequency}
+                                        r={0}
+                                        fill="transparent"
+                                        shape={(props: any) => {
+                                          const { cx, cy } = props;
+                                          return (
+                                            <rect
+                                              x={cx - 8}
+                                              y={cy - 8}
+                                              width={16}
+                                              height={16}
+                                              fill="#ef4444"
+                                              stroke="#dc2626"
+                                              strokeWidth={2}
+                                            />
+                                          );
+                                        }}
+                                      />
+                                    ) : null
+                                  )}
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <ResponsiveContainer width="100%" height={320}>
-                    <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                       <defs>
-                         <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
-                           <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
-                           <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7}/>
-                         </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                      <XAxis 
-                        dataKey="timeRange" 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        label={{ value: 'Response Time Range (<5s flagged)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                      />
-                      <YAxis 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        label={{ value: 'Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                      />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar 
-                        dataKey="frequency" 
-                        fill="url(#rapidGradient)" 
-                        radius={[4, 4, 0, 0]}
-                        stroke="#dc2626"
-                        strokeWidth={1}
-                       />
-                     </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+                )}
+              </CardContent>
+            </Card>
 
-            </div>
+            {/* Rapid Guessing Detection - Full Width Row */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-red-500/10">
+                      <Clock className="h-5 w-5 text-red-500" />
+                    </div>
+                    <CardTitle className="text-lg">Rapid Guessing Detection</CardTitle>
+                  </div>
+                  <Badge variant="destructive" className="text-xs">Flagged Responses</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ResponsiveContainer width="100%" height={320}>
+                  <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                     <defs>
+                       <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                         <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7}/>
+                       </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="timeRange" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Response Time Range (<5s flagged)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="frequency" 
+                      fill="url(#rapidGradient)" 
+                      radius={[4, 4, 0, 0]}
+                      stroke="#dc2626"
+                      strokeWidth={1}
+                     />
+                   </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
             
             
             {/* Response Time vs Difficulty */}
