@@ -1,11 +1,13 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-import { ArrowLeft, BarChart3, Filter } from "lucide-react";
+import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
 import { 
   BarChart, 
   Bar, 
@@ -17,9 +19,8 @@ import {
   Cell
 } from "recharts";
 
-type ViewLevel = 'test' | 'location' | 'testCenter';
-
-interface BehavioralPatternAnalysisPageProps {}
+type ViewLevel = "test" | "location" | "testcenter";
+type FilterType = "all" | "flagged" | "unflagged";
 
 // Mock data for different levels
 const testLevelData = [
@@ -47,70 +48,82 @@ const testCenterLevelData = [
   { name: 'TC-006', sequentialPattern: 112, answerRevision: 31 },
 ];
 
-export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageProps) {
+const candidateData = [
+  { id: 'C001', name: 'John Doe', email: 'john@example.com', status: 'Completed', flagged: false, anomalyScore: 0.23, anomalyType: 'None', testName: 'Mathematics Assessment' },
+  { id: 'C002', name: 'Jane Smith', email: 'jane@example.com', status: 'In Progress', flagged: true, anomalyScore: 0.87, anomalyType: 'Sequential Pattern', testName: 'Science Aptitude Test' },
+  { id: 'C003', name: 'Bob Johnson', email: 'bob@example.com', status: 'Completed', flagged: true, anomalyScore: 0.92, anomalyType: 'Answer Revision', testName: 'English Proficiency' },
+  { id: 'C004', name: 'Alice Brown', email: 'alice@example.com', status: 'Not Started', flagged: false, anomalyScore: 0.15, anomalyType: 'None', testName: 'Logic & Reasoning' },
+  { id: 'C005', name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Completed', flagged: true, anomalyScore: 0.78, anomalyType: 'Sequential Pattern', testName: 'Mathematics Assessment' },
+];
+
+const levelLabels = {
+  test: "Test",
+  location: "Location", 
+  testcenter: "Test Center"
+};
+
+export function BehavioralPatternAnalysisPage() {
   const navigate = useNavigate();
-  const [viewLevel, setViewLevel] = useState<ViewLevel>('test');
+  const [viewLevel, setViewLevel] = useState<ViewLevel>("test");
+  
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [sliderValue, setSliderValue] = useState([0]); // 0: Test, 1: Location, 2: Test Center
+  const [selectedTestCenter, setSelectedTestCenter] = useState<string | null>(null);
+  const [showCandidates, setShowCandidates] = useState(false);
+  const [candidateFilter, setCandidateFilter] = useState<FilterType>("all");
+  const [clickedSegment, setClickedSegment] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [showCandidateCharts, setShowCandidateCharts] = useState(false);
 
-  const getCurrentData = useCallback(() => {
-    switch (viewLevel) {
-      case 'test':
-        return testLevelData;
-      case 'location':
-        return locationLevelData;
-      case 'testCenter':
-        return testCenterLevelData;
-      default:
-        return testLevelData;
-    }
-  }, [viewLevel]);
-
-  const getViewLevelFromSlider = (value: number): ViewLevel => {
-    switch (value) {
-      case 0: return 'test';
-      case 1: return 'location';
-      case 2: return 'testCenter';
-      default: return 'test';
-    }
+  const getCurrentData = () => {
+    if (viewLevel === "test") return testLevelData;
+    if (viewLevel === "location") return locationLevelData;
+    return testCenterLevelData;
   };
 
-  const getSliderValueFromLevel = (level: ViewLevel): number => {
-    switch (level) {
-      case 'test': return 0;
-      case 'location': return 1;
-      case 'testCenter': return 2;
-      default: return 0;
-    }
-  };
-
-  const handleSliderChange = useCallback((value: number[]) => {
-    const newLevel = getViewLevelFromSlider(value[0]);
-    setSliderValue(value);
-    setViewLevel(newLevel);
+  const handleLevelChange = (level: ViewLevel) => {
+    setViewLevel(level);
     setSelectedLocation(null);
-  }, []);
+    setSelectedTestCenter(null);
+    setShowCandidates(false);
+    setClickedSegment(null);
+  };
 
-  const handleBarClick = useCallback((data: any) => {
-    if (viewLevel === 'location') {
-      // When clicking a location bar, switch to test center level
+  const handleBarClick = (data: any, segment?: string) => {
+    if (viewLevel === "test") {
+      // Drill down from test to location level
+      setViewLevel("location");
+    } else if (viewLevel === "location" && !selectedLocation) {
       setSelectedLocation(data.name);
-      setViewLevel('testCenter');
-      setSliderValue([2]);
+      setViewLevel("testcenter");
+    } else if (viewLevel === "testcenter") {
+      setSelectedTestCenter(data.name);
+      setShowCandidates(true);
+      if (segment === "answerRevision") {
+        setClickedSegment("answerRevision");
+        setCandidateFilter("flagged");
+      } else {
+        setClickedSegment(null);
+        setCandidateFilter("all");
+      }
     }
-  }, [viewLevel]);
+  };
 
-  const getBarColor = useCallback((entry: any, index: number) => {
-    if (viewLevel === 'testCenter' && selectedLocation) {
-      return "hsl(var(--admin-sequential-pattern))";
+  const getFilteredCandidates = () => {
+    let filtered = candidateData;
+    
+    if (candidateFilter === "flagged") {
+      filtered = filtered.filter(c => c.flagged);
+    } else if (candidateFilter === "unflagged") {
+      filtered = filtered.filter(c => !c.flagged);
     }
     
-    // Color coding based on anomaly levels
-    const total = entry.sequentialPattern + entry.answerRevision;
-    if (total > 250) return "#ef4444"; // High anomaly
-    if (total > 150) return "#f97316"; // Medium anomaly
-    return "hsl(var(--admin-sequential-pattern))"; // Normal
-  }, [viewLevel, selectedLocation]);
+    return filtered;
+  };
+
+  const handleCandidateClick = (candidate: any) => {
+    setSelectedCandidate(candidate);
+    setShowCandidateCharts(true);
+  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -126,6 +139,9 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
           <p className="text-xs text-muted-foreground mt-1">
             Total Anomalies: {(payload[0]?.value || 0) + (payload[1]?.value || 0)}
           </p>
+          <p className="text-xs text-muted-foreground">
+            Click to drill down
+          </p>
         </div>
       );
     }
@@ -133,93 +149,65 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
   };
 
   const getTitle = () => {
-    if (viewLevel === 'testCenter' && selectedLocation) {
+    if (viewLevel === 'testcenter' && selectedLocation) {
       return `Behavioral Pattern Anomaly - ${selectedLocation} Test Centers`;
     }
     
     switch (viewLevel) {
       case 'test': return 'Behavioral Pattern Anomaly - Test Level';
       case 'location': return 'Behavioral Pattern Anomaly - Location Level';
-      case 'testCenter': return 'Behavioral Pattern Anomaly - Test Center Level';
+      case 'testcenter': return 'Behavioral Pattern Anomaly - Test Center Level';
       default: return 'Behavioral Pattern Anomaly';
     }
-  };
-
-  const getSliderLabels = () => {
-    return ['Test', 'Location', 'Test Center'];
   };
 
   return (
     <div className="min-h-screen bg-background">
       <AdminHeader />
       
-      <div className="container mx-auto px-4 py-6">
-        {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-6">
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button 
-              variant="outline" 
-              onClick={() => navigate('/admin')}
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate("/admin")}
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Dashboard</span>
             </Button>
-            
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-admin-answer-revision" />
-              <h1 className="text-2xl font-bold">{getTitle()}</h1>
+            <div>
+              <h1 className="text-3xl font-bold">Behavioral Pattern Anomaly Analysis</h1>
+              <p className="text-muted-foreground">
+                Hierarchical drill-down analysis at {levelLabels[viewLevel]} level
+                {selectedLocation && ` - ${selectedLocation}`}
+                {selectedTestCenter && ` - ${selectedTestCenter}`}
+              </p>
             </div>
           </div>
-          
           <Badge variant="outline" className="text-admin-answer-revision border-admin-answer-revision">
             Behavioral Analysis
           </Badge>
         </div>
 
-        {/* Level Slider */}
-        <Card className="mb-6">
+        {/* Level Selector Tabs */}
+        <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Analysis Level</CardTitle>
-              <div className="flex items-center space-x-2">
-                <Filter className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  Current: {getSliderLabels()[sliderValue[0]]}
-                </span>
-              </div>
-            </div>
+            <CardTitle className="flex items-center space-x-2">
+              <Filter className="h-5 w-5" />
+              <span>Analysis Level</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="px-4">
-                <Slider
-                  value={sliderValue}
-                  onValueChange={handleSliderChange}
-                  max={2}
-                  min={0}
-                  step={1}
-                  className="w-full"
-                />
-              </div>
-              <div className="flex justify-between text-sm text-muted-foreground px-4">
-                {getSliderLabels().map((label, index) => (
-                  <span 
-                    key={label}
-                    className={sliderValue[0] === index ? "font-medium text-primary" : ""}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-              {selectedLocation && viewLevel === 'testCenter' && (
-                <div className="flex items-center justify-center">
-                  <Badge variant="secondary" className="mt-2">
-                    Filtered by: {selectedLocation}
-                  </Badge>
-                </div>
-              )}
-            </div>
+            <Tabs value={viewLevel} onValueChange={handleLevelChange} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="test">Test</TabsTrigger>
+                <TabsTrigger value="location">Location</TabsTrigger>
+                <TabsTrigger value="testcenter">Test Center</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </CardContent>
         </Card>
 
@@ -227,61 +215,65 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Behavioral Pattern Anomaly Distribution</CardTitle>
-              <div className="flex space-x-2">
-                <Badge variant="outline" className="text-blue-600 border-blue-600">
-                  Sequential Patterns
-                </Badge>
-                <Badge variant="outline" className="text-orange-600 border-orange-600">
-                  Answer Revisions
-                </Badge>
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-admin-answer-revision" />
+                <CardTitle>
+                  Behavioral Pattern Anomaly - {levelLabels[viewLevel]} Level
+                  {selectedLocation && ` (${selectedLocation})`}
+                </CardTitle>
               </div>
+              {clickedSegment && (
+                <Badge variant="destructive">
+                  Showing flagged candidates from answer revision segment
+                </Badge>
+              )}
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-96">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={getCurrentData()} 
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                  />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar 
-                    dataKey="sequentialPattern" 
-                    fill="#2563eb" 
-                    name="Sequential Pattern Numbers"
-                    onClick={handleBarClick}
-                    cursor="pointer"
-                  >
-                    {getCurrentData().map((entry, index) => (
-                      <Cell key={`cell-sequential-${index}`} fill="#2563eb" />
-                    ))}
-                  </Bar>
-                  <Bar 
-                    dataKey="answerRevision" 
-                    fill="#ea580c" 
-                    name="Answer Revision Numbers"
-                    onClick={handleBarClick}
-                    cursor="pointer"
-                  >
-                    {getCurrentData().map((entry, index) => (
-                      <Cell key={`cell-revision-${index}`} fill="#ea580c" />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={getCurrentData()}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12 }}
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar 
+                  dataKey="sequentialPattern" 
+                  fill="#2563eb" 
+                  name="Sequential Pattern Numbers"
+                  onClick={(data) => handleBarClick(data)}
+                  style={{ cursor: "pointer" }}
+                />
+                <Bar 
+                  dataKey="answerRevision" 
+                  fill="#ea580c" 
+                  name="Answer Revision Numbers"
+                  onClick={(data) => handleBarClick(data, "answerRevision")}
+                  style={{ cursor: "pointer" }}
+                />
+              </BarChart>
+            </ResponsiveContainer>
             
             {/* Chart Legend and Info */}
+            <div className="mt-4 flex justify-between text-xs text-muted-foreground">
+              <span>Anomaly Student Numbers</span>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+                  <span>Sequential Pattern</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
+                  <span>Answer Revision (Click orange segment for flagged candidates)</span>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">
@@ -304,17 +296,129 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 </div>
               </div>
             </div>
-
-            {/* Instructions */}
-            <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                <strong>Instructions:</strong> Use the slider above to switch between analysis levels. 
-                {viewLevel === 'location' && " Click on a location bar to drill down to its test centers."}
-                {viewLevel === 'testCenter' && selectedLocation && " Showing test centers for the selected location."}
-              </p>
-            </div>
           </CardContent>
         </Card>
+
+        {/* Candidate List */}
+        {showCandidates && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="h-5 w-5 text-admin-sequential-pattern" />
+                  <CardTitle>
+                    Candidate Information - {selectedTestCenter}
+                  </CardTitle>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Select value={candidateFilter} onValueChange={(value: FilterType) => setCandidateFilter(value)}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder={
+                        clickedSegment === "answerRevision" ? "Flagged Only" : 
+                        candidateFilter === "all" ? "All Candidates" :
+                        candidateFilter === "flagged" ? "Flagged Only" : "Unflagged Only"
+                      } />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Candidates</SelectItem>
+                      <SelectItem value="flagged">Flagged Only</SelectItem>
+                      <SelectItem value="unflagged">Unflagged Only</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <div className="rounded-lg border bg-card">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/30">
+                        <th className="text-left p-4 font-semibold text-foreground">Candidate ID</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Name</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Email</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Test Name</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Status</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Anomaly Score</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Anomaly Type</th>
+                        <th className="text-left p-4 font-semibold text-foreground">Flag Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getFilteredCandidates().map((candidate, index) => (
+                        <tr 
+                          key={candidate.id} 
+                          onClick={() => handleCandidateClick(candidate)}
+                          className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
+                        >
+                          <td className="p-4 font-mono text-sm text-muted-foreground">{candidate.id}</td>
+                          <td className="p-4 font-medium">{candidate.name}</td>
+                          <td className="p-4 text-muted-foreground">{candidate.email}</td>
+                          <td className="p-4">
+                            <Badge 
+                              variant="secondary" 
+                              className="bg-primary/10 text-primary border-primary/20 font-medium px-3 py-1"
+                            >
+                              {candidate.testName}
+                            </Badge>
+                          </td>
+                          <td className="p-4">
+                            <Badge 
+                              variant={candidate.status === 'Completed' ? 'default' : 
+                                      candidate.status === 'In Progress' ? 'secondary' : 'outline'}
+                              className="font-medium"
+                            >
+                              {candidate.status}
+                            </Badge>
+                          </td>
+                          <td className="p-4">
+                            <span className={`font-semibold ${candidate.anomalyScore > 0.7 ? 'text-red-500' : 
+                                           candidate.anomalyScore > 0.4 ? 'text-yellow-500' : 'text-green-500'}`}>
+                              {candidate.anomalyScore.toFixed(2)}
+                            </span>
+                          </td>
+                          <td className="p-4">
+                            <Badge 
+                              variant={candidate.anomalyType === 'None' ? 'secondary' : 'destructive'}
+                              className="font-medium"
+                            >
+                              {candidate.anomalyType}
+                            </Badge>
+                          </td>
+                          <td className="p-4">
+                            {candidate.flagged ? (
+                              <div className="flex items-center space-x-2 text-red-500">
+                                <Eye className="h-4 w-4" />
+                                <span className="font-medium">Flagged</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2 text-green-500">
+                                <EyeOff className="h-4 w-4" />
+                                <span className="font-medium">Normal</span>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {getFilteredCandidates().length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No candidates found matching the current filter.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Candidate Charts Modal */}
+        <CandidateChartsModal 
+          candidate={selectedCandidate}
+          isOpen={showCandidateCharts}
+          onClose={() => setShowCandidateCharts(false)}
+        />
       </div>
     </div>
   );
