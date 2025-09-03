@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -204,17 +204,39 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
           <Separator className="mt-4" />
         </DialogHeader>
 
-        <Tabs defaultValue="forensics" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 shadow-lg rounded-xl p-2 backdrop-blur-sm">
-            <TabsTrigger value="forensics" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:border-0 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50 data-[state=inactive]:bg-transparent">
-              Post Test Forensics
-            </TabsTrigger>
-            <TabsTrigger value="performance" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=active]:border-0 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50 data-[state=inactive]:bg-transparent">
-              Performance Analysis
-            </TabsTrigger>
-          </TabsList>
+        <div className="space-y-6 mt-6">
+          {/* Summary Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-primary">8.5</div>
+                <p className="text-xs text-muted-foreground">Avg. Response Time (min)</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-r from-green-500/5 to-green-500/10 border-green-500/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-green-600">35/50</div>
+                <p className="text-xs text-muted-foreground">Score</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-r from-amber-500/5 to-amber-500/10 border-amber-500/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-amber-600">2.1</div>
+                <p className="text-xs text-muted-foreground">Avg. Difficulty</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-r from-red-500/5 to-red-500/10 border-red-500/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-red-600">3</div>
+                <p className="text-xs text-muted-foreground">Anomalous Items</p>
+              </CardContent>
+            </Card>
+          </div>
 
-          <TabsContent value="forensics" className="space-y-6 mt-6">
+          <Separator className="my-6" />
+
+          {/* Graphs Section */}
+          <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* OS Curve */}
               <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -226,7 +248,11 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                       </div>
                       <CardTitle className="text-lg">OS Curve Analysis</CardTitle>
                     </div>
-                    <Badge variant="secondary" className="text-xs">Cumulative Response Probability</Badge>
+                    <Badge variant="secondary" className="text-xs">S-Curve with Anomalies</Badge>
+                  </div>
+                  <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
+                    <p className="font-semibold mb-1">Anomaly Detected - Item No: 6</p>
+                    <p>Item Response Time: 395 sec | Percentile Rank: 99.96% | Outlier Score: 20.00</p>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -247,11 +273,14 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         dataKey="time" 
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
-                        label={{ value: 'Time (seconds)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                        domain={[-15, 25]}
+                        label={{ value: 'Time Range', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                       />
                       <YAxis 
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
+                        domain={[0, 1]}
+                        tickCount={11}
                         label={{ value: 'Probability', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                       />
                       <Tooltip content={<CustomTooltip />} />
@@ -269,26 +298,26 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                 </CardContent>
               </Card>
 
-              {/* Item Time Frequency Distribution */}
+              {/* Rapid Guessing Detection */}
               <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <BarChart3 className="h-5 w-5 text-primary" />
+                      <div className="p-2 rounded-lg bg-red-500/10">
+                        <Clock className="h-5 w-5 text-red-500" />
                       </div>
-                      <CardTitle className="text-lg">Time Distribution</CardTitle>
+                      <CardTitle className="text-lg">Rapid Guessing Detection</CardTitle>
                     </div>
-                    <Badge variant="secondary" className="text-xs">Response Frequency</Badge>
+                    <Badge variant="destructive" className="text-xs">Flagged Responses</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <ResponsiveContainer width="100%" height={320}>
-                    <BarChart data={timeFrequencyData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                    <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
                        <defs>
-                         <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                           <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
-                           <stop offset="95%" stopColor="#059669" stopOpacity={0.7}/>
+                         <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
+                           <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                           <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7}/>
                          </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
@@ -296,10 +325,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                         dataKey="timeRange" 
                         stroke="hsl(var(--muted-foreground))"
                         fontSize={12}
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                        label={{ value: 'Time Range', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                        label={{ value: 'Response Time Range (<5s flagged)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                       />
                       <YAxis 
                         stroke="hsl(var(--muted-foreground))"
@@ -309,43 +335,13 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                       <Tooltip content={<CustomTooltip />} />
                       <Bar 
                         dataKey="frequency" 
-                        fill="url(#barGradient)" 
+                        fill="url(#rapidGradient)" 
                         radius={[4, 4, 0, 0]}
-                        stroke="#059669"
+                        stroke="#dc2626"
                         strokeWidth={1}
                       />
                     </BarChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="performance" className="space-y-6 mt-6">
-            {/* Summary Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-primary">8.5</div>
-                  <p className="text-xs text-muted-foreground">Avg. Response Time (min)</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-to-r from-green-500/5 to-green-500/10 border-green-500/20">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-green-600">75%</div>
-                  <p className="text-xs text-muted-foreground">Accuracy Rate</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-to-r from-amber-500/5 to-amber-500/10 border-amber-500/20">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-amber-600">2.1</div>
-                  <p className="text-xs text-muted-foreground">Avg. Difficulty</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gradient-to-r from-red-500/5 to-red-500/10 border-red-500/20">
-                <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-red-600">3</div>
-                  <p className="text-xs text-muted-foreground">Anomalous Items</p>
                 </CardContent>
               </Card>
             </div>
@@ -410,8 +406,63 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+          </div>
+
+          <Separator className="my-6" />
+
+          {/* Response Time Statistics Section */}
+          <Card className="border-2 border-border/50 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-lg bg-amber-500/10">
+                  <BarChart3 className="h-5 w-5 text-amber-500" />
+                </div>
+                <CardTitle className="text-lg">Response Time Statistics</CardTitle>
+              </div>
+              <p className="text-sm text-muted-foreground">Flagged items with anomalous response times</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 font-semibold">SL No.</th>
+                      <th className="text-left p-3 font-semibold">Item Name</th>
+                      <th className="text-left p-3 font-semibold">Item Response Time</th>
+                      <th className="text-left p-3 font-semibold">Flagged</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">1</td>
+                      <td className="p-3 font-medium">Question 6</td>
+                      <td className="p-3">395 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">2</td>
+                      <td className="p-3 font-medium">Question 3</td>
+                      <td className="p-3">3 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Rapid Guess</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">3</td>
+                      <td className="p-3 font-medium">Question 8</td>
+                      <td className="p-3">285 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </DialogContent>
     </Dialog>
   );
