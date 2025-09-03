@@ -30,6 +30,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { CandidateChartsModal } from "./CandidateChartsModal";
 
 interface Alert {
   id: string;
