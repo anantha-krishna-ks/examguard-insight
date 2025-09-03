@@ -279,74 +279,80 @@ export default function ResponseTimeAnalysisPage() {
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Candidate ID</th>
-                    <th className="text-left p-2">Name</th>
-                    <th className="text-left p-2">Email</th>
-                    <th className="text-left p-2">Test Name</th>
-                    <th className="text-left p-2">Status</th>
-                    <th className="text-left p-2">Anomaly Score</th>
-                    <th className="text-left p-2">Anomaly Type</th>
-                    <th className="text-left p-2">Flag Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getFilteredCandidates().map((candidate) => (
-                    <tr key={candidate.id} className="border-b hover:bg-muted/50">
-                      <td className="p-2 font-mono text-sm">{candidate.id}</td>
-                      <td className="p-2">{candidate.name}</td>
-                      <td className="p-2 text-muted-foreground">{candidate.email}</td>
-                      <td className="p-2">
-                        <Badge variant="outline" className="text-xs">
-                          {candidate.testName}
-                        </Badge>
-                      </td>
-                      <td className="p-2">
-                        <Badge 
-                          variant={candidate.status === 'Completed' ? 'default' : 
-                                  candidate.status === 'In Progress' ? 'secondary' : 'outline'}
-                        >
-                          {candidate.status}
-                        </Badge>
-                      </td>
-                      <td className="p-2">
-                        <span className={candidate.anomalyScore > 0.7 ? 'text-red-500 font-medium' : 
-                                       candidate.anomalyScore > 0.4 ? 'text-yellow-500' : 'text-green-500'}>
-                          {candidate.anomalyScore.toFixed(2)}
-                        </span>
-                      </td>
-                      <td className="p-2">
-                        <Badge 
-                          variant={candidate.anomalyType === 'None' ? 'secondary' : 'destructive'}
-                          className="text-xs"
-                        >
-                          {candidate.anomalyType}
-                        </Badge>
-                      </td>
-                      <td className="p-2">
-                        {candidate.flagged ? (
-                          <div className="flex items-center space-x-1 text-red-500">
-                            <Eye className="h-4 w-4" />
-                            <span className="text-sm">Flagged</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-1 text-green-500">
-                            <EyeOff className="h-4 w-4" />
-                            <span className="text-sm">Normal</span>
-                          </div>
-                        )}
-                      </td>
+              <div className="rounded-lg border bg-card">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/30">
+                      <th className="text-left p-4 font-semibold text-foreground">Candidate ID</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Name</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Email</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Test Name</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Status</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Anomaly Score</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Anomaly Type</th>
+                      <th className="text-left p-4 font-semibold text-foreground">Flag Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {getFilteredCandidates().length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No candidates found matching the current filter.
-                </div>
-              )}
+                  </thead>
+                  <tbody>
+                    {getFilteredCandidates().map((candidate, index) => (
+                      <tr key={candidate.id} className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}>
+                        <td className="p-4 font-mono text-sm text-muted-foreground">{candidate.id}</td>
+                        <td className="p-4 font-medium">{candidate.name}</td>
+                        <td className="p-4 text-muted-foreground">{candidate.email}</td>
+                        <td className="p-4">
+                          <Badge 
+                            variant="secondary" 
+                            className="bg-primary/10 text-primary border-primary/20 font-medium px-3 py-1"
+                          >
+                            {candidate.testName}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <Badge 
+                            variant={candidate.status === 'Completed' ? 'default' : 
+                                    candidate.status === 'In Progress' ? 'secondary' : 'outline'}
+                            className="font-medium"
+                          >
+                            {candidate.status}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          <span className={`font-semibold ${candidate.anomalyScore > 0.7 ? 'text-red-500' : 
+                                         candidate.anomalyScore > 0.4 ? 'text-yellow-500' : 'text-green-500'}`}>
+                            {candidate.anomalyScore.toFixed(2)}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <Badge 
+                            variant={candidate.anomalyType === 'None' ? 'secondary' : 'destructive'}
+                            className="font-medium"
+                          >
+                            {candidate.anomalyType}
+                          </Badge>
+                        </td>
+                        <td className="p-4">
+                          {candidate.flagged ? (
+                            <div className="flex items-center space-x-2 text-red-500">
+                              <Eye className="h-4 w-4" />
+                              <span className="font-medium">Flagged</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center space-x-2 text-green-500">
+                              <EyeOff className="h-4 w-4" />
+                              <span className="font-medium">Normal</span>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {getFilteredCandidates().length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No candidates found matching the current filter.
+                  </div>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
