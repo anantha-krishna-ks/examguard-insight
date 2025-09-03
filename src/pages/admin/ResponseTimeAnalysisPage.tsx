@@ -41,11 +41,11 @@ const testCenterLevelData = [
 ];
 
 const candidateData = [
-  { id: 'C001', name: 'John Doe', email: 'john@example.com', status: 'Completed', flagged: false, anomalyScore: 0.23 },
-  { id: 'C002', name: 'Jane Smith', email: 'jane@example.com', status: 'In Progress', flagged: true, anomalyScore: 0.87 },
-  { id: 'C003', name: 'Bob Johnson', email: 'bob@example.com', status: 'Completed', flagged: true, anomalyScore: 0.92 },
-  { id: 'C004', name: 'Alice Brown', email: 'alice@example.com', status: 'Not Started', flagged: false, anomalyScore: 0.15 },
-  { id: 'C005', name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Completed', flagged: true, anomalyScore: 0.78 },
+  { id: 'C001', name: 'John Doe', email: 'john@example.com', status: 'Completed', flagged: false, anomalyScore: 0.23, anomalyType: 'None', testName: 'Mathematics Assessment' },
+  { id: 'C002', name: 'Jane Smith', email: 'jane@example.com', status: 'In Progress', flagged: true, anomalyScore: 0.87, anomalyType: 'Item Pre-Knowledge', testName: 'Science Aptitude Test' },
+  { id: 'C003', name: 'Bob Johnson', email: 'bob@example.com', status: 'Completed', flagged: true, anomalyScore: 0.92, anomalyType: 'Rapid Guessing', testName: 'English Proficiency' },
+  { id: 'C004', name: 'Alice Brown', email: 'alice@example.com', status: 'Not Started', flagged: false, anomalyScore: 0.15, anomalyType: 'None', testName: 'Logic & Reasoning' },
+  { id: 'C005', name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Completed', flagged: true, anomalyScore: 0.78, anomalyType: 'Item Pre-Knowledge', testName: 'Mathematics Assessment' },
 ];
 
 const levelLabels = {
@@ -262,7 +262,11 @@ export default function ResponseTimeAnalysisPage() {
               <div className="flex items-center space-x-2">
                 <Select value={candidateFilter} onValueChange={(value: FilterType) => setCandidateFilter(value)}>
                   <SelectTrigger className="w-40">
-                    <SelectValue />
+                    <SelectValue placeholder={
+                      clickedSegment === "completed" ? "Flagged Only" : 
+                      candidateFilter === "all" ? "All Candidates" :
+                      candidateFilter === "flagged" ? "Flagged Only" : "Unflagged Only"
+                    } />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Candidates</SelectItem>
@@ -281,8 +285,10 @@ export default function ResponseTimeAnalysisPage() {
                     <th className="text-left p-2">Candidate ID</th>
                     <th className="text-left p-2">Name</th>
                     <th className="text-left p-2">Email</th>
+                    <th className="text-left p-2">Test Name</th>
                     <th className="text-left p-2">Status</th>
                     <th className="text-left p-2">Anomaly Score</th>
+                    <th className="text-left p-2">Anomaly Type</th>
                     <th className="text-left p-2">Flag Status</th>
                   </tr>
                 </thead>
@@ -292,6 +298,11 @@ export default function ResponseTimeAnalysisPage() {
                       <td className="p-2 font-mono text-sm">{candidate.id}</td>
                       <td className="p-2">{candidate.name}</td>
                       <td className="p-2 text-muted-foreground">{candidate.email}</td>
+                      <td className="p-2">
+                        <Badge variant="outline" className="text-xs">
+                          {candidate.testName}
+                        </Badge>
+                      </td>
                       <td className="p-2">
                         <Badge 
                           variant={candidate.status === 'Completed' ? 'default' : 
@@ -305,6 +316,14 @@ export default function ResponseTimeAnalysisPage() {
                                        candidate.anomalyScore > 0.4 ? 'text-yellow-500' : 'text-green-500'}>
                           {candidate.anomalyScore.toFixed(2)}
                         </span>
+                      </td>
+                      <td className="p-2">
+                        <Badge 
+                          variant={candidate.anomalyType === 'None' ? 'secondary' : 'destructive'}
+                          className="text-xs"
+                        >
+                          {candidate.anomalyType}
+                        </Badge>
                       </td>
                       <td className="p-2">
                         {candidate.flagged ? (
