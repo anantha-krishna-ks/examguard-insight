@@ -47,6 +47,8 @@ interface Alert {
 
 export function AlertFeed() {
   const { toast } = useToast();
+  const [showCandidateCharts, setShowCandidateCharts] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [alerts, setAlerts] = useState<Alert[]>([
     {
       id: 'C-37435',
