@@ -221,6 +221,8 @@ export function AlertFeed() {
 
   const handleInvestigate = (alert: Alert) => {
     console.log('Investigating alert:', alert);
+    setSelectedCandidate(alert);
+    setShowCandidateCharts(true);
     toast({
       title: "Investigation Started",
       description: `Opening detailed view for ${alert.candidateName}`,
@@ -392,10 +394,10 @@ export function AlertFeed() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => handleInvestigate(alert)} className="text-xs">
-                          <Eye className="mr-2 h-3 w-3" />
-                          Investigate
-                        </DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => handleInvestigate(alert)} className="text-xs">
+                           <Eye className="mr-2 h-3 w-3" />
+                           View Analytics
+                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleCreateCase(alert)} className="text-xs">
                           <FileText className="mr-2 h-3 w-3" />
                           Create Case
@@ -500,6 +502,13 @@ export function AlertFeed() {
           </Button>
         </div>
       </div>
+
+      {/* Candidate Charts Modal */}
+      <CandidateChartsModal
+        candidate={selectedCandidate}
+        isOpen={showCandidateCharts}
+        onClose={() => setShowCandidateCharts(false)}
+      />
     </div>
   );
 }
