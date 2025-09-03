@@ -205,7 +205,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
         </DialogHeader>
 
         <Tabs defaultValue="forensics" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-2 bg-muted/30">
+          <TabsList className="grid w-full grid-cols-2 bg-card border border-border/50 shadow-sm rounded-lg p-1">
             <TabsTrigger value="forensics" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               Post Test Forensics
             </TabsTrigger>
