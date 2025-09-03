@@ -70,6 +70,20 @@ const timeFrequencyData = [
   { timeRange: "241s+", frequency: 2 }
 ];
 
+// Mock data for individual anomaly frequency charts
+const generateAnomalyFrequencyData = (itemNo: number, responseTime: number) => [
+  { timeRange: "1-44", frequency: 45, isAnomaly: false },
+  { timeRange: "45-88", frequency: 30, isAnomaly: false },
+  { timeRange: "89-132", frequency: 16, isAnomaly: false },
+  { timeRange: "133-176", frequency: 8, isAnomaly: false },
+  { timeRange: "177-220", frequency: 2, isAnomaly: false },
+  { timeRange: "221-264", frequency: 1, isAnomaly: false },
+  { timeRange: "265-308", frequency: 0, isAnomaly: false },
+  { timeRange: "309-352", frequency: 0, isAnomaly: false },
+  { timeRange: "353-396", frequency: 0, isAnomaly: false },
+  { timeRange: "397-440", frequency: 1, isAnomaly: responseTime >= 397 }
+];
+
 // Mock data for Response Time vs Difficulty
 const responseTimeDifficultyData = [
   { difficulty: 1.2, responseTime: 45, correct: true, itemId: "Q1" },
@@ -528,6 +542,120 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
               </div>
             </CardContent>
           </Card>
+
+          <Separator className="my-6" />
+
+          {/* Individual Anomaly Frequency Charts */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="p-2 rounded-lg bg-red-500/10">
+                <BarChart3 className="h-5 w-5 text-red-500" />
+              </div>
+              <h3 className="text-xl font-bold">Individual Anomaly Analysis</h3>
+            </div>
+            
+            {anomalyData.map((anomaly, index) => {
+              const responseTime = 395; // Mock response time for item 6
+              const percentileRank = 99.96;
+              const chartData = generateAnomalyFrequencyData(anomaly.itemNo, responseTime);
+              
+              return (
+                <Card key={`anomaly-chart-${index}`} className="border-2 border-border/50 shadow-lg">
+                  <CardHeader className="pb-4">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <h4 className="font-semibold text-foreground mb-1">
+                        Item No: {anomaly.itemNo}, Item Response Time (Sec): {responseTime}, 
+                        Item PercentileRank (%): {percentileRank}, Outlier Score: {anomaly.outlierScore.toFixed(2)}
+                      </h4>
+                    </div>
+                    {/* Legend */}
+                    <div className="flex items-center justify-center space-x-8 mt-4">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-3 bg-cyan-400 border border-cyan-500"></div>
+                        <span className="text-sm font-medium">Bar Dataset</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                        <span className="text-sm font-medium">Marker</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ResponsiveContainer width="100%" height={350}>
+                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                        <XAxis 
+                          dataKey="timeRange" 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                          angle={-45}
+                          textAnchor="end"
+                          height={80}
+                          label={{ value: 'Item Response', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                        />
+                        <YAxis 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                          label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                        />
+                        <Tooltip 
+                          content={({ active, payload, label }: any) => {
+                            if (active && payload && payload.length) {
+                              const data = payload[0].payload;
+                              return (
+                                <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                                  <p className="font-semibold text-foreground mb-2">{label}</p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Frequency: <span className="font-medium text-foreground">{data.frequency}</span>
+                                  </p>
+                                  {data.isAnomaly && (
+                                    <p className="text-sm text-red-500 font-medium">Anomaly Detected</p>
+                                  )}
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar 
+                          dataKey="frequency" 
+                          fill="#22d3ee"
+                          stroke="#06b6d4"
+                          strokeWidth={1}
+                          radius={[2, 2, 0, 0]}
+                        />
+                        {chartData.map((entry, barIndex) => 
+                          entry.isAnomaly ? (
+                            <ReferenceDot
+                              key={`marker-${barIndex}`}
+                              x={entry.timeRange}
+                              y={entry.frequency}
+                              r={0}
+                              fill="transparent"
+                              shape={(props: any) => {
+                                const { cx, cy } = props;
+                                return (
+                                  <rect
+                                    x={cx - 8}
+                                    y={cy - 8}
+                                    width={16}
+                                    height={16}
+                                    fill="#ef4444"
+                                    stroke="#dc2626"
+                                    strokeWidth={2}
+                                  />
+                                );
+                              }}
+                            />
+                          ) : null
+                        )}
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
