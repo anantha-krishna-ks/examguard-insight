@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
 import {
   BarChart,
   Bar,
@@ -64,6 +65,8 @@ export default function ResponseTimeAnalysisPage() {
   const [showCandidates, setShowCandidates] = useState(false);
   const [candidateFilter, setCandidateFilter] = useState<FilterType>("all");
   const [clickedSegment, setClickedSegment] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [showCandidateCharts, setShowCandidateCharts] = useState(false);
 
   const getCurrentData = () => {
     if (viewLevel === "test") return testLevelData;
@@ -109,6 +112,11 @@ export default function ResponseTimeAnalysisPage() {
     }
     
     return filtered;
+  };
+
+  const handleCandidateClick = (candidate: any) => {
+    setSelectedCandidate(candidate);
+    setShowCandidateCharts(true);
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -295,7 +303,11 @@ export default function ResponseTimeAnalysisPage() {
                   </thead>
                   <tbody>
                     {getFilteredCandidates().map((candidate, index) => (
-                      <tr key={candidate.id} className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}>
+                      <tr 
+                        key={candidate.id} 
+                        onClick={() => handleCandidateClick(candidate)}
+                        className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
+                      >
                         <td className="p-4 font-mono text-sm text-muted-foreground">{candidate.id}</td>
                         <td className="p-4 font-medium">{candidate.name}</td>
                         <td className="p-4 text-muted-foreground">{candidate.email}</td>
@@ -357,6 +369,13 @@ export default function ResponseTimeAnalysisPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Candidate Charts Modal */}
+      <CandidateChartsModal 
+        candidate={selectedCandidate}
+        isOpen={showCandidateCharts}
+        onClose={() => setShowCandidateCharts(false)}
+      />
     </div>
   );
 }
