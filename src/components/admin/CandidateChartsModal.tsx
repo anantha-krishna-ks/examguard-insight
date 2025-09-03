@@ -205,11 +205,11 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
         </DialogHeader>
 
         <Tabs defaultValue="forensics" className="w-full mt-6">
-          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 shadow-lg rounded-xl p-1.5 backdrop-blur-sm">
-            <TabsTrigger value="forensics" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50">
+          <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 shadow-lg rounded-xl p-2 backdrop-blur-sm">
+            <TabsTrigger value="forensics" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/25 data-[state=active]:border-0 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50 data-[state=inactive]:bg-transparent">
               Post Test Forensics
             </TabsTrigger>
-            <TabsTrigger value="performance" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50">
+            <TabsTrigger value="performance" className="relative rounded-lg px-6 py-3 font-semibold transition-all duration-300 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/25 data-[state=active]:border-0 data-[state=inactive]:text-slate-600 data-[state=inactive]:hover:bg-slate-200/50 dark:data-[state=inactive]:text-slate-300 dark:data-[state=inactive]:hover:bg-slate-600/50 data-[state=inactive]:bg-transparent">
               Performance Analysis
             </TabsTrigger>
           </TabsList>
