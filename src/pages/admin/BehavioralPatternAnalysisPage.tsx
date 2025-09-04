@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
+import { BehavioralPatternModal } from "@/components/admin/BehavioralPatternModal";
 import { 
   BarChart, 
   Bar, 
@@ -315,7 +315,8 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                       {getFilteredCandidates().map((candidate, index) => (
                         <tr 
                           key={candidate.id} 
-                          className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
+                          onClick={() => handleCandidateClick(candidate)}
+                          className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
                         >
                           <td className="p-4 font-mono text-sm text-muted-foreground">{candidate.id}</td>
                           <td className="p-4 font-medium">{candidate.name}</td>
@@ -379,8 +380,8 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
           </Card>
         )}
 
-        {/* Candidate Charts Modal */}
-        <CandidateChartsModal 
+        {/* Behavioral Pattern Modal */}
+        <BehavioralPatternModal 
           candidate={selectedCandidate}
           isOpen={showCandidateCharts}
           onClose={() => setShowCandidateCharts(false)}
