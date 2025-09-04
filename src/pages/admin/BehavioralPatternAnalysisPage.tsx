@@ -8,6 +8,7 @@ import { AdminHeader } from "@/components/admin/AdminHeader";
 import { ArrowLeft, BarChart3, Filter, Users, Eye, EyeOff, Brain } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BehavioralPatternModal } from "@/components/admin/BehavioralPatternModal";
+import { ViolinPlot } from "@/components/admin/ViolinPlot";
 import { 
   BarChart, 
   Bar, 
@@ -363,25 +364,12 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={getCurrentViolinData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis domain={[20, 35]} />
-                    <Tooltip 
-                      formatter={(value, name) => [value, name]}
-                      labelFormatter={(label) => `Location: ${label}`}
-                    />
-                    {/* Median line representation */}
-                    <Bar 
-                      dataKey="median" 
-                      fill="#8b5cf6" 
-                      name="Median Score"
-                      radius={[2, 2, 2, 2]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-2 p-3 bg-muted/20 rounded text-sm">
+                <ViolinPlot 
+                  data={getCurrentViolinData()} 
+                  width={400} 
+                  height={300} 
+                />
+                <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
                   <p className="font-medium">Distribution Analysis:</p>
                   <p className="text-xs text-muted-foreground">
                     Violin plot shows score distribution patterns across {levelLabels[viewLevel].toLowerCase()}s.
