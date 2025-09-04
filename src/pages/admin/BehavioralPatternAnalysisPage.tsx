@@ -315,8 +315,7 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                       {getFilteredCandidates().map((candidate, index) => (
                         <tr 
                           key={candidate.id} 
-                          onClick={() => handleCandidateClick(candidate)}
-                          className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors cursor-pointer ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
+                          className={`border-b border-border last:border-b-0 hover:bg-muted/30 transition-colors ${index % 2 === 0 ? 'bg-background' : 'bg-muted/10'}`}
                         >
                           <td className="p-4 font-mono text-sm text-muted-foreground">{candidate.id}</td>
                           <td className="p-4 font-medium">{candidate.name}</td>
