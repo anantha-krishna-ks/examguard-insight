@@ -112,7 +112,6 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Activity className="h-6 w-6 text-primary" />
@@ -129,179 +128,345 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
               Comprehensive Analysis
             </Badge>
           </DialogTitle>
-            <div className="flex items-center space-x-2">
-              <Select onValueChange={handleExport}>
-                <SelectTrigger className="w-32">
-                  <Download className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Export" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pdf">PDF Report</SelectItem>
-                  <SelectItem value="csv">CSV Data</SelectItem>
-                  <SelectItem value="png">PNG Charts</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
         </DialogHeader>
 
-        {/* Filter Bar */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Filter className="h-5 w-5" />
-              <span>Analysis Filters</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4">
-              <div>
-                <label className="text-sm font-medium">Test Center</label>
+        <div className="space-y-6">
+          {/* Filter Bar */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Analysis Filters</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Select value={selectedFilter} onValueChange={setSelectedFilter}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Test Center" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Centers</SelectItem>
-                    <SelectItem value="hyd001">HYD-001</SelectItem>
-                    <SelectItem value="hyd002">HYD-002</SelectItem>
+                    <SelectItem value="HYD-001">HYD-001</SelectItem>
+                    <SelectItem value="HYD-002">HYD-002</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Test ID</label>
+                
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder="All Tests" />
+                    <SelectValue placeholder="Test ID" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="all">All Tests</SelectItem>
                     <SelectItem value="test1">Test-001</SelectItem>
                     <SelectItem value="test2">Test-002</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Student ID</label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder={candidate.id} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={candidate.id}>{candidate.id}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Anomaly Type</label>
+                
                 <Select value={selectedAnomalyType} onValueChange={setSelectedAnomalyType}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Anomaly Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="all">All Anomalies</SelectItem>
                     <SelectItem value="sequential">Sequential Pattern</SelectItem>
                     <SelectItem value="revision">Answer Revision</SelectItem>
                     <SelectItem value="frequency">Change Frequency</SelectItem>
                   </SelectContent>
                 </Select>
+                
+                <Button variant="outline" onClick={() => {setSelectedFilter('all'); setSelectedAnomalyType('all');}}>
+                  Reset Filters
+                </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-4">
+          {/* Anomaly Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Sequential Patterns</p>
+                    <p className="text-2xl font-bold text-blue-600">12</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-blue-600" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">≥6 items or ≥3 repeats</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Answer Revisions</p>
+                    <p className="text-2xl font-bold text-orange-600">28</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-orange-600" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Including flip-flops</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Anomaly Score</p>
+                    <p className="text-2xl font-bold text-red-600">0.89</p>
+                  </div>
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">High risk threshold</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Similarity Index</p>
+                    <p className="text-2xl font-bold text-purple-600">0.67</p>
+                  </div>
+                  <Users className="h-8 w-8 text-purple-600" />
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">With other students</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sequential Pattern Detection */}
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">Sequential Patterns</p>
-                  <p className="text-2xl font-bold">3</p>
-                  <p className="text-xs text-muted-foreground">Flagged patterns</p>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-blue-600" />
+                <span>Sequential Pattern Detection</span>
+                <Badge variant="destructive" className="ml-2">High Risk</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={sequentialPatternData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="pattern" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [value, name]}
+                    labelFormatter={(label) => `Pattern: ${label}`}
+                  />
+                  <Bar dataKey="occurrences" fill="#2563eb" name="Occurrences" />
+                  <Bar dataKey="zScore" fill="#dc2626" name="Z-Score" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
+                <p className="text-sm font-medium text-red-800">🚨 Anomaly Detected</p>
+                <p className="text-xs text-red-700 mt-1">
+                  Pattern "A-B-C-D" repeated 8 times (Z-score: 3.2) • Pattern length ≥6 items detected
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Answer Revision Tracker */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-orange-600" />
+                <span>Answer Revision Tracker</span>
+                <Badge variant="secondary">Moderate Risk</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={answerRevisionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="item" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="totalChanges" fill="#ea580c" name="Total Revisions" />
+                  <Bar dataKey="rapidChanges" fill="#dc2626" name="Rapid Revisions (<10s)" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                  <p className="text-sm font-medium text-orange-800">Flip-Flop Behavior</p>
+                  <p className="text-xs text-orange-700">Q15: A→B→A (3 changes)</p>
+                </div>
+                <div className="p-3 bg-red-50 border border-red-200 rounded">
+                  <p className="text-sm font-medium text-red-800">Rapid Revisions</p>
+                  <p className="text-xs text-red-700">Q23: 4 changes in 8 seconds</p>
+                </div>
+                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
+                  <p className="text-sm font-medium text-yellow-800">Clustered Changes</p>
+                  <p className="text-xs text-yellow-700">Q45-Q50: High difficulty items</p>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Change Frequency Heatmap */}
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-orange-500" />
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Activity className="h-5 w-5 text-green-600" />
+                <span>Change Frequency Heatmap</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={changeFrequencyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="item" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [value, name]}
+                    labelFormatter={(label) => `Item: ${label}`}
+                  />
+                  <Bar dataKey="wrongToRight" fill="#10b981" name="W→R" />
+                  <Bar dataKey="wrongToWrong" fill="#f59e0b" name="W→W" />
+                  <Bar dataKey="rightToWrong" fill="#ef4444" name="R→W" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                <p className="text-sm font-medium text-blue-800">💡 Most Modified Item</p>
+                <p className="text-xs text-blue-700">Item Q18: 12 total changes (HYD-001 Test Center)</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Time Window Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Clock className="h-5 w-5 text-purple-600" />
+                <span>Time Window Analysis (5-second intervals)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={timeWindowData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="minute" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="changes" stroke="#8b5cf6" strokeWidth={2} name="Answer Changes" />
+                  <Line type="monotone" dataKey="wrTeRatio" stroke="#06b6d4" strokeWidth={2} name="WR/TE Ratio" />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded">
+                <p className="text-sm font-medium text-purple-800">📊 Deviation Analysis</p>
+                <p className="text-xs text-purple-700">
+                  Peak activity: 120-125s window (8 changes) • 2.3σ above mean
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Score Profile Anomaly Panel */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Target className="h-5 w-5 text-indigo-600" />
+                <span>Score Profile Anomaly Panel</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm font-medium">Answer Revisions</p>
-                  <p className="text-2xl font-bold">26</p>
-                  <p className="text-xs text-muted-foreground">Total changes</p>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={scoreProfileData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="section" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="score" fill="#6366f1" name="Response Score" />
+                      <Bar dataKey="variance" fill="#94a3b8" name="Variance" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="space-y-4">
+                  <div className="p-3 bg-indigo-50 border border-indigo-200 rounded">
+                    <p className="text-sm font-medium text-indigo-800">🎯 Person-Fit Statistics</p>
+                    <p className="text-xs text-indigo-700">IRT-based lz* = -2.1 (p &lt; 0.05)</p>
+                  </div>
+                  <div className="p-3 bg-red-50 border border-red-200 rounded">
+                    <p className="text-sm font-medium text-red-800">⚠️ Low Variability</p>
+                    <p className="text-xs text-red-700">Flat scoring pattern detected</p>
+                  </div>
+                  <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                    <p className="text-sm font-medium text-orange-800">📈 End Clustering</p>
+                    <p className="text-xs text-orange-700">Q85-Q100: Unexpected correctness</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Inter-Test Taker Similarity */}
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="h-5 w-5 text-green-500" />
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-cyan-600" />
+                <span>Inter-Test Taker Similarity</span>
+                <Badge variant="destructive">Collusion Risk</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm font-medium">Rapid Changes</p>
-                  <p className="text-2xl font-bold">8</p>
-                  <p className="text-xs text-muted-foreground">Under 10 seconds</p>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={similarityData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="candidateId" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="similarity" fill="#06b6d4" name="Similarity Score" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="space-y-4">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded">
+                    <p className="text-sm font-medium text-red-800">🚨 Identical Strings</p>
+                    <p className="text-xs text-red-700">
+                      Q15-Q30: 100% match with Student BP003
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-50 border border-orange-200 rounded">
+                    <p className="text-sm font-medium text-orange-800">📊 Cluster Analysis</p>
+                    <p className="text-xs text-orange-700">
+                      3 students in same cluster (similarity &gt; 0.85)
+                    </p>
+                  </div>
+                  <div className="p-3 bg-cyan-50 border border-cyan-200 rounded">
+                    <p className="text-sm font-medium text-cyan-800">🔍 Investigation</p>
+                    <p className="text-xs text-cyan-700">
+                      Same test center, adjacent seats
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+
+          {/* Export Options */}
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-red-500" />
-                <div>
-                  <p className="text-sm font-medium">Similarity Score</p>
-                  <p className="text-2xl font-bold">0.95</p>
-                  <p className="text-xs text-muted-foreground">Highest match</p>
-                </div>
+            <CardHeader>
+              <CardTitle>Export Analysis</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" disabled className="flex items-center space-x-2">
+                  <Download className="h-4 w-4" />
+                  <span>Export CSV</span>
+                </Button>
+                <Button variant="outline" disabled className="flex items-center space-x-2">
+                  <FileText className="h-4 w-4" />
+                  <span>PDF Summary</span>
+                </Button>
+                <Badge variant="secondary" className="ml-2">Coming Soon</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
-
-        {/* Sequential Pattern Detection Bar Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-blue-600" />
-              <span>Sequential Pattern Detection</span>
-              <Badge variant="destructive" className="ml-2">High Risk</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={sequentialPatternData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="pattern" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value, name) => [value, name]}
-                  labelFormatter={(label) => `Pattern: ${label}`}
-                />
-                <Bar dataKey="occurrences" fill="#2563eb" name="Occurrences" />
-                <Bar dataKey="zScore" fill="#dc2626" name="Z-Score" />
-              </BarChart>
-            </ResponsiveContainer>
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
-              <p className="text-sm font-medium text-red-800">🚨 Anomaly Detected</p>
-              <p className="text-xs text-red-700 mt-1">
-                Pattern "A-B-C-D" repeated 8 times (Z-score: 3.2) • Pattern length ≥6 items detected
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* All other sections displayed linearly without tabs */}
-        {/* Answer Revision Tracker, Change Frequency, Time Window Analysis, Score Profile, Similarity */}
-      </DialogContent>
-    </Dialog>
-  );
-}
       </DialogContent>
     </Dialog>
   );
