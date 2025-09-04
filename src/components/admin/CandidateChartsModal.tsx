@@ -27,7 +27,7 @@ import {
   Legend,
   ReferenceDot
 } from "recharts";
-import { BarChart3, TrendingUp, Clock, Download, Printer, Maximize2, FileText, Image, FileSpreadsheet } from "lucide-react";
+import { BarChart3, TrendingUp, Clock, Download, Printer, Maximize2, FileText, Image, FileSpreadsheet, Users, Target, AlertTriangle, Activity } from "lucide-react";
 
 interface CandidateChartsModalProps {
   candidate: any;
@@ -84,18 +84,76 @@ const generateAnomalyFrequencyData = (itemNo: number, responseTime: number) => [
   { timeRange: "397-440", frequency: 1, isAnomaly: responseTime >= 397 }
 ];
 
-// Mock data for Response Time vs Difficulty
-const responseTimeDifficultyData = [
-  { difficulty: 1.2, responseTime: 45, correct: true, itemId: "Q1" },
-  { difficulty: 1.5, responseTime: 62, correct: true, itemId: "Q2" },
-  { difficulty: 1.8, responseTime: 78, correct: false, itemId: "Q3" },
-  { difficulty: 2.1, responseTime: 95, correct: true, itemId: "Q4" },
-  { difficulty: 2.4, responseTime: 120, correct: false, itemId: "Q5" },
-  { difficulty: 2.7, responseTime: 145, correct: true, itemId: "Q6" },
-  { difficulty: 3.0, responseTime: 180, correct: false, itemId: "Q7" },
-  { difficulty: 3.3, responseTime: 210, correct: true, itemId: "Q8" },
-  { difficulty: 3.6, responseTime: 240, correct: false, itemId: "Q9" },
-  { difficulty: 3.9, responseTime: 275, correct: true, itemId: "Q10" }
+// Mock data for Behavioral Pattern Anomaly Analysis
+
+// Sequential Pattern Detection Data
+const sequentialPatternData = [
+  { test: "Test 1", sequential: 152, revision: 26 },
+  { test: "Test 2", sequential: 206, revision: 51 },
+  { test: "Test 3", sequential: 97, revision: 5 }
+];
+
+// Answer Revision Tracker Data
+const answerRevisionData = [
+  { item: "Q1", totalChanges: 2, flipFlopBehavior: false, rapidRevisions: 0 },
+  { item: "Q2", totalChanges: 5, flipFlopBehavior: true, rapidRevisions: 2 },
+  { item: "Q3", totalChanges: 1, flipFlopBehavior: false, rapidRevisions: 0 },
+  { item: "Q4", totalChanges: 8, flipFlopBehavior: true, rapidRevisions: 4 },
+  { item: "Q5", totalChanges: 3, flipFlopBehavior: false, rapidRevisions: 1 },
+  { item: "Q6", totalChanges: 12, flipFlopBehavior: true, rapidRevisions: 6 }
+];
+
+// Item-to-Item Transition Clusters Data
+const transitionClustersData = Array.from({ length: 50 }, (_, i) => ({
+  item: `Item${i + 1}`,
+  wrongToRight: Math.floor(Math.random() * 25) + 5,
+  wrongToWrong: Math.floor(Math.random() * 15) + 2,
+  rightToWrong: Math.floor(Math.random() * 10) + 1,
+  rightToRight: Math.floor(Math.random() * 30) + 10
+}));
+
+// Time Window Analysis - Wrong→Right Changes
+const timeWindowData = [
+  { minute: 0, changes: 4 }, { minute: 2, changes: 0 }, { minute: 4, changes: 3 },
+  { minute: 6, changes: 3 }, { minute: 8, changes: 1 }, { minute: 10, changes: 4 },
+  { minute: 12, changes: 2 }, { minute: 14, changes: 6 }, { minute: 16, changes: 4 },
+  { minute: 18, changes: 1 }, { minute: 20, changes: 2 }, { minute: 22, changes: 18 },
+  { minute: 24, changes: 12 }, { minute: 26, changes: 2 }, { minute: 28, changes: 1 },
+  { minute: 30, changes: 4 }, { minute: 32, changes: 2 }, { minute: 34, changes: 4 },
+  { minute: 36, changes: 3 }, { minute: 38, changes: 1 }, { minute: 40, changes: 3 },
+  { minute: 42, changes: 2 }, { minute: 44, changes: 1 }, { minute: 46, changes: 2 },
+  { minute: 48, changes: 3 }, { minute: 50, changes: 1 }, { minute: 52, changes: 3 },
+  { minute: 54, changes: 4 }, { minute: 56, changes: 2 }, { minute: 58, changes: 1 }
+];
+
+// Inter-Test Taker Similarity Data (Probability of Wrong→Right Transitions)
+const similarityData = [
+  { candidateId: "Cand_111", probability: 1.0 },
+  { candidateId: "Cand_20", probability: 1.0 },
+  { candidateId: "Cand_93", probability: 0.61 },
+  { candidateId: "Cand_18", probability: 0.51 },
+  { candidateId: "Cand_95", probability: 0.51 },
+  { candidateId: "Cand_17", probability: 0.51 },
+  { candidateId: "Cand_16", probability: 0.51 },
+  { candidateId: "Cand_14", probability: 0.51 },
+  { candidateId: "Cand_10", probability: 0.41 },
+  { candidateId: "Cand_02", probability: 0.41 },
+  { candidateId: "Cand_18", probability: 0.34 },
+  { candidateId: "Cand_01", probability: 0.31 },
+  { candidateId: "Cand_07", probability: 0.29 },
+  { candidateId: "Cand_04", probability: 0.28 },
+  { candidateId: "Cand_12", probability: 0.25 },
+  { candidateId: "Cand_04", probability: 0.25 },
+  { candidateId: "Cand_09", probability: 0.18 },
+  { candidateId: "Cand_06", probability: 0.13 },
+  { candidateId: "Cand_05", probability: 0.12 }
+];
+
+// Score Profile Anomaly Detection
+const scoreProfileData = [
+  { section: "Math", variability: 0.85, personFit: 0.12, clusteredCorrectness: false },
+  { section: "Verbal", variability: 0.23, personFit: -2.45, clusteredCorrectness: true },
+  { section: "Logic", variability: 0.67, personFit: 0.89, clusteredCorrectness: false }
 ];
 
 export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateChartsModalProps) {
@@ -148,43 +206,36 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
     return null;
   };
 
-  const AnomalyTooltip = ({ active, payload, coordinate }: any) => {
-    if (active && coordinate) {
-      const anomaly = anomalyData.find(a => 
-        Math.abs(coordinate.x - (20 + ((a.time + 15) / 40) * 600)) < 20 &&
-        Math.abs(coordinate.y - (30 + (1 - a.probability) * 260)) < 20
+  const TransitionTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+          <p className="font-semibold text-foreground mb-2">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <div key={index} className="flex items-center space-x-2">
+              <div 
+                className="w-3 h-3 rounded-full" 
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-sm text-muted-foreground">
+                {entry.name}: <span className="font-medium text-foreground">{entry.value}</span>
+              </span>
+            </div>
+          ))}
+        </div>
       );
-      
-      if (anomaly) {
-        return (
-          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-            <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
-            <p className="text-sm text-muted-foreground">
-              Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
-            </p>
-          </div>
-        );
-      }
     }
     return null;
   };
 
-  const ScatterTooltip = ({ active, payload }: any) => {
+  const SimilarityTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
-      const data = payload[0].payload;
       return (
         <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-          <p className="font-semibold text-foreground mb-2">{data.itemId}</p>
-          <div className="space-y-1 text-sm">
-            <p><span className="text-muted-foreground">Difficulty:</span> <span className="font-medium">{data.difficulty}</span></p>
-            <p><span className="text-muted-foreground">Response Time:</span> <span className="font-medium">{data.responseTime}s</span></p>
-            <div className="flex items-center space-x-2">
-              <span className="text-muted-foreground">Result:</span>
-              <Badge variant={data.correct ? "default" : "destructive"} className="text-xs">
-                {data.correct ? 'Correct' : 'Incorrect'}
-              </Badge>
-            </div>
-          </div>
+          <p className="font-semibold text-foreground mb-2">{label}</p>
+          <p className="text-sm text-muted-foreground">
+            Transition Probability: <span className="font-medium text-foreground">{(payload[0].value * 100).toFixed(1)}%</span>
+          </p>
         </div>
       );
     }
@@ -198,7 +249,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Candidate Analytics
+                Behavioral Pattern Analytics
               </DialogTitle>
               <Badge variant="outline" className="text-primary border-primary font-medium">
                 {candidate?.name}
@@ -253,350 +304,407 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-primary">8.5</div>
-                <p className="text-xs text-muted-foreground">Avg. Response Time (min)</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-r from-green-500/5 to-green-500/10 border-green-500/20">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-green-600">35/50</div>
-                <p className="text-xs text-muted-foreground">Score</p>
+                <div className="text-2xl font-bold text-primary">7</div>
+                <p className="text-xs text-muted-foreground">Sequential Patterns</p>
               </CardContent>
             </Card>
             <Card className="bg-gradient-to-r from-amber-500/5 to-amber-500/10 border-amber-500/20">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-amber-600">2.1</div>
-                <p className="text-xs text-muted-foreground">Avg. Difficulty</p>
+                <div className="text-2xl font-bold text-amber-600">15</div>
+                <p className="text-xs text-muted-foreground">Answer Revisions</p>
               </CardContent>
             </Card>
             <Card className="bg-gradient-to-r from-red-500/5 to-red-500/10 border-red-500/20">
               <CardContent className="p-4">
                 <div className="text-2xl font-bold text-red-600">3</div>
-                <p className="text-xs text-muted-foreground">Anomalous Items</p>
+                <p className="text-xs text-muted-foreground">Flip-Flop Behaviors</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-r from-purple-500/5 to-purple-500/10 border-purple-500/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-purple-600">85%</div>
+                <p className="text-xs text-muted-foreground">Pattern Similarity</p>
               </CardContent>
             </Card>
           </div>
 
           <Separator className="my-6" />
 
-          {/* Graphs Section */}
+          {/* Behavioral Pattern Analysis Charts */}
           <div className="space-y-6">
-            {/* OS Curve Analysis - Full Width */}
+            {/* Sequential Pattern Detection */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="p-2 rounded-lg bg-primary/10">
-                      <TrendingUp className="h-5 w-5 text-primary" />
+                      <Target className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">OS Curve Analysis</CardTitle>
+                    <CardTitle className="text-lg">Sequential Pattern Detection</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="text-xs">S-Curve with Anomalies</Badge>
+                  <Badge variant="secondary" className="text-xs">Patterns ≥6 items</Badge>
                 </div>
-                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                  <p className="font-semibold mb-1">Anomaly Detected - Item No: 6</p>
-                  <p>Item Response Time: 395 sec | Percentile Rank: 99.96% | Outlier Score: 20.00</p>
-                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Behavioral Pattern Anomaly - Sequential patterns and answer revisions across tests
+                </p>
               </CardHeader>
               <CardContent className="pt-0">
-                {/* Legend */}
                 <div className="mb-4 flex items-center justify-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    <div className="w-6 h-1 bg-blue-500 rounded"></div>
-                    <span className="text-sm font-medium">S-Curve</span>
+                    <div className="w-4 h-3 bg-blue-600 rounded"></div>
+                    <span className="text-sm font-medium">Sequential Pattern Numbers</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
-                    <span className="text-sm font-medium">Actual Outliers</span>
+                    <div className="w-4 h-3 bg-orange-500 rounded"></div>
+                    <span className="text-sm font-medium">Answer Revision Numbers</span>
                   </div>
                 </div>
-                <ResponsiveContainer width="100%" height={320}>
-                  <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                     <defs>
-                       <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
-                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
-                       </linearGradient>
-                       <linearGradient id="osStroke" x1="0" y1="0" x2="1" y2="0">
-                         <stop offset="0%" stopColor="#3b82f6"/>
-                         <stop offset="100%" stopColor="#6366f1"/>
-                       </linearGradient>
-                    </defs>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={sequentialPatternData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                     <XAxis 
-                      dataKey="time" 
+                      dataKey="test" 
                       stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
-                      domain={[-15, 25]}
-                      ticks={[-15, -10, -5, 0, 5, 10, 15, 20, 25]}
+                      label={{ value: 'Test', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
-                      domain={[0, 1]}
-                      tickCount={11}
+                      label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                     />
-                     <Tooltip 
-                       content={({ active, payload, coordinate }: any) => {
-                         if (active && coordinate) {
-                           const anomaly = anomalyData[0]; // Since we only have one anomaly
-                           return (
-                             <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-                               <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
-                               <p className="text-sm text-muted-foreground">
-                                 Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
-                               </p>
-                             </div>
-                           );
-                         }
-                         return null;
-                       }}
-                     />
-                      <Line 
-                        type="monotone" 
-                        dataKey="probability" 
-                        stroke="#3b82f6" 
-                        strokeWidth={3}
-                        dot={false}
-                        name="S-Curve"
-                      />
-                      {anomalyData.map((anomaly, index) => (
-                        <ReferenceDot
-                          key={`anomaly-${index}`}
-                          x={anomaly.time}
-                          y={anomaly.probability}
-                          r={6}
-                          fill="#ef4444"
-                          stroke="#dc2626"
-                          strokeWidth={2}
-                        />
-                      ))}
-                  </LineChart>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="sequential" 
+                      fill="#2563eb"
+                      radius={[2, 2, 0, 0]}
+                      name="Sequential Pattern Numbers"
+                    />
+                    <Bar 
+                      dataKey="revision" 
+                      fill="#ea580c"
+                      radius={[2, 2, 0, 0]}
+                      name="Answer Revision Numbers"
+                    />
+                  </BarChart>
                 </ResponsiveContainer>
-                
-                {/* Individual Anomaly Analysis within OS Curve */}
-                {anomalyData.length > 0 && (
-                  <div className="mt-8 space-y-6">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-lg bg-red-500/10">
-                        <BarChart3 className="h-4 w-4 text-red-500" />
-                      </div>
-                      <h4 className="text-lg font-semibold">Individual Anomaly Analysis</h4>
-                    </div>
-                    
-                    <div className="max-h-96 overflow-y-auto space-y-6">
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                        {anomalyData.map((anomaly, index) => {
-                          const responseTime = 395; // Mock response time for item 6
-                          const percentileRank = 99.96;
-                          const chartData = generateAnomalyFrequencyData(anomaly.itemNo, responseTime);
-                          
-                          return (
-                            <div key={`anomaly-chart-${index}`} className="border border-border/30 rounded-lg p-4 bg-muted/20">
-                              <div className="bg-muted/50 rounded-lg p-3 mb-4">
-                                <h5 className="font-semibold text-foreground text-sm">
-                                  Item No: {anomaly.itemNo}, Item Response Time (Sec): {responseTime}, 
-                                  Item PercentileRank (%): {percentileRank}, Outlier Score: {anomaly.outlierScore.toFixed(2)}
-                                </h5>
-                              </div>
-                              
-                              {/* Legend */}
-                              <div className="flex items-center justify-center space-x-8 mb-4">
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-4 h-3 bg-cyan-400 border border-cyan-500"></div>
-                                  <span className="text-xs font-medium">Bar Dataset</span>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
-                                  <span className="text-xs font-medium">Marker</span>
-                                </div>
-                              </div>
-                              
-                              <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                                  <XAxis 
-                                    dataKey="timeRange" 
-                                    stroke="hsl(var(--muted-foreground))"
-                                    fontSize={11}
-                                    angle={-45}
-                                    textAnchor="end"
-                                    height={80}
-                                    label={{ value: 'Item Response', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                                  />
-                                  <YAxis 
-                                    stroke="hsl(var(--muted-foreground))"
-                                    fontSize={11}
-                                    label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                                  />
-                                  <Tooltip 
-                                    content={({ active, payload, label }: any) => {
-                                      if (active && payload && payload.length) {
-                                        const data = payload[0].payload;
-                                        return (
-                                          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-                                            <p className="font-semibold text-foreground mb-2">{label}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                              Frequency: <span className="font-medium text-foreground">{data.frequency}</span>
-                                            </p>
-                                            {data.isAnomaly && (
-                                              <p className="text-sm text-red-500 font-medium">Anomaly Detected</p>
-                                            )}
-                                          </div>
-                                        );
-                                      }
-                                      return null;
-                                    }}
-                                  />
-                                  <Bar 
-                                    dataKey="frequency" 
-                                    fill="#22d3ee"
-                                    stroke="#06b6d4"
-                                    strokeWidth={1}
-                                    radius={[2, 2, 0, 0]}
-                                  />
-                                  {chartData.map((entry, barIndex) => 
-                                    entry.isAnomaly ? (
-                                      <ReferenceDot
-                                        key={`marker-${barIndex}`}
-                                        x={entry.timeRange}
-                                        y={entry.frequency}
-                                        r={0}
-                                        fill="transparent"
-                                        shape={(props: any) => {
-                                          const { cx, cy } = props;
-                                          return (
-                                            <rect
-                                              x={cx - 8}
-                                              y={cy - 8}
-                                              width={16}
-                                              height={16}
-                                              fill="#ef4444"
-                                              stroke="#dc2626"
-                                              strokeWidth={2}
-                                            />
-                                          );
-                                        }}
-                                      />
-                                    ) : null
-                                  )}
-                                </BarChart>
-                              </ResponsiveContainer>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
-            {/* Rapid Guessing Detection - Full Width Row */}
+            {/* Answer Revision Tracker */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-amber-500/10">
+                      <Activity className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <CardTitle className="text-lg">Answer Revision Tracker</CardTitle>
+                  </div>
+                  <Badge variant="destructive" className="text-xs">Flip-Flop Detected</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Tracks total answer changes and flags rapid revisions (&lt;10s) and flip-flopping behavior
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={answerRevisionData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="item" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Question Items', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Number of Changes', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                              <p className="font-semibold text-foreground mb-2">{label}</p>
+                              <p className="text-sm text-muted-foreground">Total Changes: <span className="font-medium text-foreground">{data.totalChanges}</span></p>
+                              <p className="text-sm text-muted-foreground">Rapid Revisions: <span className="font-medium text-foreground">{data.rapidRevisions}</span></p>
+                              {data.flipFlopBehavior && (
+                                <p className="text-sm text-red-500 font-medium">⚠ Flip-Flop Behavior Detected</p>
+                              )}
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar dataKey="totalChanges" radius={[4, 4, 0, 0]}>
+                      {answerRevisionData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.flipFlopBehavior ? "#ef4444" : "#3b82f6"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Item-to-Item Transition Clusters */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-green-500/10">
+                      <BarChart3 className="h-5 w-5 text-green-500" />
+                    </div>
+                    <CardTitle className="text-lg">Item-to-Item Transition Clusters (All Items)</CardTitle>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">W→R, W→W, R→W Analysis</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Shows transition patterns between wrong and right answers across all test items
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="mb-4 flex items-center justify-center space-x-4 text-xs">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span>Wrong to Right</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-3 h-3 bg-orange-500 rounded"></div>
+                    <span>Wrong to Wrong</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span>Right to Wrong</span>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={transitionClustersData.slice(0, 20)} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="item" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      label={{ value: 'Transition to Item', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Count', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip content={<TransitionTooltip />} />
+                    <Bar 
+                      dataKey="wrongToRight" 
+                      stackId="transitions"
+                      fill="#ef4444"
+                      name="Wrong→Right"
+                    />
+                    <Bar 
+                      dataKey="wrongToWrong" 
+                      stackId="transitions"
+                      fill="#f97316"
+                      name="Wrong→Wrong"
+                    />
+                    <Bar 
+                      dataKey="rightToWrong" 
+                      stackId="transitions"
+                      fill="#22c55e"
+                      name="Right→Wrong"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Time Window Analysis */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-blue-500/10">
+                      <Clock className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <CardTitle className="text-lg">Burst of Wrong→Right Changes Across Candidates</CardTitle>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">5-second windows</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Time-based analysis of answer changes showing WR/TE ratio and deviation patterns
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart data={timeWindowData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="minute" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Minute of session', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Wrong→Right Changes (count)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                              <p className="font-semibold text-foreground mb-2">Minute {label}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Wrong→Right Changes: <span className="font-medium text-foreground">{payload[0].value}</span>
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="changes" 
+                      stroke="#3b82f6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
+                      activeDot={{ r: 5, fill: '#1d4ed8' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Inter-Test Taker Similarity */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="p-2 rounded-lg bg-purple-500/10">
+                      <Users className="h-5 w-5 text-purple-500" />
+                    </div>
+                    <CardTitle className="text-lg">Probability of Transitioning from Wrong to Right (Center A)</CardTitle>
+                  </div>
+                  <Badge variant="destructive" className="text-xs">Collusive Behavior</Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Detects identical response strings and clusters across students for potential collusion
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart data={similarityData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="candidateId" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      label={{ value: 'Candidate ID', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      domain={[0, 1.0]}
+                      label={{ value: 'Wrong To Right | Total Wrong Answer Probability', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip content={<SimilarityTooltip />} />
+                    <Bar dataKey="probability" radius={[4, 4, 0, 0]}>
+                      {similarityData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.probability >= 0.8 ? "#ef4444" : entry.probability >= 0.5 ? "#f59e0b" : "#06b6d4"}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6 text-xs">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span>High Risk (≥80%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-amber-500 rounded"></div>
+                    <span>Medium Risk (50-79%)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-cyan-500 rounded"></div>
+                    <span>Low Risk (&lt;50%)</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Score Profile Anomaly Panel */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="p-2 rounded-lg bg-red-500/10">
-                      <Clock className="h-5 w-5 text-red-500" />
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
                     </div>
-                    <CardTitle className="text-lg">Rapid Guessing Detection</CardTitle>
+                    <CardTitle className="text-lg">Score Profile Anomaly Panel</CardTitle>
                   </div>
-                  <Badge variant="destructive" className="text-xs">Flagged Responses</Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                     <defs>
-                       <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
-                         <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
-                         <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7}/>
-                       </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis 
-                      dataKey="timeRange" 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                      label={{ value: 'Response Time Range (<5s flagged)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                    />
-                    <YAxis 
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                      label={{ value: 'Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar 
-                      dataKey="frequency" 
-                      fill="url(#rapidGradient)" 
-                      radius={[4, 4, 0, 0]}
-                      stroke="#dc2626"
-                      strokeWidth={1}
-                     />
-                   </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            
-            
-            {/* Response Time vs Difficulty */}
-            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Clock className="h-5 w-5 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg">Response Time vs Item Difficulty</CardTitle>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">Performance Correlation</Badge>
+                  <Badge variant="destructive" className="text-xs">IRT-Based</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Correlation between item difficulty and response time, color-coded by accuracy
+                  Flags low response variability and uses IRT-based person-fit statistics
                 </p>
               </CardHeader>
               <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={400}>
-                  <ScatterChart data={responseTimeDifficultyData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis 
-                      dataKey="difficulty" 
-                      type="number"
-                      domain={['dataMin', 'dataMax']}
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                      label={{ value: 'Item Difficulty Level', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                    />
-                    <YAxis 
-                      dataKey="responseTime"
-                      stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
-                      label={{ value: 'Response Time (seconds)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                    />
-                    <Tooltip content={<ScatterTooltip />} />
-                    <Scatter dataKey="responseTime" fill="hsl(var(--primary))">
-                      {responseTimeDifficultyData.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.correct ? "#10b981" : "#ef4444"}
-                          stroke={entry.correct ? "#059669" : "#dc2626"}
-                          strokeWidth={2}
-                          r={6}
-                        />
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-3 font-semibold">Section</th>
+                        <th className="text-left p-3 font-semibold">Response Variability</th>
+                        <th className="text-left p-3 font-semibold">Person-Fit Score</th>
+                        <th className="text-left p-3 font-semibold">Clustered Correctness</th>
+                        <th className="text-left p-3 font-semibold">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {scoreProfileData.map((section, index) => (
+                        <tr key={index} className="border-b border-border/50 hover:bg-muted/50">
+                          <td className="p-3 font-medium">{section.section}</td>
+                          <td className="p-3">{section.variability.toFixed(2)}</td>
+                          <td className="p-3">{section.personFit.toFixed(2)}</td>
+                          <td className="p-3">
+                            <Badge variant={section.clusteredCorrectness ? "destructive" : "default"} className="text-xs">
+                              {section.clusteredCorrectness ? 'Yes' : 'No'}
+                            </Badge>
+                          </td>
+                          <td className="p-3">
+                            <Badge 
+                              variant={
+                                section.variability < 0.3 || section.personFit < -2.0 || section.clusteredCorrectness 
+                                  ? "destructive" 
+                                  : "default"
+                              } 
+                              className="text-xs"
+                            >
+                              {section.variability < 0.3 || section.personFit < -2.0 || section.clusteredCorrectness 
+                                ? 'Flagged' 
+                                : 'Normal'
+                              }
+                            </Badge>
+                          </td>
+                        </tr>
                       ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
-                <div className="mt-6 flex justify-center space-x-8 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-green-600"></div>
-                    <span className="font-medium">Correct Answer</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-red-600"></div>
-                    <span className="font-medium">Incorrect Answer</span>
-                  </div>
+                    </tbody>
+                  </table>
                 </div>
               </CardContent>
             </Card>
@@ -604,51 +712,67 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
 
           <Separator className="my-6" />
 
-          {/* Response Time Statistics Section */}
+          {/* Behavioral Pattern Summary Statistics */}
           <Card className="border-2 border-border/50 shadow-lg">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <div className="p-2 rounded-lg bg-amber-500/10">
                   <BarChart3 className="h-5 w-5 text-amber-500" />
                 </div>
-                <CardTitle className="text-lg">Response Time Statistics</CardTitle>
+                <CardTitle className="text-lg">Behavioral Pattern Summary</CardTitle>
               </div>
-              <p className="text-sm text-muted-foreground">Flagged items with anomalous response times</p>
+              <p className="text-sm text-muted-foreground">Flagged behavioral anomalies and threshold breaches</p>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="text-left p-3 font-semibold">SL No.</th>
-                      <th className="text-left p-3 font-semibold">Item Name</th>
-                      <th className="text-left p-3 font-semibold">Item Response Time</th>
-                      <th className="text-left p-3 font-semibold">Flagged</th>
+                      <th className="text-left p-3 font-semibold">Anomaly Type</th>
+                      <th className="text-left p-3 font-semibold">Detection Method</th>
+                      <th className="text-left p-3 font-semibold">Threshold</th>
+                      <th className="text-left p-3 font-semibold">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-border/50 hover:bg-muted/50">
-                      <td className="p-3">1</td>
-                      <td className="p-3 font-medium">Question 6</td>
-                      <td className="p-3">395 seconds</td>
+                      <td className="p-3 font-medium">Sequential Patterns</td>
+                      <td className="p-3">Pattern Length Detection</td>
+                      <td className="p-3">≥6 items or ≥3 repeats</td>
                       <td className="p-3">
-                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                        <Badge variant="destructive" className="text-xs">7 Detected</Badge>
                       </td>
                     </tr>
                     <tr className="border-b border-border/50 hover:bg-muted/50">
-                      <td className="p-3">2</td>
-                      <td className="p-3 font-medium">Question 3</td>
-                      <td className="p-3">3 seconds</td>
+                      <td className="p-3 font-medium">Flip-Flop Behavior</td>
+                      <td className="p-3">A→B→A Pattern</td>
+                      <td className="p-3">≥3 oscillations</td>
                       <td className="p-3">
-                        <Badge variant="destructive" className="text-xs">Rapid Guess</Badge>
+                        <Badge variant="destructive" className="text-xs">3 Items Flagged</Badge>
                       </td>
                     </tr>
                     <tr className="border-b border-border/50 hover:bg-muted/50">
-                      <td className="p-3">3</td>
-                      <td className="p-3 font-medium">Question 8</td>
-                      <td className="p-3">285 seconds</td>
+                      <td className="p-3 font-medium">Rapid Revisions</td>
+                      <td className="p-3">Time-based Analysis</td>
+                      <td className="p-3">&lt;10 seconds</td>
                       <td className="p-3">
-                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                        <Badge variant="destructive" className="text-xs">13 Rapid Changes</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3 font-medium">Response Variability</td>
+                      <td className="p-3">IRT Person-Fit</td>
+                      <td className="p-3">&lt;0.3 or Z &lt; -2.0</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">1 Section Flagged</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3 font-medium">Pattern Similarity</td>
+                      <td className="p-3">Cluster Analysis</td>
+                      <td className="p-3">≥80% similarity</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">2 High Risk</Badge>
                       </td>
                     </tr>
                   </tbody>
