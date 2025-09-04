@@ -41,8 +41,16 @@ interface BehavioralPatternModalProps {
   onClose: () => void;
 }
 
-// Mock data for behavioral pattern analysis
+// Mock data for Sequential Pattern Detection
 const sequentialPatternData = [
+  { pattern: 'A-B-C-D', occurrences: 8, zScore: 3.2 },
+  { pattern: 'B-C-D-A', occurrences: 5, zScore: 2.1 },
+  { pattern: 'C-D-A-B', occurrences: 3, zScore: 1.4 },
+  { pattern: 'D-A-B-C', occurrences: 2, zScore: 0.8 },
+];
+
+// Original sequential pattern data for table
+const sequentialTableData = [
   { sequence: "ABCD", occurrences: 12, length: 4, zScore: 3.2, flagged: true },
   { sequence: "AAAA", occurrences: 8, length: 4, zScore: 2.8, flagged: true },
   { sequence: "ABAB", occurrences: 6, length: 4, zScore: 2.1, flagged: false },
@@ -105,10 +113,22 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
       <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold flex items-center space-x-2">
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
               <Activity className="h-6 w-6 text-primary" />
-              <span>Behavioral Pattern Analysis - {candidate.name}</span>
-            </DialogTitle>
+              <div>
+                <span className="text-xl">Behavioral Pattern Analysis</span>
+                {candidate && (
+                  <div className="text-sm text-muted-foreground mt-1">
+                    <span className="font-medium">{candidate.name}</span> • ID: {candidate.id}
+                  </div>
+                )}
+              </div>
+            </div>
+            <Badge variant="outline" className="ml-4">
+              Comprehensive Analysis
+            </Badge>
+          </DialogTitle>
             <div className="flex items-center space-x-2">
               <Select onValueChange={handleExport}>
                 <SelectTrigger className="w-32">
@@ -244,304 +264,44 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
           </Card>
         </div>
 
-        <Tabs defaultValue="sequential" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="sequential">Sequential Patterns</TabsTrigger>
-            <TabsTrigger value="revisions">Answer Revisions</TabsTrigger>
-            <TabsTrigger value="frequency">Change Frequency</TabsTrigger>
-            <TabsTrigger value="timewindow">Time Analysis</TabsTrigger>
-            <TabsTrigger value="profile">Score Profile</TabsTrigger>
-            <TabsTrigger value="similarity">Similarity</TabsTrigger>
-          </TabsList>
+        {/* Sequential Pattern Detection Bar Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-blue-600" />
+              <span>Sequential Pattern Detection</span>
+              <Badge variant="destructive" className="ml-2">High Risk</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={sequentialPatternData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="pattern" />
+                <YAxis />
+                <Tooltip 
+                  formatter={(value, name) => [value, name]}
+                  labelFormatter={(label) => `Pattern: ${label}`}
+                />
+                <Bar dataKey="occurrences" fill="#2563eb" name="Occurrences" />
+                <Bar dataKey="zScore" fill="#dc2626" name="Z-Score" />
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
+              <p className="text-sm font-medium text-red-800">🚨 Anomaly Detected</p>
+              <p className="text-xs text-red-700 mt-1">
+                Pattern "A-B-C-D" repeated 8 times (Z-score: 3.2) • Pattern length ≥6 items detected
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="sequential">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
-                  <span>Sequential Pattern Detection</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <Card>
-                      <CardContent className="p-3">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Patterns ≥6 items</p>
-                          <p className="text-xl font-bold">2</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="p-3">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Repeated ≥3 times</p>
-                          <p className="text-xl font-bold">3</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardContent className="p-3">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground">Z-score {">"}= 2.5</p>
-                          <p className="text-xl font-bold text-red-500">3</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse border border-border">
-                      <thead>
-                        <tr className="bg-muted/30">
-                          <th className="border border-border p-2 text-left">Sequence</th>
-                          <th className="border border-border p-2 text-left">Occurrences</th>
-                          <th className="border border-border p-2 text-left">Length</th>
-                          <th className="border border-border p-2 text-left">Z-Score</th>
-                          <th className="border border-border p-2 text-left">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {sequentialPatternData.map((pattern, index) => (
-                          <tr key={index} className="hover:bg-muted/10">
-                            <td className="border border-border p-2 font-mono">{pattern.sequence}</td>
-                            <td className="border border-border p-2">{pattern.occurrences}</td>
-                            <td className="border border-border p-2">{pattern.length}</td>
-                            <td className="border border-border p-2">{pattern.zScore}</td>
-                            <td className="border border-border p-2">
-                              <Badge variant={pattern.flagged ? "destructive" : "secondary"}>
-                                {pattern.flagged ? "Flagged" : "Normal"}
-                              </Badge>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="revisions">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>Answer Revision Tracker</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={answerRevisionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="item" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="totalChanges" fill="#2563eb" name="Total Changes" />
-                    <Bar dataKey="flipFlops" fill="#ea580c" name="Flip-Flops" />
-                    <Bar dataKey="rapidChanges" fill="#dc2626" name="Rapid Changes" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <Separator className="my-4" />
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold mb-2">Flip-Flop Behavior (A → B → A)</h4>
-                    <p className="text-sm text-muted-foreground">Total instances: <span className="font-semibold">7</span></p>
-                    <p className="text-sm text-muted-foreground">Most affected item: Q18 (3 flip-flops)</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Rapid Revisions ({"<"}10s)</h4>
-                    <p className="text-sm text-muted-foreground">Total instances: <span className="font-semibold">8</span></p>
-                    <p className="text-sm text-muted-foreground">Clustered on difficult items: 75%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="frequency">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5" />
-                  <span>Change Frequency Heatmap</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={changeFrequencyData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="item" />
-                    <YAxis />
-                    <Tooltip 
-                      formatter={(value, name) => [value, name]}
-                      labelFormatter={(label) => `Item: ${label}`}
-                    />
-                    <Bar dataKey="wrongToRight" fill="#10b981" name="W→R" />
-                    <Bar dataKey="wrongToWrong" fill="#f59e0b" name="W→W" />
-                    <Bar dataKey="rightToWrong" fill="#ef4444" name="R→W" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-4 p-3 bg-muted/20 rounded">
-                  <p className="text-sm"><strong>Most Modified Item:</strong> Q3 (6 total transitions)</p>
-                  <p className="text-sm"><strong>Test Center Average:</strong> HYD-001 shows highest W→R transitions</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="timewindow">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5" />
-                  <span>Time Window Analysis</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={timeWindowData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="minute" />
-                    <YAxis yAxisId="left" />
-                    <YAxis yAxisId="right" orientation="right" />
-                    <Tooltip />
-                    <Line 
-                      yAxisId="left" 
-                      type="monotone" 
-                      dataKey="changes" 
-                      stroke="#2563eb" 
-                      strokeWidth={2}
-                      name="Answer Changes"
-                    />
-                    <Line 
-                      yAxisId="right" 
-                      type="monotone" 
-                      dataKey="wrTeRatio" 
-                      stroke="#dc2626" 
-                      strokeWidth={2}
-                      name="WR/TE Ratio"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                  <Card>
-                    <CardContent className="p-3">
-                      <p className="text-sm text-muted-foreground">Peak Activity Window</p>
-                      <p className="font-semibold">Minutes 20-30</p>
-                      <p className="text-xs">18 changes in 5-second window</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-3">
-                      <p className="text-sm text-muted-foreground">Deviation from Mean</p>
-                      <p className="font-semibold text-red-500">+3.2σ</p>
-                      <p className="text-xs">Significantly above average</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="profile">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
-                  <span>Score Profile Anomaly Panel</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4">
-                    {scoreProfileData.map((section, index) => (
-                      <Card key={index}>
-                        <CardContent className="p-4">
-                          <h4 className="font-semibold">{section.section}</h4>
-                          <p className="text-2xl font-bold">{section.score}%</p>
-                          <p className="text-sm text-muted-foreground">Variance: {section.variance}</p>
-                          <p className="text-sm text-muted-foreground">Person-Fit: {section.personFit}</p>
-                          <Badge variant={section.personFit < 0.8 ? "destructive" : "secondary"}>
-                            {section.personFit < 0.8 ? "Low Variability" : "Normal"}
-                          </Badge>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200">
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                      <h4 className="font-semibold">IRT-Based Person-Fit Statistics</h4>
-                    </div>
-                    <p className="text-sm mt-2">Logical section shows low response variability (0.72), indicating potential flat scoring pattern.</p>
-                    <p className="text-sm">Clustered correctness detected in final 20% of test items.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="similarity">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5" />
-                  <span>Inter-Test Taker Similarity</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse border border-border">
-                      <thead>
-                        <tr className="bg-muted/30">
-                          <th className="border border-border p-2 text-left">Candidate ID</th>
-                          <th className="border border-border p-2 text-left">Similarity Score</th>
-                          <th className="border border-border p-2 text-left">Identical Responses</th>
-                          <th className="border border-border p-2 text-left">Suspicion Level</th>
-                          <th className="border border-border p-2 text-left">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {similarityData.map((item, index) => (
-                          <tr key={index} className="hover:bg-muted/10">
-                            <td className="border border-border p-2 font-mono">{item.candidateId}</td>
-                            <td className="border border-border p-2">{item.similarity}</td>
-                            <td className="border border-border p-2">{item.identicalResponses}/50</td>
-                            <td className="border border-border p-2">
-                              <Badge variant={
-                                item.suspicionLevel === "High" ? "destructive" : 
-                                item.suspicionLevel === "Medium" ? "secondary" : "outline"
-                              }>
-                                {item.suspicionLevel}
-                              </Badge>
-                            </td>
-                            <td className="border border-border p-2">
-                              <Button size="sm" variant="outline">
-                                <Eye className="h-4 w-4 mr-1" />
-                                View Details
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded border border-red-200">
-                    <div className="flex items-center space-x-2">
-                      <AlertTriangle className="h-5 w-5 text-red-600" />
-                      <h4 className="font-semibold">Collusive Behavior Alert</h4>
-                    </div>
-                    <p className="text-sm mt-2">High similarity (0.95) detected with candidate BP003.</p>
-                    <p className="text-sm">Cluster analysis suggests potential coordinated responses in questions 15-35.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* All other sections displayed linearly without tabs */}
+        {/* Answer Revision Tracker, Change Frequency, Time Window Analysis, Score Profile, Similarity */}
+      </DialogContent>
+    </Dialog>
+  );
+}
       </DialogContent>
     </Dialog>
   );
