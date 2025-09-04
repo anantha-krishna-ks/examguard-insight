@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -20,9 +21,13 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Cell
+  ScatterChart,
+  Scatter,
+  Cell,
+  Legend,
+  ReferenceDot
 } from "recharts";
-import { BarChart3, TrendingUp, Download, Printer, Maximize2, FileText, Image, FileSpreadsheet, Users } from "lucide-react";
+import { BarChart3, TrendingUp, Clock, Download, Printer, Maximize2, FileText, Image, FileSpreadsheet } from "lucide-react";
 
 interface CandidateChartsModalProps {
   candidate: any;
@@ -30,53 +35,67 @@ interface CandidateChartsModalProps {
   onClose: () => void;
 }
 
-// Mock data for Sequential Pattern Detection
-const sequentialPatternData = [
-  { test: 'Test 1', sequentialPatterns: 152, answerRevisions: 26, flagged: true },
-  { test: 'Test 2', sequentialPatterns: 206, answerRevisions: 51, flagged: true },
-  { test: 'Test 3', sequentialPatterns: 97, answerRevisions: 5, flagged: false },
-  { test: 'Test 4', sequentialPatterns: 134, answerRevisions: 33, flagged: false },
-  { test: 'Test 5', sequentialPatterns: 178, answerRevisions: 42, flagged: true }
+// Mock data for OS Curve - Perfect S-curve shape
+const osCurveData = [
+  { time: -15, probability: 0.01 },
+  { time: -10, probability: 0.02 },
+  { time: -5, probability: 0.05 },
+  { time: -2, probability: 0.12 },
+  { time: 0, probability: 0.25 },
+  { time: 2, probability: 0.45 },
+  { time: 4, probability: 0.65 },
+  { time: 6, probability: 0.80 },
+  { time: 8, probability: 0.90 },
+  { time: 10, probability: 0.95 },
+  { time: 15, probability: 0.98 },
+  { time: 20, probability: 0.99 },
+  { time: 25, probability: 1.0 }
 ];
 
-// Mock data for Item-to-Item Transition Clusters
-const transitionClustersData = Array.from({ length: 100 }, (_, i) => ({
-  itemNumber: i + 1,
-  wrongToRight: Math.floor(Math.random() * 15) + 5,
-  wrongToWrong: Math.floor(Math.random() * 8) + 2,
-  rightToWrong: Math.floor(Math.random() * 12) + 3,
-  rightToRight: Math.floor(Math.random() * 20) + 10
-}));
-
-// Mock data for Answer Changes Over Time (Burst Analysis)
-const burstChangesData = Array.from({ length: 60 }, (_, i) => ({
-  minute: i,
-  wrongToRightChanges: i === 22 ? 18 : i === 24 ? 12 : Math.floor(Math.random() * 4) + 1
-}));
-
-// Mock data for Score Profile Anomaly
-const scoreProfileData = [
-  { candidateId: 'C_A_001_001', avgCorrectness: 0.63 },
-  { candidateId: 'C_A_001_002', avgCorrectness: 0.51 },
-  { candidateId: 'C_A_001_003', avgCorrectness: 0.48 },
-  { candidateId: 'C_A_001_004', avgCorrectness: 0.41 },
-  { candidateId: 'C_A_001_005', avgCorrectness: 0.40 },
-  { candidateId: 'C_A_001_006', avgCorrectness: 0.40 },
-  { candidateId: 'C_A_001_007', avgCorrectness: 0.39 },
-  { candidateId: 'C_A_001_008', avgCorrectness: 0.38 },
-  { candidateId: 'C_A_001_009', avgCorrectness: 0.29 },
-  { candidateId: 'C_A_001_010', avgCorrectness: 0.28 },
-  { candidateId: 'C_A_001_011', avgCorrectness: 0.21 },
-  { candidateId: 'C_A_001_012', avgCorrectness: 0.20 },
-  { candidateId: 'C_A_001_013', avgCorrectness: 0.20 },
-  { candidateId: 'C_A_001_014', avgCorrectness: 0.10 }
+// Anomaly data points
+const anomalyData = [
+  { time: 6, probability: 0.05, itemNo: 6, outlierScore: 20.004859271615384 }
 ];
 
-// Mock data for Inter-Test Taker Similarity
-const similarityData = [
-  { student1: 'BP001', student2: 'BP003', similarity: 0.94, responses: 'Identical in 94% responses' },
-  { student1: 'BP002', student2: 'BP005', similarity: 0.87, responses: 'Identical in 87% responses' },
-  { student1: 'BP001', student2: 'BP004', similarity: 0.78, responses: 'Identical in 78% responses' }
+// Mock data for item time frequency distribution
+const timeFrequencyData = [
+  { timeRange: "0-30s", frequency: 8 },
+  { timeRange: "31-60s", frequency: 15 },
+  { timeRange: "61-90s", frequency: 22 },
+  { timeRange: "91-120s", frequency: 18 },
+  { timeRange: "121-150s", frequency: 12 },
+  { timeRange: "151-180s", frequency: 8 },
+  { timeRange: "181-210s", frequency: 5 },
+  { timeRange: "211-240s", frequency: 3 },
+  { timeRange: "241s+", frequency: 2 }
+];
+
+// Mock data for individual anomaly frequency charts
+const generateAnomalyFrequencyData = (itemNo: number, responseTime: number) => [
+  { timeRange: "1-44", frequency: 45, isAnomaly: false },
+  { timeRange: "45-88", frequency: 30, isAnomaly: false },
+  { timeRange: "89-132", frequency: 16, isAnomaly: false },
+  { timeRange: "133-176", frequency: 8, isAnomaly: false },
+  { timeRange: "177-220", frequency: 2, isAnomaly: false },
+  { timeRange: "221-264", frequency: 1, isAnomaly: false },
+  { timeRange: "265-308", frequency: 0, isAnomaly: false },
+  { timeRange: "309-352", frequency: 0, isAnomaly: false },
+  { timeRange: "353-396", frequency: 0, isAnomaly: false },
+  { timeRange: "397-440", frequency: 1, isAnomaly: responseTime >= 397 }
+];
+
+// Mock data for Response Time vs Difficulty
+const responseTimeDifficultyData = [
+  { difficulty: 1.2, responseTime: 45, correct: true, itemId: "Q1" },
+  { difficulty: 1.5, responseTime: 62, correct: true, itemId: "Q2" },
+  { difficulty: 1.8, responseTime: 78, correct: false, itemId: "Q3" },
+  { difficulty: 2.1, responseTime: 95, correct: true, itemId: "Q4" },
+  { difficulty: 2.4, responseTime: 120, correct: false, itemId: "Q5" },
+  { difficulty: 2.7, responseTime: 145, correct: true, itemId: "Q6" },
+  { difficulty: 3.0, responseTime: 180, correct: false, itemId: "Q7" },
+  { difficulty: 3.3, responseTime: 210, correct: true, itemId: "Q8" },
+  { difficulty: 3.6, responseTime: 240, correct: false, itemId: "Q9" },
+  { difficulty: 3.9, responseTime: 275, correct: true, itemId: "Q10" }
 ];
 
 export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateChartsModalProps) {
@@ -86,17 +105,20 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
     // Mock export functionality - in real app would generate actual exports
     const candidateName = candidate?.name?.replace(/\s+/g, '_') || 'candidate';
     const timestamp = new Date().toISOString().split('T')[0];
-    const filename = `${candidateName}_behavioral_analytics_${timestamp}`;
+    const filename = `${candidateName}_analytics_${timestamp}`;
     
     switch (format) {
       case 'pdf':
         console.log(`Exporting ${filename}.pdf`);
+        // Implementation would use libraries like jsPDF or react-to-pdf
         break;
       case 'png':
         console.log(`Exporting ${filename}.png`);
+        // Implementation would capture canvas/svg and convert to image
         break;
       case 'csv':
         console.log(`Exporting ${filename}.csv`);
+        // Implementation would convert chart data to CSV format
         break;
       case 'print':
         window.print();
@@ -126,28 +148,41 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
     return null;
   };
 
-  const TransitionTooltip = ({ active, payload, label }: any) => {
+  const AnomalyTooltip = ({ active, payload, coordinate }: any) => {
+    if (active && coordinate) {
+      const anomaly = anomalyData.find(a => 
+        Math.abs(coordinate.x - (20 + ((a.time + 15) / 40) * 600)) < 20 &&
+        Math.abs(coordinate.y - (30 + (1 - a.probability) * 260)) < 20
+      );
+      
+      if (anomaly) {
+        return (
+          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+            <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
+            <p className="text-sm text-muted-foreground">
+              Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
+            </p>
+          </div>
+        );
+      }
+    }
+    return null;
+  };
+
+  const ScatterTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
+      const data = payload[0].payload;
       return (
         <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
-          <p className="font-semibold text-foreground mb-2">Item {label}</p>
-          {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between space-x-2">
-              <div className="flex items-center space-x-2">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: entry.color }}
-                />
-                <span className="text-sm text-muted-foreground">{entry.name}:</span>
-              </div>
-              <span className="font-medium text-foreground">{entry.value}</span>
-            </div>
-          ))}
-          <div className="mt-2 pt-2 border-t border-border/50">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total transitions:</span>
-              <span className="font-medium text-foreground">{total}</span>
+          <p className="font-semibold text-foreground mb-2">{data.itemId}</p>
+          <div className="space-y-1 text-sm">
+            <p><span className="text-muted-foreground">Difficulty:</span> <span className="font-medium">{data.difficulty}</span></p>
+            <p><span className="text-muted-foreground">Response Time:</span> <span className="font-medium">{data.responseTime}s</span></p>
+            <div className="flex items-center space-x-2">
+              <span className="text-muted-foreground">Result:</span>
+              <Badge variant={data.correct ? "default" : "destructive"} className="text-xs">
+                {data.correct ? 'Correct' : 'Incorrect'}
+              </Badge>
             </div>
           </div>
         </div>
@@ -163,7 +198,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Behavioral Pattern Analytics
+                Candidate Analytics
               </DialogTitle>
               <Badge variant="outline" className="text-primary border-primary font-medium">
                 {candidate?.name}
@@ -216,270 +251,412 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
         <div className="space-y-6 mt-6">
           {/* Summary Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-gradient-to-r from-blue-500/5 to-blue-500/10 border-blue-500/20">
+            <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-blue-600">567</div>
-                <p className="text-xs text-muted-foreground">Total Sequential Patterns</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gradient-to-r from-orange-500/5 to-orange-500/10 border-orange-500/20">
-              <CardContent className="p-4">
-                <div className="text-2xl font-bold text-orange-600">157</div>
-                <p className="text-xs text-muted-foreground">Answer Revisions</p>
+                <div className="text-2xl font-bold text-primary">8.5</div>
+                <p className="text-xs text-muted-foreground">Avg. Response Time (min)</p>
               </CardContent>
             </Card>
             <Card className="bg-gradient-to-r from-green-500/5 to-green-500/10 border-green-500/20">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-green-600">34</div>
-                <p className="text-xs text-muted-foreground">Change Frequency Events</p>
+                <div className="text-2xl font-bold text-green-600">35/50</div>
+                <p className="text-xs text-muted-foreground">Score</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-r from-amber-500/5 to-amber-500/10 border-amber-500/20">
+              <CardContent className="p-4">
+                <div className="text-2xl font-bold text-amber-600">2.1</div>
+                <p className="text-xs text-muted-foreground">Avg. Difficulty</p>
               </CardContent>
             </Card>
             <Card className="bg-gradient-to-r from-red-500/5 to-red-500/10 border-red-500/20">
               <CardContent className="p-4">
-                <div className="text-2xl font-bold text-red-600">High</div>
-                <p className="text-xs text-muted-foreground">Anomaly Risk Level</p>
+                <div className="text-2xl font-bold text-red-600">3</div>
+                <p className="text-xs text-muted-foreground">Anomalous Items</p>
               </CardContent>
             </Card>
           </div>
 
           <Separator className="my-6" />
 
-          {/* Behavioral Pattern Analysis Charts */}
+          {/* Graphs Section */}
           <div className="space-y-6">
-            {/* Sequential Pattern Detection */}
+            {/* OS Curve Analysis - Full Width */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 rounded-lg bg-blue-500/10">
-                      <BarChart3 className="h-5 w-5 text-blue-500" />
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="text-lg">Sequential Pattern Detection</CardTitle>
+                    <CardTitle className="text-lg">OS Curve Analysis</CardTitle>
                   </div>
-                  <Badge variant="secondary" className="text-xs">Z-score Anomaly Flags</Badge>
+                  <Badge variant="secondary" className="text-xs">S-Curve with Anomalies</Badge>
                 </div>
                 <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                  <p className="font-semibold mb-1">Patterns ≥6 items detected in Tests 1, 2, and 5</p>
-                  <p>Repeated sequences (A,B,C,D) flagged • Chi-square p-value &lt; 0.001</p>
+                  <p className="font-semibold mb-1">Anomaly Detected - Item No: 6</p>
+                  <p>Item Response Time: 395 sec | Percentile Rank: 99.96% | Outlier Score: 20.00</p>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={sequentialPatternData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis dataKey="test" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="sequentialPatterns" fill="#2563eb" name="Sequential Patterns" />
-                    <Bar dataKey="answerRevisions" fill="#ea580c" name="Answer Revisions" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Change Frequency Heatmap */}
-            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
+                {/* Legend */}
+                <div className="mb-4 flex items-center justify-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 rounded-lg bg-purple-500/10">
-                      <BarChart3 className="h-5 w-5 text-purple-500" />
-                    </div>
-                    <CardTitle className="text-lg">Item-to-Item Transition Clusters (All Items)</CardTitle>
+                    <div className="w-6 h-1 bg-blue-500 rounded"></div>
+                    <span className="text-sm font-medium">S-Curve</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">W→R, W→W, R→W Analysis</Badge>
-                </div>
-                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                  <p className="font-semibold mb-1">Most modified item: Item 25 (Test Center C)</p>
-                  <p>High transition frequency in items 20-30 • Pattern indicates strategic revision behavior</p>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={transitionClustersData.slice(0, 50)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis dataKey="itemNumber" stroke="hsl(var(--muted-foreground))" fontSize={10} interval={4} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <Tooltip content={<TransitionTooltip />} />
-                    <Bar dataKey="wrongToRight" stackId="transitions" fill="#ef4444" name="Wrong to Right" />
-                    <Bar dataKey="wrongToWrong" stackId="transitions" fill="#f97316" name="Wrong to Wrong" />
-                    <Bar dataKey="rightToWrong" stackId="transitions" fill="#10b981" name="Right to Wrong" />
-                    <Bar dataKey="rightToRight" stackId="transitions" fill="#6b7280" name="Right to Right" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Burst of Wrong→Right Changes */}
-            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="p-2 rounded-lg bg-green-500/10">
-                      <TrendingUp className="h-5 w-5 text-green-500" />
-                    </div>
-                    <CardTitle className="text-lg">Burst of Wrong→Right Changes Across Candidates</CardTitle>
+                    <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                    <span className="text-sm font-medium">Actual Outliers</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">Time Window Analysis</Badge>
                 </div>
-                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                  <p className="font-semibold mb-1">Significant burst detected at minute 22-24</p>
-                  <p>Peak: 18 wrong→right changes • Possible collaboration or external assistance</p>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={320}>
-                  <LineChart data={burstChangesData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
-                    <XAxis dataKey="minute" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="wrongToRightChanges" 
-                      stroke="#10b981" 
-                      strokeWidth={2}
-                      dot={{ fill: '#10b981', strokeWidth: 2, r: 3 }}
-                      name="Wrong→Right Changes (count)"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Score Profile Anomaly */}
-            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className="p-2 rounded-lg bg-cyan-500/10">
-                      <BarChart3 className="h-5 w-5 text-cyan-500" />
-                    </div>
-                    <CardTitle className="text-lg">Average Correctness for Candidates in Center A</CardTitle>
-                  </div>
-                  <Badge variant="secondary" className="text-xs">IRT Person-Fit Statistics</Badge>
-                </div>
-                <div className="mt-3 p-3 bg-muted/50 rounded-lg text-sm">
-                  <p className="font-semibold mb-1">Low response variability detected in candidates C_A_001_013 & C_A_001_014</p>
-                  <p>Flat scoring pattern • Clustered correctness at test end suggests unusual behavior</p>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={scoreProfileData} margin={{ top: 10, right: 10, left: 10, bottom: 60 }}>
+                  <LineChart data={osCurveData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                     <defs>
+                       <linearGradient id="osGradient" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                         <stop offset="95%" stopColor="#6366f1" stopOpacity={0.1}/>
+                       </linearGradient>
+                       <linearGradient id="osStroke" x1="0" y1="0" x2="1" y2="0">
+                         <stop offset="0%" stopColor="#3b82f6"/>
+                         <stop offset="100%" stopColor="#6366f1"/>
+                       </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                     <XAxis 
-                      dataKey="candidateId" 
-                      stroke="hsl(var(--muted-foreground))" 
-                      fontSize={10} 
-                      angle={-45}
-                      textAnchor="end"
-                      height={80}
+                      dataKey="time" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      domain={[-15, 25]}
+                      ticks={[-15, -10, -5, 0, 5, 10, 15, 20, 25]}
                     />
                     <YAxis 
-                      stroke="hsl(var(--muted-foreground))" 
+                      stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
                       domain={[0, 1]}
-                      tickFormatter={(value) => value.toFixed(1)}
+                      tickCount={11}
                     />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="avgCorrectness" fill="#06b6d4" name="Average Correctness (Proportion)" />
-                  </BarChart>
+                     <Tooltip 
+                       content={({ active, payload, coordinate }: any) => {
+                         if (active && coordinate) {
+                           const anomaly = anomalyData[0]; // Since we only have one anomaly
+                           return (
+                             <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                               <p className="font-semibold text-foreground mb-2">Item: {anomaly.itemNo}</p>
+                               <p className="text-sm text-muted-foreground">
+                                 Outlier Score: <span className="font-medium text-foreground">{anomaly.outlierScore}, Item: {anomaly.itemNo}</span>
+                               </p>
+                             </div>
+                           );
+                         }
+                         return null;
+                       }}
+                     />
+                      <Line 
+                        type="monotone" 
+                        dataKey="probability" 
+                        stroke="#3b82f6" 
+                        strokeWidth={3}
+                        dot={false}
+                        name="S-Curve"
+                      />
+                      {anomalyData.map((anomaly, index) => (
+                        <ReferenceDot
+                          key={`anomaly-${index}`}
+                          x={anomaly.time}
+                          y={anomaly.probability}
+                          r={6}
+                          fill="#ef4444"
+                          stroke="#dc2626"
+                          strokeWidth={2}
+                        />
+                      ))}
+                  </LineChart>
                 </ResponsiveContainer>
+                
+                {/* Individual Anomaly Analysis within OS Curve */}
+                {anomalyData.length > 0 && (
+                  <div className="mt-8 space-y-6">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-2 rounded-lg bg-red-500/10">
+                        <BarChart3 className="h-4 w-4 text-red-500" />
+                      </div>
+                      <h4 className="text-lg font-semibold">Individual Anomaly Analysis</h4>
+                    </div>
+                    
+                    <div className="max-h-96 overflow-y-auto space-y-6">
+                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        {anomalyData.map((anomaly, index) => {
+                          const responseTime = 395; // Mock response time for item 6
+                          const percentileRank = 99.96;
+                          const chartData = generateAnomalyFrequencyData(anomaly.itemNo, responseTime);
+                          
+                          return (
+                            <div key={`anomaly-chart-${index}`} className="border border-border/30 rounded-lg p-4 bg-muted/20">
+                              <div className="bg-muted/50 rounded-lg p-3 mb-4">
+                                <h5 className="font-semibold text-foreground text-sm">
+                                  Item No: {anomaly.itemNo}, Item Response Time (Sec): {responseTime}, 
+                                  Item PercentileRank (%): {percentileRank}, Outlier Score: {anomaly.outlierScore.toFixed(2)}
+                                </h5>
+                              </div>
+                              
+                              {/* Legend */}
+                              <div className="flex items-center justify-center space-x-8 mb-4">
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-4 h-3 bg-cyan-400 border border-cyan-500"></div>
+                                  <span className="text-xs font-medium">Bar Dataset</span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-3 h-3 bg-red-500 border border-red-600"></div>
+                                  <span className="text-xs font-medium">Marker</span>
+                                </div>
+                              </div>
+                              
+                              <ResponsiveContainer width="100%" height={300}>
+                                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                                  <XAxis 
+                                    dataKey="timeRange" 
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={11}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={80}
+                                    label={{ value: 'Item Response', position: 'insideBottom', offset: -40, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                                  />
+                                  <YAxis 
+                                    stroke="hsl(var(--muted-foreground))"
+                                    fontSize={11}
+                                    label={{ value: 'Item Response Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                                  />
+                                  <Tooltip 
+                                    content={({ active, payload, label }: any) => {
+                                      if (active && payload && payload.length) {
+                                        const data = payload[0].payload;
+                                        return (
+                                          <div className="bg-card p-4 border rounded-lg shadow-lg backdrop-blur-sm border-border/50">
+                                            <p className="font-semibold text-foreground mb-2">{label}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                              Frequency: <span className="font-medium text-foreground">{data.frequency}</span>
+                                            </p>
+                                            {data.isAnomaly && (
+                                              <p className="text-sm text-red-500 font-medium">Anomaly Detected</p>
+                                            )}
+                                          </div>
+                                        );
+                                      }
+                                      return null;
+                                    }}
+                                  />
+                                  <Bar 
+                                    dataKey="frequency" 
+                                    fill="#22d3ee"
+                                    stroke="#06b6d4"
+                                    strokeWidth={1}
+                                    radius={[2, 2, 0, 0]}
+                                  />
+                                  {chartData.map((entry, barIndex) => 
+                                    entry.isAnomaly ? (
+                                      <ReferenceDot
+                                        key={`marker-${barIndex}`}
+                                        x={entry.timeRange}
+                                        y={entry.frequency}
+                                        r={0}
+                                        fill="transparent"
+                                        shape={(props: any) => {
+                                          const { cx, cy } = props;
+                                          return (
+                                            <rect
+                                              x={cx - 8}
+                                              y={cy - 8}
+                                              width={16}
+                                              height={16}
+                                              fill="#ef4444"
+                                              stroke="#dc2626"
+                                              strokeWidth={2}
+                                            />
+                                          );
+                                        }}
+                                      />
+                                    ) : null
+                                  )}
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            {/* Inter-Test Taker Similarity */}
+            {/* Rapid Guessing Detection - Full Width Row */}
             <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <div className="p-2 rounded-lg bg-red-500/10">
-                      <Users className="h-5 w-5 text-red-500" />
+                      <Clock className="h-5 w-5 text-red-500" />
                     </div>
-                    <CardTitle className="text-lg">Inter-Test Taker Similarity</CardTitle>
+                    <CardTitle className="text-lg">Rapid Guessing Detection</CardTitle>
                   </div>
-                  <Badge variant="destructive" className="text-xs">Collusion Detection</Badge>
-                </div>
-                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm">
-                  <p className="font-semibold mb-1 text-red-800">High similarity detected between multiple candidates</p>
-                  <p className="text-red-700">Cluster analysis indicates potential collusive behavior • Investigation recommended</p>
+                  <Badge variant="destructive" className="text-xs">Flagged Responses</Badge>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="space-y-4">
-                  {similarityData.map((similarity, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border/50">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-2">
-                          <Badge variant="outline" className="font-mono text-xs">{similarity.student1}</Badge>
-                          <span className="text-muted-foreground">↔</span>
-                          <Badge variant="outline" className="font-mono text-xs">{similarity.student2}</Badge>
-                        </div>
-                        <span className="text-sm text-muted-foreground">{similarity.responses}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="text-right">
-                          <div className={`text-lg font-bold ${similarity.similarity > 0.9 ? 'text-red-500' : similarity.similarity > 0.8 ? 'text-orange-500' : 'text-yellow-500'}`}>
-                            {(similarity.similarity * 100).toFixed(0)}%
-                          </div>
-                          <div className="text-xs text-muted-foreground">Similarity</div>
-                        </div>
-                        <Badge variant={similarity.similarity > 0.9 ? "destructive" : similarity.similarity > 0.8 ? "secondary" : "outline"} className="text-xs">
-                          {similarity.similarity > 0.9 ? 'Critical' : similarity.similarity > 0.8 ? 'High' : 'Medium'}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ResponsiveContainer width="100%" height={320}>
+                  <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                     <defs>
+                       <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
+                         <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                         <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7}/>
+                       </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="timeRange" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Response Time Range (<5s flagged)', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Frequency', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="frequency" 
+                      fill="url(#rapidGradient)" 
+                      radius={[4, 4, 0, 0]}
+                      stroke="#dc2626"
+                      strokeWidth={1}
+                     />
+                   </BarChart>
+                </ResponsiveContainer>
               </CardContent>
             </Card>
-
-            {/* Filter Bar and Export Options */}
-            <Card className="border-2 border-border/50 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-lg">Analysis Controls</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap items-center gap-4">
+            
+            
+            {/* Response Time vs Difficulty */}
+            <Card className="border-2 border-border/50 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Test Center:</label>
-                    <select className="px-3 py-1 border border-border rounded-md bg-background text-sm">
-                      <option>All Centers</option>
-                      <option>Center A</option>
-                      <option>Center B</option>
-                      <option>Center C</option>
-                    </select>
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Clock className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle className="text-lg">Response Time vs Item Difficulty</CardTitle>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <label className="text-sm font-medium">Anomaly Type:</label>
-                    <select className="px-3 py-1 border border-border rounded-md bg-background text-sm">
-                      <option>All Types</option>
-                      <option>Sequential Pattern</option>
-                      <option>Answer Revision</option>
-                      <option>Change Frequency</option>
-                      <option>Similarity</option>
-                    </select>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" disabled className="flex items-center space-x-1">
-                      <FileSpreadsheet className="h-4 w-4" />
-                      <span>Export CSV</span>
-                    </Button>
-                    <Button variant="outline" size="sm" disabled className="flex items-center space-x-1">
-                      <FileText className="h-4 w-4" />
-                      <span>PDF Summary</span>
-                    </Button>
-                  </div>
+                  <Badge variant="secondary" className="text-xs">Performance Correlation</Badge>
                 </div>
-                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Note:</strong> Export functionality currently disabled. Contact administrator for detailed reports.
-                  </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Correlation between item difficulty and response time, color-coded by accuracy
+                </p>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <ResponsiveContainer width="100%" height={400}>
+                  <ScatterChart data={responseTimeDifficultyData} margin={{ top: 20, right: 20, left: 20, bottom: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
+                    <XAxis 
+                      dataKey="difficulty" 
+                      type="number"
+                      domain={['dataMin', 'dataMax']}
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Item Difficulty Level', position: 'insideBottom', offset: -15, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <YAxis 
+                      dataKey="responseTime"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      label={{ value: 'Response Time (seconds)', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <Tooltip content={<ScatterTooltip />} />
+                    <Scatter dataKey="responseTime" fill="hsl(var(--primary))">
+                      {responseTimeDifficultyData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.correct ? "#10b981" : "#ef4444"}
+                          stroke={entry.correct ? "#059669" : "#dc2626"}
+                          strokeWidth={2}
+                          r={6}
+                        />
+                      ))}
+                    </Scatter>
+                  </ScatterChart>
+                </ResponsiveContainer>
+                <div className="mt-6 flex justify-center space-x-8 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-green-500 rounded-full border-2 border-green-600"></div>
+                    <span className="font-medium">Correct Answer</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-500 rounded-full border-2 border-red-600"></div>
+                    <span className="font-medium">Incorrect Answer</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
+
+          <Separator className="my-6" />
+
+          {/* Response Time Statistics Section */}
+          <Card className="border-2 border-border/50 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-lg bg-amber-500/10">
+                  <BarChart3 className="h-5 w-5 text-amber-500" />
+                </div>
+                <CardTitle className="text-lg">Response Time Statistics</CardTitle>
+              </div>
+              <p className="text-sm text-muted-foreground">Flagged items with anomalous response times</p>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 font-semibold">SL No.</th>
+                      <th className="text-left p-3 font-semibold">Item Name</th>
+                      <th className="text-left p-3 font-semibold">Item Response Time</th>
+                      <th className="text-left p-3 font-semibold">Flagged</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">1</td>
+                      <td className="p-3 font-medium">Question 6</td>
+                      <td className="p-3">395 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">2</td>
+                      <td className="p-3 font-medium">Question 3</td>
+                      <td className="p-3">3 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Rapid Guess</Badge>
+                      </td>
+                    </tr>
+                    <tr className="border-b border-border/50 hover:bg-muted/50">
+                      <td className="p-3">3</td>
+                      <td className="p-3 font-medium">Question 8</td>
+                      <td className="p-3">285 seconds</td>
+                      <td className="p-3">
+                        <Badge variant="destructive" className="text-xs">Outlier</Badge>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
         </div>
       </DialogContent>
     </Dialog>
