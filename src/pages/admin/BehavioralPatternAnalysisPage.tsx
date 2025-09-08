@@ -27,29 +27,97 @@ interface BehavioralPatternAnalysisPageProps {}
 
 // Mock data for different levels
 const testLevelData = [
-  { name: 'Test 1', sequentialPattern: 152, answerRevision: 26, changeFrequency: 34 },
-  { name: 'Test 2', sequentialPattern: 206, answerRevision: 51, changeFrequency: 67 },
-  { name: 'Test 3', sequentialPattern: 97, answerRevision: 5, changeFrequency: 12 },
-  { name: 'Test 4', sequentialPattern: 134, answerRevision: 33, changeFrequency: 45 },
-  { name: 'Test 5', sequentialPattern: 178, answerRevision: 42, changeFrequency: 56 },
+  { name: 'Test 1', sequentialPattern: 152, answerRevision: 26 },
+  { name: 'Test 2', sequentialPattern: 206, answerRevision: 51 },
+  { name: 'Test 3', sequentialPattern: 97, answerRevision: 5 },
+  { name: 'Test 4', sequentialPattern: 134, answerRevision: 33 },
+  { name: 'Test 5', sequentialPattern: 178, answerRevision: 42 },
 ];
 
 const locationLevelData = [
-  { name: 'Hyderabad', sequentialPattern: 324, answerRevision: 67, changeFrequency: 89 },
-  { name: 'Malaysia', sequentialPattern: 289, answerRevision: 54, changeFrequency: 78 },
-  { name: 'Mysore', sequentialPattern: 198, answerRevision: 43, changeFrequency: 56 },
-  { name: 'Noida', sequentialPattern: 245, answerRevision: 38, changeFrequency: 63 },
-  { name: 'Central Region', sequentialPattern: 312, answerRevision: 71, changeFrequency: 94 },
+  { name: 'Hyderabad', sequentialPattern: 324, answerRevision: 67 },
+  { name: 'Malaysia', sequentialPattern: 289, answerRevision: 54 },
+  { name: 'Mysore', sequentialPattern: 198, answerRevision: 43 },
+  { name: 'Noida', sequentialPattern: 245, answerRevision: 38 },
+  { name: 'Central Region', sequentialPattern: 312, answerRevision: 71 },
 ];
 
 const testCenterLevelData = [
-  { name: 'HYD-001', sequentialPattern: 89, answerRevision: 21, changeFrequency: 32 },
-  { name: 'HYD-002', sequentialPattern: 76, answerRevision: 18, changeFrequency: 28 },
-  { name: 'HYD-003', sequentialPattern: 103, answerRevision: 28, changeFrequency: 41 },
-  { name: 'HYD-004', sequentialPattern: 94, answerRevision: 15, changeFrequency: 36 },
-  { name: 'HYD-005', sequentialPattern: 87, answerRevision: 23, changeFrequency: 34 },
-  { name: 'HYD-006', sequentialPattern: 112, answerRevision: 31, changeFrequency: 45 },
+  { name: 'HYD-001', sequentialPattern: 89, answerRevision: 21 },
+  { name: 'HYD-002', sequentialPattern: 76, answerRevision: 18 },
+  { name: 'HYD-003', sequentialPattern: 103, answerRevision: 28 },
+  { name: 'HYD-004', sequentialPattern: 94, answerRevision: 15 },
+  { name: 'HYD-005', sequentialPattern: 87, answerRevision: 23 },
+  { name: 'HYD-006', sequentialPattern: 112, answerRevision: 31 },
 ];
+
+// Answer Revision detailed analysis data
+const answerChangePercentageData = {
+  test: [
+    { name: 'Test 1', changePercentage: 18.5, anomalyCount: 12 },
+    { name: 'Test 2', changePercentage: 23.7, anomalyCount: 18 },
+    { name: 'Test 3', changePercentage: 8.2, anomalyCount: 3 },
+    { name: 'Test 4', changePercentage: 16.9, anomalyCount: 9 },
+    { name: 'Test 5', changePercentage: 21.3, anomalyCount: 15 },
+  ],
+  location: [
+    { name: 'Hyderabad', changePercentage: 24.8, anomalyCount: 28 },
+    { name: 'Malaysia', changePercentage: 19.6, anomalyCount: 22 },
+    { name: 'Mysore', changePercentage: 15.3, anomalyCount: 16 },
+    { name: 'Noida', changePercentage: 17.8, anomalyCount: 19 },
+    { name: 'Central Region', changePercentage: 26.4, anomalyCount: 31 },
+  ],
+  testcenter: [
+    { name: 'HYD-001', changePercentage: 22.1, anomalyCount: 8 },
+    { name: 'HYD-002', changePercentage: 16.7, anomalyCount: 6 },
+    { name: 'HYD-003', changePercentage: 28.3, anomalyCount: 11 },
+    { name: 'HYD-004', changePercentage: 19.4, anomalyCount: 7 },
+    { name: 'HYD-005', changePercentage: 21.8, anomalyCount: 9 },
+    { name: 'HYD-006', changePercentage: 25.6, anomalyCount: 12 },
+  ]
+};
+
+const meanDeviationData = {
+  location: [
+    { name: 'Hyderabad', scores: [15.2, 16.8, 14.5, 17.1, 15.9, 16.3, 14.8, 17.5, 15.7, 16.1], median: 15.99, q1: 15.2, q3: 16.8 },
+    { name: 'Malaysia', scores: [13.8, 14.2, 13.5, 14.7, 13.9, 14.1, 13.6, 14.4, 13.7, 14.0], median: 13.99, q1: 13.5, q3: 14.4 },
+    { name: 'Mysore', scores: [12.1, 12.8, 11.9, 13.2, 12.4, 12.6, 12.0, 13.0, 12.3, 12.5], median: 12.48, q1: 12.0, q3: 13.0 },
+    { name: 'Noida', scores: [14.3, 15.1, 13.8, 15.6, 14.7, 14.9, 14.2, 15.3, 14.5, 14.8], median: 14.72, q1: 14.2, q3: 15.3 },
+  ],
+  testcenter: [
+    { name: 'HYD-001', scores: [14.8, 15.2, 14.5, 15.7, 15.0, 15.3, 14.7, 15.5, 14.9, 15.1], median: 15.07, q1: 14.7, q3: 15.5 },
+    { name: 'HYD-002', scores: [13.2, 13.8, 13.0, 14.1, 13.5, 13.7, 13.1, 13.9, 13.3, 13.6], median: 13.52, q1: 13.1, q3: 13.9 },
+    { name: 'HYD-003', scores: [16.1, 16.9, 15.8, 17.2, 16.5, 16.7, 16.0, 17.0, 16.3, 16.6], median: 16.51, q1: 16.0, q3: 17.0 },
+    { name: 'HYD-004', scores: [15.3, 15.9, 15.0, 16.2, 15.6, 15.8, 15.2, 16.0, 15.4, 15.7], median: 15.61, q1: 15.2, q3: 16.0 },
+    { name: 'HYD-005', scores: [14.5, 15.1, 14.2, 15.4, 14.8, 15.0, 14.4, 15.2, 14.6, 14.9], median: 14.81, q1: 14.4, q3: 15.2 },
+    { name: 'HYD-006', scores: [16.8, 17.6, 16.5, 17.9, 17.2, 17.4, 16.7, 17.7, 17.0, 17.3], median: 17.21, q1: 16.7, q3: 17.7 },
+  ]
+};
+
+const wrTeRatioData = {
+  test: [
+    { name: 'Test 1', wrRatio: 0.72, teRatio: 0.28, combinedRatio: 2.57 },
+    { name: 'Test 2', wrRatio: 0.68, teRatio: 0.32, combinedRatio: 2.13 },
+    { name: 'Test 3', wrRatio: 0.81, teRatio: 0.19, combinedRatio: 4.26 },
+    { name: 'Test 4', wrRatio: 0.75, teRatio: 0.25, combinedRatio: 3.00 },
+    { name: 'Test 5', wrRatio: 0.70, teRatio: 0.30, combinedRatio: 2.33 },
+  ],
+  location: [
+    { name: 'Hyderabad', wrRatio: 0.73, teRatio: 0.27, combinedRatio: 2.70 },
+    { name: 'Malaysia', wrRatio: 0.69, teRatio: 0.31, combinedRatio: 2.23 },
+    { name: 'Mysore', wrRatio: 0.78, teRatio: 0.22, combinedRatio: 3.55 },
+    { name: 'Noida', wrRatio: 0.71, teRatio: 0.29, combinedRatio: 2.45 },
+    { name: 'Central Region', wrRatio: 0.67, teRatio: 0.33, combinedRatio: 2.03 },
+  ],
+  testcenter: [
+    { name: 'HYD-001', wrRatio: 0.74, teRatio: 0.26, combinedRatio: 2.85 },
+    { name: 'HYD-002', wrRatio: 0.71, teRatio: 0.29, combinedRatio: 2.45 },
+    { name: 'HYD-003', wrRatio: 0.76, teRatio: 0.24, combinedRatio: 3.17 },
+    { name: 'HYD-004', wrRatio: 0.72, teRatio: 0.28, combinedRatio: 2.57 },
+    { name: 'HYD-005', wrRatio: 0.73, teRatio: 0.27, combinedRatio: 2.70 },
+    { name: 'HYD-006', wrRatio: 0.75, teRatio: 0.25, combinedRatio: 3.00 },
+  ]
+};
 
 const behavioralCandidateData = [
   { id: 'BP001', name: 'Raj Patel', email: 'raj@example.com', status: 'Completed', flagged: true, anomalyScore: 0.89, anomalyType: 'Sequential Pattern', testName: 'Behavioral Assessment A' },
@@ -59,23 +127,6 @@ const behavioralCandidateData = [
   { id: 'BP005', name: 'Vikram Gupta', email: 'vikram@example.com', status: 'Completed', flagged: true, anomalyScore: 0.81, anomalyType: 'Change Frequency', testName: 'Pattern Recognition Test' },
 ];
 
-// Change frequency data for locations and test centers
-const locationChangeFrequencyData = [
-  { name: 'Hyderabad', wrongToRight: 89, wrongToWrong: 45, rightToWrong: 23 },
-  { name: 'Malaysia', wrongToRight: 76, wrongToWrong: 38, rightToWrong: 19 },
-  { name: 'Mysore', wrongToRight: 52, wrongToWrong: 28, rightToWrong: 15 },
-  { name: 'Noida', wrongToRight: 68, wrongToWrong: 35, rightToWrong: 18 },
-  { name: 'Central Region', wrongToRight: 94, wrongToWrong: 51, rightToWrong: 27 },
-];
-
-const testCenterChangeFrequencyData = [
-  { name: 'HYD-001', wrongToRight: 32, wrongToWrong: 18, rightToWrong: 8 },
-  { name: 'HYD-002', wrongToRight: 28, wrongToWrong: 15, rightToWrong: 6 },
-  { name: 'HYD-003', wrongToRight: 41, wrongToWrong: 22, rightToWrong: 11 },
-  { name: 'HYD-004', wrongToRight: 36, wrongToWrong: 19, rightToWrong: 9 },
-  { name: 'HYD-005', wrongToRight: 34, wrongToWrong: 17, rightToWrong: 7 },
-  { name: 'HYD-006', wrongToRight: 45, wrongToWrong: 24, rightToWrong: 12 },
-];
 
 // Violin plot data for WR scores
 const violinPlotData = {
@@ -118,10 +169,18 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
     return testCenterLevelData;
   };
 
-  const getCurrentChangeFrequencyData = () => {
-    if (viewLevel === 'location') return locationChangeFrequencyData;
-    if (viewLevel === 'testcenter') return testCenterChangeFrequencyData;
+  const getCurrentAnswerChangeData = () => {
+    return answerChangePercentageData[viewLevel] || [];
+  };
+
+  const getCurrentMeanDeviationData = () => {
+    if (viewLevel === 'location') return meanDeviationData.location;
+    if (viewLevel === 'testcenter') return meanDeviationData.testcenter;
     return [];
+  };
+
+  const getCurrentWrTeRatioData = () => {
+    return wrTeRatioData[viewLevel] || [];
   };
 
   const getCurrentViolinData = () => {
@@ -145,30 +204,30 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
     } else if (viewLevel === 'location' && !selectedLocation) {
       setSelectedLocation(data.name);
       setViewLevel('testcenter');
-    } else if (viewLevel === 'testcenter') {
-      setSelectedTestCenter(data.name);
-      setShowCandidates(true);
-      if (segment === 'sequentialPattern' || segment === 'answerRevision' || segment === 'changeFrequency') {
-        setClickedSegment(segment);
-        setCandidateFilter('flagged');
-      } else {
-        setClickedSegment(null);
-        setCandidateFilter('all');
+      } else if (viewLevel === 'testcenter') {
+        setSelectedTestCenter(data.name);
+        setShowCandidates(true);
+        if (segment === 'sequentialPattern' || segment === 'answerRevision') {
+          setClickedSegment(segment);
+          setCandidateFilter('flagged');
+        } else {
+          setClickedSegment(null);
+          setCandidateFilter('all');
+        }
       }
-    }
-  };
+    };
 
-  const getFilteredCandidates = () => {
-    let filtered = behavioralCandidateData;
-    
-    if (candidateFilter === 'flagged') {
-      filtered = filtered.filter(c => c.flagged);
-    } else if (candidateFilter === 'unflagged') {
-      filtered = filtered.filter(c => !c.flagged);
-    }
-    
-    return filtered;
-  };
+    const getFilteredCandidates = () => {
+      let filtered = behavioralCandidateData;
+      
+      if (candidateFilter === 'flagged') {
+        filtered = filtered.filter(c => c.flagged);
+      } else if (candidateFilter === 'unflagged') {
+        filtered = filtered.filter(c => !c.flagged);
+      }
+      
+      return filtered;
+    };
 
   const handleCandidateClick = (candidate: any) => {
     setSelectedCandidate(candidate);
@@ -286,13 +345,6 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                   onClick={(data) => handleBarClick(data, "answerRevision")}
                   style={{ cursor: "pointer" }}
                 />
-                <Bar 
-                  dataKey="changeFrequency" 
-                  fill="#10b981" 
-                  name="Change Frequency"
-                  onClick={(data) => handleBarClick(data, "changeFrequency")}
-                  style={{ cursor: "pointer" }}
-                />
               </BarChart>
             </ResponsiveContainer>
             <div className="mt-4 flex justify-between text-xs text-muted-foreground">
@@ -304,18 +356,125 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
-                  <span>Answer Revision</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span>Change Frequency (Click for flagged candidates)</span>
+                  <span>Answer Revision (Click for detailed analysis)</span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Violin Plot for Location and Test Center levels */}
+        {/* Answer Revision Detailed Analysis */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-foreground">Answer Revision Detailed Analysis</h2>
+          
+          {/* Answer Change Percentage Anomaly */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-red-500" />
+                <span>Answer Change Percentage Anomaly (Revision on &gt;15% of total items)</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={getCurrentAnswerChangeData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      name === 'changePercentage' ? `${value}%` : value,
+                      name === 'changePercentage' ? 'Change Percentage' : 'Anomaly Count'
+                    ]}
+                  />
+                  <Bar dataKey="changePercentage" fill="#ef4444" name="Change Percentage" />
+                  <Bar dataKey="anomalyCount" fill="#f59e0b" name="Anomaly Count" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
+                <p className="font-medium">Anomaly Threshold: &gt;15% revision rate</p>
+                <p className="text-xs text-muted-foreground">
+                  Red bars show percentage of items revised, yellow bars show count of candidates with anomalous revision patterns.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Deviation from Mean Values - Violin Plot */}
+          {(viewLevel === 'location' || viewLevel === 'testcenter') && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="h-5 w-5 text-purple-500" />
+                  <span>Deviation from Mean Values at {levelLabels[viewLevel]}</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ViolinPlot 
+                  data={getCurrentMeanDeviationData()} 
+                  width={400} 
+                  height={300} 
+                />
+                <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
+                  <p className="font-medium">Mean Deviation Analysis:</p>
+                  <p className="text-xs text-muted-foreground">
+                    Violin plot shows how answer revision patterns deviate from location means. 
+                    Wider sections indicate more common deviation ranges.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* WR/TE Ratio Analysis */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-green-500" />
+                <span>WR/TE Ratio Analysis</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={getCurrentWrTeRatioData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (typeof value === 'number') {
+                        return [
+                          name === 'combinedRatio' ? value.toFixed(2) : `${(value * 100).toFixed(1)}%`,
+                          name === 'wrRatio' ? 'WR Ratio' : name === 'teRatio' ? 'TE Ratio' : 'WR/TE Ratio'
+                        ];
+                      }
+                      return [value, name];
+                    }}
+                  />
+                  <Bar dataKey="wrRatio" fill="#10b981" name="WR Ratio" />
+                  <Bar dataKey="teRatio" fill="#3b82f6" name="TE Ratio" />
+                  <Bar dataKey="combinedRatio" fill="#8b5cf6" name="WR/TE Combined Ratio" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-4 flex justify-center space-x-6 text-xs text-muted-foreground">
+                <div className="flex items-center space-x-1">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span>WR (Wrong-Right) Ratio</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>TE (Time Extension) Ratio</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <span>Combined WR/TE Ratio</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Violin Plot for Student WR Scores */}
         {(viewLevel === 'location' || viewLevel === 'testcenter') && (
           <Card>
             <CardHeader>
