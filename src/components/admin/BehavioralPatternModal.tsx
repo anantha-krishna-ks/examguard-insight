@@ -266,42 +266,6 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
             </CardContent>
           </Card>
 
-          {/* Answer Revision Tracker */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-orange-600" />
-                <span>Answer Revision Tracker</span>
-                <Badge variant="secondary">Moderate Risk</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={answerRevisionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="item" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="totalChanges" fill="#ea580c" name="Total Revisions" />
-                  <Bar dataKey="rapidChanges" fill="#dc2626" name="Rapid Revisions (<10s)" />
-                </BarChart>
-              </ResponsiveContainer>
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded">
-                  <p className="text-sm font-medium text-orange-800">Flip-Flop Behavior</p>
-                  <p className="text-xs text-orange-700">Q15: A→B→A (3 changes)</p>
-                </div>
-                <div className="p-3 bg-red-50 border border-red-200 rounded">
-                  <p className="text-sm font-medium text-red-800">Rapid Revisions</p>
-                  <p className="text-xs text-red-700">Q23: 4 changes in 8 seconds</p>
-                </div>
-                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
-                  <p className="text-sm font-medium text-yellow-800">Clustered Changes</p>
-                  <p className="text-xs text-yellow-700">Q45-Q50: High difficulty items</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Change Frequency Heatmap */}
           <Card>
@@ -361,91 +325,6 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
             </CardContent>
           </Card>
 
-          {/* Score Profile Anomaly Panel */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Target className="h-5 w-5 text-indigo-600" />
-                <span>Score Profile Anomaly Panel</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={scoreProfileData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="section" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="score" fill="#6366f1" name="Response Score" />
-                      <Bar dataKey="variance" fill="#94a3b8" name="Variance" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-4">
-                  <div className="p-3 bg-indigo-50 border border-indigo-200 rounded">
-                    <p className="text-sm font-medium text-indigo-800">🎯 Person-Fit Statistics</p>
-                    <p className="text-xs text-indigo-700">IRT-based lz* = -2.1 (p &lt; 0.05)</p>
-                  </div>
-                  <div className="p-3 bg-red-50 border border-red-200 rounded">
-                    <p className="text-sm font-medium text-red-800">⚠️ Low Variability</p>
-                    <p className="text-xs text-red-700">Flat scoring pattern detected</p>
-                  </div>
-                  <div className="p-3 bg-orange-50 border border-orange-200 rounded">
-                    <p className="text-sm font-medium text-orange-800">📈 End Clustering</p>
-                    <p className="text-xs text-orange-700">Q85-Q100: Unexpected correctness</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Inter-Test Taker Similarity */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-cyan-600" />
-                <span>Inter-Test Taker Similarity</span>
-                <Badge variant="destructive">Collusion Risk</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={similarityData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="candidateId" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="similarity" fill="#06b6d4" name="Similarity Score" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="space-y-4">
-                  <div className="p-3 bg-red-50 border border-red-200 rounded">
-                    <p className="text-sm font-medium text-red-800">🚨 Identical Strings</p>
-                    <p className="text-xs text-red-700">
-                      Q15-Q30: 100% match with Student BP003
-                    </p>
-                  </div>
-                  <div className="p-3 bg-orange-50 border border-orange-200 rounded">
-                    <p className="text-sm font-medium text-orange-800">📊 Cluster Analysis</p>
-                    <p className="text-xs text-orange-700">
-                      3 students in same cluster (similarity &gt; 0.85)
-                    </p>
-                  </div>
-                  <div className="p-3 bg-cyan-50 border border-cyan-200 rounded">
-                    <p className="text-sm font-medium text-cyan-800">🔍 Investigation</p>
-                    <p className="text-xs text-cyan-700">
-                      Same test center, adjacent seats
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Export Options */}
           <Card>
