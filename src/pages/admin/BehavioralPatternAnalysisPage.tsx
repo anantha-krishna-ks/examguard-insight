@@ -17,7 +17,9 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell
+  Cell,
+  LineChart,
+  Line
 } from "recharts";
 
 type ViewLevel = 'test' | 'location' | 'testcenter';
@@ -146,6 +148,79 @@ const violinPlotData = {
   ]
 };
 
+// Test Center specific additional data
+const perItemChangesData = {
+  'HYD-001': [
+    { item: 'Item 1', wrongToRight: 8, wrongToWrong: 4, rightToWrong: 2 },
+    { item: 'Item 2', wrongToRight: 12, wrongToWrong: 6, rightToWrong: 3 },
+    { item: 'Item 3', wrongToRight: 6, wrongToWrong: 8, rightToWrong: 5 },
+    { item: 'Item 4', wrongToRight: 10, wrongToWrong: 3, rightToWrong: 1 },
+    { item: 'Item 5', wrongToRight: 15, wrongToWrong: 7, rightToWrong: 4 },
+  ],
+  'HYD-002': [
+    { item: 'Item 1', wrongToRight: 6, wrongToWrong: 3, rightToWrong: 1 },
+    { item: 'Item 2', wrongToRight: 9, wrongToWrong: 5, rightToWrong: 2 },
+    { item: 'Item 3', wrongToRight: 4, wrongToWrong: 6, rightToWrong: 4 },
+    { item: 'Item 4', wrongToRight: 8, wrongToWrong: 2, rightToWrong: 1 },
+    { item: 'Item 5', wrongToRight: 11, wrongToWrong: 5, rightToWrong: 3 },
+  ],
+  'HYD-003': [
+    { item: 'Item 1', wrongToRight: 14, wrongToWrong: 8, rightToWrong: 3 },
+    { item: 'Item 2', wrongToRight: 18, wrongToWrong: 10, rightToWrong: 5 },
+    { item: 'Item 3', wrongToRight: 10, wrongToWrong: 12, rightToWrong: 7 },
+    { item: 'Item 4', wrongToRight: 16, wrongToWrong: 6, rightToWrong: 2 },
+    { item: 'Item 5', wrongToRight: 22, wrongToWrong: 11, rightToWrong: 6 },
+  ],
+};
+
+const responseTimeWindowData = {
+  'HYD-001': [
+    { timeWindow: '0-5s', changes: 12, mostModifiedItem: 'Item 3' },
+    { timeWindow: '5-10s', changes: 8, mostModifiedItem: 'Item 1' },
+    { timeWindow: '10-15s', changes: 6, mostModifiedItem: 'Item 5' },
+    { timeWindow: '15-20s', changes: 4, mostModifiedItem: 'Item 2' },
+    { timeWindow: '20-25s', changes: 3, mostModifiedItem: 'Item 4' },
+  ],
+  'HYD-002': [
+    { timeWindow: '0-5s', changes: 9, mostModifiedItem: 'Item 2' },
+    { timeWindow: '5-10s', changes: 6, mostModifiedItem: 'Item 1' },
+    { timeWindow: '10-15s', changes: 4, mostModifiedItem: 'Item 4' },
+    { timeWindow: '15-20s', changes: 3, mostModifiedItem: 'Item 3' },
+    { timeWindow: '20-25s', changes: 2, mostModifiedItem: 'Item 5' },
+  ],
+  'HYD-003': [
+    { timeWindow: '0-5s', changes: 18, mostModifiedItem: 'Item 5' },
+    { timeWindow: '5-10s', changes: 14, mostModifiedItem: 'Item 2' },
+    { timeWindow: '10-15s', changes: 10, mostModifiedItem: 'Item 1' },
+    { timeWindow: '15-20s', changes: 8, mostModifiedItem: 'Item 3' },
+    { timeWindow: '20-25s', changes: 5, mostModifiedItem: 'Item 4' },
+  ],
+};
+
+const probabilityCorrectnessData = {
+  'HYD-001': [
+    { item: 'Item 1', probability: 0.72, candidatesAffected: 15 },
+    { item: 'Item 2', probability: 0.68, candidatesAffected: 18 },
+    { item: 'Item 3', probability: 0.81, candidatesAffected: 12 },
+    { item: 'Item 4', probability: 0.75, candidatesAffected: 14 },
+    { item: 'Item 5', probability: 0.63, candidatesAffected: 20 },
+  ],
+  'HYD-002': [
+    { item: 'Item 1', probability: 0.69, candidatesAffected: 12 },
+    { item: 'Item 2', probability: 0.74, candidatesAffected: 14 },
+    { item: 'Item 3', probability: 0.66, candidatesAffected: 16 },
+    { item: 'Item 4', probability: 0.78, candidatesAffected: 11 },
+    { item: 'Item 5', probability: 0.71, candidatesAffected: 13 },
+  ],
+  'HYD-003': [
+    { item: 'Item 1', probability: 0.65, candidatesAffected: 22 },
+    { item: 'Item 2', probability: 0.59, candidatesAffected: 26 },
+    { item: 'Item 3', probability: 0.73, candidatesAffected: 18 },
+    { item: 'Item 4', probability: 0.67, candidatesAffected: 20 },
+    { item: 'Item 5', probability: 0.61, candidatesAffected: 24 },
+  ],
+};
+
 const levelLabels = {
   test: "Test",
   location: "Location", 
@@ -181,6 +256,27 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
 
   const getCurrentWrTeRatioData = () => {
     return wrTeRatioData[viewLevel] || [];
+  };
+
+  const getCurrentPerItemChangesData = () => {
+    if (viewLevel === 'testcenter' && selectedTestCenter) {
+      return perItemChangesData[selectedTestCenter as keyof typeof perItemChangesData] || [];
+    }
+    return [];
+  };
+
+  const getCurrentResponseTimeData = () => {
+    if (viewLevel === 'testcenter' && selectedTestCenter) {
+      return responseTimeWindowData[selectedTestCenter as keyof typeof responseTimeWindowData] || [];
+    }
+    return [];
+  };
+
+  const getCurrentProbabilityData = () => {
+    if (viewLevel === 'testcenter' && selectedTestCenter) {
+      return probabilityCorrectnessData[selectedTestCenter as keyof typeof probabilityCorrectnessData] || [];
+    }
+    return [];
   };
 
   const getCurrentViolinData = () => {
@@ -473,6 +569,177 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
             </CardContent>
           </Card>
         </div>
+
+        {/* Test Center Specific Additional Charts */}
+        {viewLevel === 'testcenter' && selectedTestCenter && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-foreground">Test Center Detailed Analysis - {selectedTestCenter}</h3>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Per Item Changes Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5 text-blue-500" />
+                    <span>Per Item Changes (W-R, W-W, R-W)</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={getCurrentPerItemChangesData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="item" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="wrongToRight" fill="#10b981" name="W→R" />
+                      <Bar dataKey="wrongToWrong" fill="#f59e0b" name="W→W" />
+                      <Bar dataKey="rightToWrong" fill="#ef4444" name="R→W" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="mt-2 flex justify-center space-x-4 text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span>Wrong→Right</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span>Wrong→Wrong</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <span>Right→Wrong</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Response Time Window Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5 text-purple-500" />
+                    <span>Response Changes in 5s Time Windows</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={getCurrentResponseTimeData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="timeWindow" />
+                      <YAxis />
+                      <Tooltip 
+                        labelFormatter={(label) => `Time Window: ${label}`}
+                        formatter={(value, name, props) => [
+                          value,
+                          'Changes',
+                          `Most Modified: ${props.payload.mostModifiedItem}`
+                        ]}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="changes" 
+                        stroke="#8b5cf6" 
+                        strokeWidth={3}
+                        dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
+                    <p className="font-medium">Time Window Analysis:</p>
+                    <p className="text-xs text-muted-foreground">
+                      Line plot shows response changes within 5-second intervals. Hover over points to see the most modified item in each window.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Probability of Correctness Chart */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5 text-indigo-500" />
+                    <span>Probability of Correctness for Item Changes</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={getCurrentProbabilityData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="item" />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value, name) => {
+                          if (typeof value === 'number') {
+                            return [
+                              name === 'probability' ? `${(value * 100).toFixed(1)}%` : value,
+                              name === 'probability' ? 'Probability' : 'Candidates Affected'
+                            ];
+                          }
+                          return [value, name];
+                        }}
+                      />
+                      <Bar dataKey="probability" fill="#6366f1" name="Probability" />
+                      <Bar dataKey="candidatesAffected" fill="#06b6d4" name="Candidates Affected" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
+                    <p className="font-medium">Correctness Probability:</p>
+                    <p className="text-xs text-muted-foreground">
+                      Shows probability of correct answers after item changes and number of candidates affected per item.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* WR/TE Ratio for Test Center */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-5 w-5 text-green-500" />
+                    <span>WR/TE Ratio Analysis</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={getCurrentWrTeRatioData().filter(d => d.name === selectedTestCenter)}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value, name) => {
+                          if (typeof value === 'number') {
+                            return [
+                              name === 'combinedRatio' ? value.toFixed(2) : `${(value * 100).toFixed(1)}%`,
+                              name === 'wrRatio' ? 'WR Ratio' : name === 'teRatio' ? 'TE Ratio' : 'WR/TE Ratio'
+                            ];
+                          }
+                          return [value, name];
+                        }}
+                      />
+                      <Bar dataKey="wrRatio" fill="#10b981" name="WR Ratio" />
+                      <Bar dataKey="teRatio" fill="#3b82f6" name="TE Ratio" />
+                      <Bar dataKey="combinedRatio" fill="#8b5cf6" name="WR/TE Combined Ratio" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div className="mt-4 flex justify-center space-x-6 text-xs text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span>WR (Wrong-Right) Ratio</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span>TE (Time Extension) Ratio</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span>Combined WR/TE Ratio</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
 
         {/* Violin Plot for Student WR Scores */}
         {(viewLevel === 'location' || viewLevel === 'testcenter') && (
