@@ -315,70 +315,30 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
           </CardContent>
         </Card>
 
-        {/* Additional Charts for Location and Test Center levels */}
+        {/* Violin Plot for Location and Test Center levels */}
         {(viewLevel === 'location' || viewLevel === 'testcenter') && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Change Frequency Graph */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5 text-green-500" />
-                  <span>Change Frequency Analysis</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={getCurrentChangeFrequencyData()}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="wrongToRight" fill="#10b981" name="W→R" />
-                    <Bar dataKey="wrongToWrong" fill="#f59e0b" name="W→W" />
-                    <Bar dataKey="rightToWrong" fill="#ef4444" name="R→W" />
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-2 flex justify-center space-x-4 text-xs text-muted-foreground">
-                  <div className="flex items-center space-x-1">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span>Wrong→Right</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <span>Wrong→Wrong</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span>Right→Wrong</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Violin Plot */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5 text-purple-500" />
-                  <span>Student WR Scores - Violin Plot</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ViolinPlot 
-                  data={getCurrentViolinData()} 
-                  width={400} 
-                  height={300} 
-                />
-                <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
-                  <p className="font-medium">Distribution Analysis:</p>
-                  <p className="text-xs text-muted-foreground">
-                    Violin plot shows score distribution patterns across {levelLabels[viewLevel].toLowerCase()}s.
-                    Higher density areas indicate more common score ranges.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-purple-500" />
+                <span>Student WR Scores - Violin Plot</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ViolinPlot 
+                data={getCurrentViolinData()} 
+                width={400} 
+                height={300} 
+              />
+              <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
+                <p className="font-medium">Distribution Analysis:</p>
+                <p className="text-xs text-muted-foreground">
+                  Violin plot shows score distribution patterns across {levelLabels[viewLevel].toLowerCase()}s.
+                  Higher density areas indicate more common score ranges.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Candidate List */}
