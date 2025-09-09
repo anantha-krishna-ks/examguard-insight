@@ -414,7 +414,8 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 <CardTitle>
                   Behavioral Pattern Anomaly - {levelLabels[viewLevel]} Level
                   {viewLevel === 'location' && selectedTest && ` (From ${selectedTest})`}
-                  {selectedLocation && ` (${selectedLocation})`}
+                  {viewLevel === 'testcenter' && selectedTest && selectedLocation && ` (From ${selectedTest} → ${selectedLocation})`}
+                  {viewLevel !== 'testcenter' && selectedLocation && ` (${selectedLocation})`}
                 </CardTitle>
               </div>
               {clickedSegment && (
