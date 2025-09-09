@@ -741,31 +741,6 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
           </div>
         )}
 
-        {/* Violin Plot for Student WR Scores */}
-        {(viewLevel === 'location' || viewLevel === 'testcenter') && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="h-5 w-5 text-purple-500" />
-                <span>Student WR Scores - Violin Plot</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ViolinPlot 
-                data={getCurrentViolinData()} 
-                width={400} 
-                height={300} 
-              />
-              <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
-                <p className="font-medium">Distribution Analysis:</p>
-                <p className="text-xs text-muted-foreground">
-                  Violin plot shows score distribution patterns across {levelLabels[viewLevel].toLowerCase()}s.
-                  Higher density areas indicate more common score ranges.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Candidate List */}
         {showCandidates && (
