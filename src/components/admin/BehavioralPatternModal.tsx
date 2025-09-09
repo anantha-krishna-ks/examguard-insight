@@ -75,15 +75,15 @@ const changeFrequencyData = [
 ];
 
 const timeWindowData = [
-  { minute: 5, changes: 2, wrTeRatio: 0.4 },
-  { minute: 10, changes: 1, wrTeRatio: 0.2 },
-  { minute: 15, changes: 4, wrTeRatio: 0.8 },
-  { minute: 20, changes: 6, wrTeRatio: 1.2 },
-  { minute: 25, changes: 18, wrTeRatio: 3.6 },
-  { minute: 30, changes: 12, wrTeRatio: 2.4 },
-  { minute: 35, changes: 3, wrTeRatio: 0.6 },
-  { minute: 40, changes: 2, wrTeRatio: 0.4 },
-  { minute: 45, changes: 1, wrTeRatio: 0.2 },
+  { minute: 5, candidateChanges: 2, testCenterAvg: 1.2, candidateWrTe: 0.4, testCenterWrTe: 0.3 },
+  { minute: 10, candidateChanges: 1, testCenterAvg: 1.5, candidateWrTe: 0.2, testCenterWrTe: 0.4 },
+  { minute: 15, candidateChanges: 4, testCenterAvg: 2.1, candidateWrTe: 0.8, testCenterWrTe: 0.6 },
+  { minute: 20, candidateChanges: 6, testCenterAvg: 2.8, candidateWrTe: 1.2, testCenterWrTe: 0.8 },
+  { minute: 25, candidateChanges: 18, testCenterAvg: 3.2, candidateWrTe: 3.6, testCenterWrTe: 1.1 },
+  { minute: 30, candidateChanges: 12, testCenterAvg: 2.9, candidateWrTe: 2.4, testCenterWrTe: 0.9 },
+  { minute: 35, candidateChanges: 3, testCenterAvg: 2.2, candidateWrTe: 0.6, testCenterWrTe: 0.7 },
+  { minute: 40, candidateChanges: 2, testCenterAvg: 1.8, candidateWrTe: 0.4, testCenterWrTe: 0.5 },
+  { minute: 45, candidateChanges: 1, testCenterAvg: 1.3, candidateWrTe: 0.2, testCenterWrTe: 0.3 },
 ];
 
 const scoreProfileData = [
@@ -311,16 +311,29 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="minute" />
                   <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="changes" stroke="#8b5cf6" strokeWidth={2} name="Answer Changes" />
-                  <Line type="monotone" dataKey="wrTeRatio" stroke="#06b6d4" strokeWidth={2} name="WR/TE Ratio" />
+                  <Tooltip 
+                    formatter={(value, name) => [value, name]}
+                    labelFormatter={(label) => `Time: ${label}s`}
+                  />
+                  <Line type="monotone" dataKey="candidateChanges" stroke="#8b5cf6" strokeWidth={3} name="Candidate Changes" />
+                  <Line type="monotone" dataKey="testCenterAvg" stroke="#8b5cf6" strokeWidth={2} strokeDasharray="5 5" name="Test Center Average" />
+                  <Line type="monotone" dataKey="candidateWrTe" stroke="#06b6d4" strokeWidth={3} name="Candidate WR/TE" />
+                  <Line type="monotone" dataKey="testCenterWrTe" stroke="#06b6d4" strokeWidth={2} strokeDasharray="5 5" name="Test Center WR/TE Avg" />
                 </LineChart>
               </ResponsiveContainer>
-              <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded">
-                <p className="text-sm font-medium text-purple-800">📊 Deviation Analysis</p>
-                <p className="text-xs text-purple-700">
-                  Peak activity: 120-125s window (8 changes) • 2.3σ above mean
-                </p>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="p-3 bg-purple-50 border border-purple-200 rounded">
+                  <p className="text-sm font-medium text-purple-800">📊 Candidate vs Test Center</p>
+                  <p className="text-xs text-purple-700">
+                    Peak: 25s window (18 vs 3.2 avg) • 4.6σ above test center mean
+                  </p>
+                </div>
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded">
+                  <p className="text-sm font-medium text-blue-800">🎯 Deviation Analysis</p>
+                  <p className="text-xs text-blue-700">
+                    WR/TE: 3.6 vs 1.1 center avg • 2.3× higher than expected
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
