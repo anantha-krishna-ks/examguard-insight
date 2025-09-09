@@ -230,6 +230,7 @@ const levelLabels = {
 export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageProps) {
   const navigate = useNavigate();
   const [viewLevel, setViewLevel] = useState<ViewLevel>('test');
+  const [selectedTest, setSelectedTest] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [selectedTestCenter, setSelectedTestCenter] = useState<string | null>(null);
   const [showCandidates, setShowCandidates] = useState(false);
@@ -287,6 +288,7 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
 
   const handleLevelChange = (level: ViewLevel) => {
     setViewLevel(level);
+    setSelectedTest(null);
     setSelectedLocation(null);
     setSelectedTestCenter(null);
     setShowCandidates(false);
@@ -295,7 +297,8 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
 
   const handleBarClick = (data: any, segment?: string) => {
     if (viewLevel === 'test') {
-      // Drill down from test to location level
+      // Store selected test and drill down to location level
+      setSelectedTest(data.name);
       setViewLevel('location');
     } else if (viewLevel === 'location' && !selectedLocation) {
       setSelectedLocation(data.name);
@@ -410,6 +413,7 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 <BarChart3 className="h-5 w-5 text-admin-answer-revision" />
                 <CardTitle>
                   Behavioral Pattern Anomaly - {levelLabels[viewLevel]} Level
+                  {viewLevel === 'location' && selectedTest && ` (From ${selectedTest})`}
                   {selectedLocation && ` (${selectedLocation})`}
                 </CardTitle>
               </div>
