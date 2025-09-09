@@ -180,7 +180,7 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
           </Card>
 
           {/* Anomaly Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -191,19 +191,6 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
                   <TrendingUp className="h-8 w-8 text-blue-600" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">≥6 items or ≥3 repeats</p>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Answer Revisions</p>
-                    <p className="text-2xl font-bold text-orange-600">28</p>
-                  </div>
-                  <TrendingUp className="h-8 w-8 text-orange-600" />
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Including flip-flops</p>
               </CardContent>
             </Card>
             
