@@ -198,12 +198,12 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Anomaly Score</p>
-                    <p className="text-2xl font-bold text-red-600">0.89</p>
+                    <p className="text-sm text-muted-foreground">Group Mean WR Sum</p>
+                    <p className="text-2xl font-bold text-orange-600">47.3</p>
                   </div>
-                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                  <Target className="h-8 w-8 text-orange-600" />
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">High risk threshold</p>
+                <p className="text-xs text-muted-foreground mt-2">Wrong-Right total sum</p>
               </CardContent>
             </Card>
             
@@ -211,12 +211,12 @@ export function BehavioralPatternModal({ candidate, isOpen, onClose }: Behaviora
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Similarity Index</p>
-                    <p className="text-2xl font-bold text-purple-600">0.67</p>
+                    <p className="text-sm text-muted-foreground">WR/TE Ratio</p>
+                    <p className="text-2xl font-bold text-green-600">2.84</p>
                   </div>
-                  <Users className="h-8 w-8 text-purple-600" />
+                  <BarChart3 className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">With other students</p>
+                <p className="text-xs text-muted-foreground mt-2">Wrong-Right to Time-Extension</p>
               </CardContent>
             </Card>
           </div>
