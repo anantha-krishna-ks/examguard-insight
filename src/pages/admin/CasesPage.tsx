@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertFeed } from "@/components/admin/AlertFeed";
+import { CaseDetailModal } from "@/components/admin/CaseDetailModal";
 import { Search, Download, Calendar, Users, Flag, FileText, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -55,6 +56,8 @@ const CasesPage = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [testCenterFilter, setTestCenterFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  const [selectedCase, setSelectedCase] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const filteredCases = mockCases.filter(testCase => {
     const matchesSearch = testCase.testName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,8 +72,9 @@ const CasesPage = () => {
     toast.success("Cases data exported successfully");
   };
 
-  const handleViewDetails = (caseId: string) => {
-    toast.info(`Opening detailed view for ${caseId}`);
+  const handleViewDetails = (testCase: any) => {
+    setSelectedCase(testCase);
+    setIsModalOpen(true);
   };
 
   return (
@@ -88,6 +92,11 @@ const CasesPage = () => {
           filteredCases={filteredCases}
           onExport={handleExport}
           onViewDetails={handleViewDetails}
+        />
+        <CaseDetailModal 
+          testCase={selectedCase}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
         />
       </SidebarProvider>
     </div>
@@ -117,7 +126,7 @@ const CasesPageContent = ({
   setDateFilter: (value: string) => void;
   filteredCases: any[];
   onExport: () => void;
-  onViewDetails: (caseId: string) => void;
+  onViewDetails: (testCase: any) => void;
 }) => {
   return (
     <div className="flex min-h-screen w-full relative">
@@ -342,7 +351,7 @@ const CasesPageContent = ({
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => onViewDetails(testCase.id)}
+                          onClick={() => onViewDetails(testCase)}
                         >
                           View Details
                         </Button>
