@@ -541,18 +541,11 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip 
-                    formatter={(value, name) => {
-                      if (typeof value === 'number') {
-                        return [
-                          name === 'combinedRatio' ? value.toFixed(2) : `${(value * 100).toFixed(1)}%`,
-                          name === 'wrRatio' ? 'WR Ratio' : name === 'teRatio' ? 'TE Ratio' : 'WR/TE Ratio'
-                        ];
-                      }
-                      return [value, name];
-                    }}
+                    formatter={(value, name) => [
+                      typeof value === 'number' ? value.toFixed(2) : value,
+                      'WR/TE Combined Ratio'
+                    ]}
                   />
-                  <Bar dataKey="wrRatio" fill="#10b981" name="WR Ratio" />
-                  <Bar dataKey="teRatio" fill="#3b82f6" name="TE Ratio" />
                   <Bar dataKey="combinedRatio" fill="#8b5cf6" name="WR/TE Combined Ratio" />
                 </BarChart>
               </ResponsiveContainer>
