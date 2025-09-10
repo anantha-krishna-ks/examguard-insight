@@ -477,21 +477,20 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={getCurrentAnswerChangeData()}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip 
-                    formatter={(value, name) => [
-                      name === 'changePercentage' ? `${value}%` : value,
-                      name === 'changePercentage' ? 'Change Percentage' : 'Anomaly Count'
-                    ]}
-                  />
-                  <Bar dataKey="changePercentage" fill="#ef4444" name="Change Percentage" />
-                  <Bar dataKey="anomalyCount" fill="#f59e0b" name="Anomaly Count" />
-                </BarChart>
-              </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={getCurrentAnswerChangeData()}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip 
+                        formatter={(value, name) => [
+                          `${value}%`,
+                          'Change Percentage'
+                        ]}
+                      />
+                      <Bar dataKey="changePercentage" fill="#ef4444" name="Change Percentage" />
+                    </BarChart>
+                  </ResponsiveContainer>
               <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
                 <p className="font-medium">Anomaly Threshold: &gt;15% revision rate</p>
                 <p className="text-xs text-muted-foreground">
