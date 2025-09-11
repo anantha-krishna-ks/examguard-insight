@@ -16,6 +16,7 @@ import SettingsPage from "./pages/admin/SettingsPage";
 import CasesPage from "./pages/admin/CasesPage";
 import TestCentresPage from "./pages/admin/TestCentresPage";
 import { BehavioralPatternAnalysisPage } from "./pages/admin/BehavioralPatternAnalysisPage";
+import ComingSoonPage from "./pages/admin/ComingSoonPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,8 @@ const App = () => (
           <Route path="/admin/settings" element={<SettingsPage />} />
           <Route path="/admin/cases" element={<CasesPage />} />
           <Route path="/admin/test-centres" element={<TestCentresPage />} />
+          <Route path="/admin/items" element={<ComingSoonPage />} />
+          <Route path="/admin/similarity" element={<ComingSoonPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
