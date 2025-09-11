@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertTriangle, Play, Pause, Square, Settings, Activity, BarChart3 } from "lucide-react";
+import { AlertTriangle, Play, Pause, Square, Settings, Activity, Users, Clock, Target } from "lucide-react";
 
 interface SimulationConfig {
   apiEndpoint: string;
@@ -16,21 +18,13 @@ interface SimulationConfig {
   testCenter: string;
   startTime: string;
   endTime: string;
-  numberOfQuestions: number;
-  // Candidate Information
-  studentId: string;
-  qnId: string;
-  candidateQnResponseTime: number;
-  timeStamp: string;
-  historicalAvg: number;
-  optionSelected: string;
-  correctOption: string;
-  itemDifficulty: number;
+  numQuestions: number;
+  numCandidates: number;
 }
 
 interface CandidateData {
   studentId: string;
-  questionId: string;
+  qnId: string;
   responseTime: number;
   timeStamp: string;
   historicalAvg: number;
@@ -43,8 +37,7 @@ interface AnomalyResult {
   type: string;
   severity: 'low' | 'medium' | 'high';
   description: string;
-  studentId: string;
-  questionId: string;
+  candidateId: string;
   timestamp: string;
 }
 
@@ -56,16 +49,8 @@ export default function SimulatorPage() {
     testCenter: "",
     startTime: "",
     endTime: "",
-    numberOfQuestions: 50,
-    // Candidate Information
-    studentId: "",
-    qnId: "",
-    candidateQnResponseTime: 0,
-    timeStamp: "",
-    historicalAvg: 0,
-    optionSelected: "",
-    correctOption: "",
-    itemDifficulty: 0
+    numQuestions: 50,
+    numCandidates: 100
   });
 
   const [isRunning, setIsRunning] = useState(false);
@@ -73,7 +58,7 @@ export default function SimulatorPage() {
   const [progress, setProgress] = useState(0);
   const [generatedData, setGeneratedData] = useState<CandidateData[]>([]);
   const [detectedAnomalies, setDetectedAnomalies] = useState<AnomalyResult[]>([]);
-  const [testQueue, setTestQueue] = useState<SimulationConfig[]>([]);
+  const [activeTests, setActiveTests] = useState(0);
 
   // Simulation timer
   useEffect(() => {
@@ -105,7 +90,7 @@ export default function SimulatorPage() {
   const generateMockData = () => {
     const newData: CandidateData = {
       studentId: `STD_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-      questionId: `Q_${Math.floor(Math.random() * config.numberOfQuestions) + 1}`,
+      qnId: `Q_${Math.floor(Math.random() * config.numQuestions) + 1}`,
       responseTime: Math.random() * 300 + 10, // 10-310 seconds
       timeStamp: new Date().toISOString(),
       historicalAvg: Math.random() * 180 + 60, // 60-240 seconds
@@ -133,8 +118,7 @@ export default function SimulatorPage() {
       type: anomalyTypes[Math.floor(Math.random() * anomalyTypes.length)],
       severity: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as 'low' | 'medium' | 'high',
       description: "Anomalous behavior detected in candidate response patterns",
-      studentId: `STD_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-      questionId: `Q_${Math.floor(Math.random() * config.numberOfQuestions) + 1}`,
+      candidateId: `STD_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
       timestamp: new Date().toISOString()
     };
 
@@ -144,6 +128,7 @@ export default function SimulatorPage() {
   const startSimulation = () => {
     setIsRunning(true);
     setIsPaused(false);
+    setActiveTests(Math.floor(Math.random() * 5) + 1);
     setProgress(0);
     setGeneratedData([]);
     setDetectedAnomalies([]);
@@ -157,22 +142,7 @@ export default function SimulatorPage() {
     setIsRunning(false);
     setIsPaused(false);
     setProgress(0);
-  };
-
-  const addTestToQueue = () => {
-    if (config.testName && config.numberOfQuestions) {
-      setTestQueue(prev => [...prev, { ...config }]);
-      // Reset form after adding
-      setConfig({
-        ...config,
-        testName: "",
-        numberOfQuestions: 50
-      });
-    }
-  };
-
-  const removeTestFromQueue = (index: number) => {
-    setTestQueue(prev => prev.filter((_, i) => i !== index));
+    setActiveTests(0);
   };
 
   const getSeverityColor = (severity: string) => {
@@ -185,358 +155,328 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="h-screen w-full bg-slate-900 overflow-auto">
-      {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-900/50">
-        <div className="container mx-auto px-6 py-6 text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">Test Forensics Data Simulator</h1>
-          <p className="text-slate-400">Generate real-time test data with configurable anomalies to validate your forensics application.</p>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Test Anomaly Simulator</h1>
+          <p className="text-muted-foreground">Generate and analyze test data for anomaly detection</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Badge variant="outline" className="px-3 py-1">
+            <Activity className="w-4 h-4 mr-1" />
+            {activeTests} Active Tests
+          </Badge>
         </div>
       </div>
 
-      <div className="container mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
-          {/* Left Side - Configuration */}
-          <div className="bg-slate-800 rounded-lg p-6 flex flex-col">
-            <h2 className="text-xl font-semibold text-white mb-6">Configuration</h2>
-            
-            <div className="space-y-6 flex-1">
-              {/* API Endpoint */}
-              <div className="space-y-2">
-                <Label htmlFor="apiEndpoint" className="text-slate-300">API Endpoint URL</Label>
-                <Input
-                  id="apiEndpoint"
-                  value={config.apiEndpoint}
-                  onChange={(e) => setConfig({ ...config, apiEndpoint: e.target.value })}
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                  placeholder="https://yourapi.com/testdata"
-                />
-              </div>
+      <Tabs defaultValue="configuration" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="configuration">Configuration</TabsTrigger>
+          <TabsTrigger value="simulation">Simulation</TabsTrigger>
+          <TabsTrigger value="anomalies">Anomaly Detection</TabsTrigger>
+          <TabsTrigger value="data">Generated Data</TabsTrigger>
+        </TabsList>
 
-              {/* Test Configuration */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-white">Test Configuration</h3>
-                
-                <div className="grid grid-cols-1 gap-4">
+        <TabsContent value="configuration" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Settings className="w-5 h-5 mr-2" />
+                Simulation Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Test Name</Label>
-                    <Select 
-                      value={config.testName} 
-                      onValueChange={(value) => setConfig({ ...config, testName: value })}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <Label htmlFor="apiEndpoint">API Endpoint URL</Label>
+                    <Input
+                      id="apiEndpoint"
+                      value={config.apiEndpoint}
+                      onChange={(e) => setConfig(prev => ({ ...prev, apiEndpoint: e.target.value }))}
+                      placeholder="https://api.example.com/v1/data"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="testName">Test Name</Label>
+                    <Select value={config.testName} onValueChange={(value) => setConfig(prev => ({ ...prev, testName: value }))}>
+                      <SelectTrigger>
                         <SelectValue placeholder="Select test name" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="Mathematics Assessment">Mathematics Assessment</SelectItem>
-                        <SelectItem value="Science Evaluation">Science Evaluation</SelectItem>
-                        <SelectItem value="Language Proficiency">Language Proficiency</SelectItem>
-                        <SelectItem value="Critical Thinking">Critical Thinking</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="mathematics-advanced">Mathematics Advanced</SelectItem>
+                        <SelectItem value="english-proficiency">English Proficiency</SelectItem>
+                        <SelectItem value="science-comprehensive">Science Comprehensive</SelectItem>
+                        <SelectItem value="aptitude-general">General Aptitude</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Location</Label>
-                    <Select 
-                      value={config.location} 
-                      onValueChange={(value) => setConfig({ ...config, location: value })}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <Label htmlFor="location">Location</Label>
+                    <Select value={config.location} onValueChange={(value) => setConfig(prev => ({ ...prev, location: value }))}>
+                      <SelectTrigger>
                         <SelectValue placeholder="Select location" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="New York">New York</SelectItem>
-                        <SelectItem value="Los Angeles">Los Angeles</SelectItem>
-                        <SelectItem value="Chicago">Chicago</SelectItem>
-                        <SelectItem value="Houston">Houston</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="new-york">New York</SelectItem>
+                        <SelectItem value="london">London</SelectItem>
+                        <SelectItem value="singapore">Singapore</SelectItem>
+                        <SelectItem value="mumbai">Mumbai</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Test Center</Label>
-                    <Select 
-                      value={config.testCenter} 
-                      onValueChange={(value) => setConfig({ ...config, testCenter: value })}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <Label htmlFor="testCenter">Test Center</Label>
+                    <Select value={config.testCenter} onValueChange={(value) => setConfig(prev => ({ ...prev, testCenter: value }))}>
+                      <SelectTrigger>
                         <SelectValue placeholder="Select test center" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="Center A">Center A</SelectItem>
-                        <SelectItem value="Center B">Center B</SelectItem>
-                        <SelectItem value="Center C">Center C</SelectItem>
-                        <SelectItem value="Center D">Center D</SelectItem>
+                      <SelectContent>
+                        <SelectItem value="center-001">Training Center 001</SelectItem>
+                        <SelectItem value="center-002">Training Center 002</SelectItem>
+                        <SelectItem value="center-003">Training Center 003</SelectItem>
+                        <SelectItem value="center-004">Training Center 004</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startTime">Start Time</Label>
+                      <Input
+                        id="startTime"
+                        type="datetime-local"
+                        value={config.startTime}
+                        onChange={(e) => setConfig(prev => ({ ...prev, startTime: e.target.value }))}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="endTime">End Time</Label>
+                      <Input
+                        id="endTime"
+                        type="datetime-local"
+                        value={config.endTime}
+                        onChange={(e) => setConfig(prev => ({ ...prev, endTime: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Start Time</Label>
+                    <Label htmlFor="numQuestions">Number of Questions</Label>
                     <Input
-                      type="datetime-local"
-                      value={config.startTime}
-                      onChange={(e) => setConfig({ ...config, startTime: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
+                      id="numQuestions"
+                      type="number"
+                      value={config.numQuestions}
+                      onChange={(e) => setConfig(prev => ({ ...prev, numQuestions: parseInt(e.target.value) || 0 }))}
+                      min="1"
+                      max="200"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-slate-300">End Time</Label>
+                    <Label htmlFor="numCandidates">Number of Candidates</Label>
                     <Input
-                      type="datetime-local"
-                      value={config.endTime}
-                      onChange={(e) => setConfig({ ...config, endTime: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white"
+                      id="numCandidates"
+                      type="number"
+                      value={config.numCandidates}
+                      onChange={(e) => setConfig(prev => ({ ...prev, numCandidates: parseInt(e.target.value) || 0 }))}
+                      min="1"
+                      max="1000"
                     />
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
+        <TabsContent value="simulation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Play className="w-5 h-5 mr-2" />
+                  Simulation Control
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={startSimulation}
+                    disabled={isRunning}
+                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Start
+                  </Button>
+                  <Button
+                    onClick={pauseSimulation}
+                    disabled={!isRunning}
+                    variant="outline"
+                  >
+                    <Pause className="w-4 h-4 mr-2" />
+                    {isPaused ? 'Resume' : 'Pause'}
+                  </Button>
+                  <Button
+                    onClick={stopSimulation}
+                    disabled={!isRunning}
+                    variant="destructive"
+                  >
+                    <Square className="w-4 h-4 mr-2" />
+                    Stop
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Simulation Progress</span>
+                  <span>{progress.toFixed(1)}%</span>
+                </div>
+                <Progress value={progress} className="h-3" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Data Points</p>
+                        <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{generatedData.length}</p>
+                      </div>
+                      <Activity className="h-8 w-8 text-blue-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Anomalies</p>
+                        <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">{detectedAnomalies.length}</p>
+                      </div>
+                      <AlertTriangle className="h-8 w-8 text-amber-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-600 dark:text-green-400">Active Tests</p>
+                        <p className="text-2xl font-bold text-green-700 dark:text-green-300">{activeTests}</p>
+                      </div>
+                      <Target className="h-8 w-8 text-green-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Candidates</p>
+                        <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{config.numCandidates}</p>
+                      </div>
+                      <Users className="h-8 w-8 text-purple-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="anomalies" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <AlertTriangle className="w-5 h-5 mr-2" />
+                Detected Anomalies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-96">
+                <div className="space-y-3">
+                  {detectedAnomalies.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No anomalies detected yet. Start the simulation to begin detection.</p>
+                  ) : (
+                    detectedAnomalies.slice().reverse().map((anomaly, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg bg-card">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <Badge variant={getSeverityColor(anomaly.severity)}>
+                              {anomaly.severity.toUpperCase()}
+                            </Badge>
+                            <span className="font-medium">{anomaly.type}</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{anomaly.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Candidate: {anomaly.candidateId} • {new Date(anomaly.timestamp).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="data" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="w-5 h-5 mr-2" />
+                Generated Data Stream
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-96">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Number of Questions</Label>
-                  <Input
-                    type="number"
-                    value={config.numberOfQuestions}
-                    onChange={(e) => setConfig({ ...config, numberOfQuestions: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                    placeholder="Number of Questions"
-                    min="1"
-                    max="200"
-                  />
-                </div>
-              </div>
-
-              {/* Candidate Information */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-white">Candidate Information</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Student ID</Label>
-                    <Input
-                      value={config.studentId}
-                      onChange={(e) => setConfig({ ...config, studentId: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="e.g., STD_001"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Question ID</Label>
-                    <Input
-                      value={config.qnId}
-                      onChange={(e) => setConfig({ ...config, qnId: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="e.g., Q_001"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Response Time (ms)</Label>
-                    <Input
-                      type="number"
-                      value={config.candidateQnResponseTime}
-                      onChange={(e) => setConfig({ ...config, candidateQnResponseTime: parseInt(e.target.value) || 0 })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="Response time in milliseconds"
-                      min="0"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Time Stamp</Label>
-                    <Input
-                      value={config.timeStamp}
-                      onChange={(e) => setConfig({ ...config, timeStamp: e.target.value })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="ISO timestamp"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Historical Average (ms)</Label>
-                    <Input
-                      type="number"
-                      value={config.historicalAvg}
-                      onChange={(e) => setConfig({ ...config, historicalAvg: parseInt(e.target.value) || 0 })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="Historical average response time"
-                      min="0"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Option Selected</Label>
-                    <Select 
-                      value={config.optionSelected} 
-                      onValueChange={(value) => setConfig({ ...config, optionSelected: value })}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                        <SelectValue placeholder="Select option" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="A">A</SelectItem>
-                        <SelectItem value="B">B</SelectItem>
-                        <SelectItem value="C">C</SelectItem>
-                        <SelectItem value="D">D</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Correct Option</Label>
-                    <Select 
-                      value={config.correctOption} 
-                      onValueChange={(value) => setConfig({ ...config, correctOption: value })}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                        <SelectValue placeholder="Select correct option" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="A">A</SelectItem>
-                        <SelectItem value="B">B</SelectItem>
-                        <SelectItem value="C">C</SelectItem>
-                        <SelectItem value="D">D</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Item Difficulty</Label>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={config.itemDifficulty}
-                      onChange={(e) => setConfig({ ...config, itemDifficulty: parseFloat(e.target.value) || 0 })}
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                      placeholder="0.0 - 1.0"
-                      min="0"
-                      max="1"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button 
-                  onClick={startSimulation}
-                  disabled={isRunning}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                >
-                  Run Simulation
-                </Button>
-                <Button 
-                  onClick={stopSimulation}
-                  disabled={!isRunning && !isPaused}
-                  variant="destructive"
-                  className="flex-1"
-                >
-                  Stop Simulation
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side - Live Dashboard */}
-          <div className="bg-slate-800 rounded-lg p-6 flex flex-col">
-            <h2 className="text-xl font-semibold text-white mb-6">Live Dashboard</h2>
-            
-            <div className="flex-1 space-y-6">
-              {/* Dashboard Status */}
-              <div className="text-center py-8">
-                {!isRunning && testQueue.length === 0 ? (
-                  <p className="text-slate-400">Simulation has not started. Configure tests and press 'Run'.</p>
-                ) : !isRunning ? (
-                  <p className="text-slate-400">Ready to start simulation. Press 'Run Simulation' to begin.</p>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-center gap-4 text-white">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                        <span>Simulation Running</span>
-                      </div>
-                      <span className="text-slate-400">Progress: {progress.toFixed(1)}%</span>
-                    </div>
-                    <Progress value={progress} className="w-full max-w-md mx-auto" />
-                    <div className="grid grid-cols-2 gap-8 text-center">
-                      <div>
-                        <p className="text-2xl font-bold text-white">{generatedData.length}</p>
-                        <p className="text-slate-400 text-sm">Data Points</p>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-red-400">{detectedAnomalies.length}</p>
-                        <p className="text-slate-400 text-sm">Anomalies</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Event Log */}
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-white mb-4">Event Log</h3>
-                <div className="bg-slate-900 rounded-lg p-4 h-[400px]">
-                  <ScrollArea className="h-full">
-                    {detectedAnomalies.length === 0 && generatedData.length === 0 ? (
-                      <div className="h-full flex items-center justify-center">
-                        <p className="text-slate-500 text-center">Event log is empty<br />Start simulation to see events</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {/* Show recent anomalies first */}
-                        {detectedAnomalies.slice(-10).reverse().map((anomaly, index) => (
-                          <div key={`anomaly-${index}`} className="border-l-4 border-red-500 pl-4 py-2">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="destructive" className="text-xs">
-                                ANOMALY
-                              </Badge>
-                              <span className="text-xs text-slate-400">
-                                {new Date(anomaly.timestamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                            <p className="text-white text-sm font-medium">{anomaly.type}</p>
-                            <p className="text-slate-400 text-xs">
-                              Student: {anomaly.studentId} • Question: {anomaly.questionId}
-                            </p>
+                  {generatedData.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">No data generated yet. Start the simulation to begin data generation.</p>
+                  ) : (
+                    generatedData.slice().reverse().map((data, index) => (
+                      <div key={index} className="p-3 border rounded-lg bg-card text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          <div>
+                            <span className="font-medium">Student:</span> {data.studentId}
                           </div>
-                        ))}
-                        
-                        {/* Show recent data points */}
-                        {generatedData.slice(-5).reverse().map((data, index) => (
-                          <div key={`data-${index}`} className="border-l-4 border-blue-500 pl-4 py-2">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Badge variant="outline" className="text-xs border-blue-500 text-blue-400">
-                                DATA
-                              </Badge>
-                              <span className="text-xs text-slate-400">
-                                {new Date(data.timeStamp).toLocaleTimeString()}
-                              </span>
-                            </div>
-                            <p className="text-white text-sm">
-                              {data.studentId} answered Q{data.questionId}
-                            </p>
-                            <p className="text-slate-400 text-xs">
-                              Response: {data.optionSelected} • 
-                              Time: {data.responseTime.toFixed(0)}ms • 
-                              <span className={data.optionSelected === data.correctOption ? 'text-green-400' : 'text-red-400'}>
-                                {data.optionSelected === data.correctOption ? 'Correct' : 'Wrong'}
-                              </span>
-                            </p>
+                          <div>
+                            <span className="font-medium">Question:</span> {data.qnId}
                           </div>
-                        ))}
+                          <div>
+                            <span className="font-medium">Response Time:</span> {data.responseTime.toFixed(1)}s
+                          </div>
+                          <div>
+                            <span className="font-medium">Selected:</span> {data.optionSelected} 
+                            {data.optionSelected === data.correctOption ? ' ✓' : ' ✗'}
+                          </div>
+                        </div>
+                        <Separator className="my-2" />
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs text-muted-foreground">
+                          <div>Historical Avg: {data.historicalAvg.toFixed(1)}s</div>
+                          <div>Difficulty: {data.itemDifficulty.toFixed(2)}</div>
+                          <div>Time: {new Date(data.timeStamp).toLocaleTimeString()}</div>
+                        </div>
                       </div>
-                    )}
-                  </ScrollArea>
+                    ))
+                  )}
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
