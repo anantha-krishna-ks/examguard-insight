@@ -17,7 +17,15 @@ interface SimulationConfig {
   startTime: string;
   endTime: string;
   numberOfQuestions: number;
-  numberOfCandidates: number;
+  // Candidate Information
+  studentId: string;
+  qnId: string;
+  candidateQnResponseTime: number;
+  timeStamp: string;
+  historicalAvg: number;
+  optionSelected: string;
+  correctOption: string;
+  itemDifficulty: number;
 }
 
 interface CandidateData {
@@ -49,7 +57,15 @@ export default function SimulatorPage() {
     startTime: "",
     endTime: "",
     numberOfQuestions: 50,
-    numberOfCandidates: 100
+    // Candidate Information
+    studentId: "",
+    qnId: "",
+    candidateQnResponseTime: 0,
+    timeStamp: "",
+    historicalAvg: 0,
+    optionSelected: "",
+    correctOption: "",
+    itemDifficulty: 0
   });
 
   const [isRunning, setIsRunning] = useState(false);
@@ -144,14 +160,13 @@ export default function SimulatorPage() {
   };
 
   const addTestToQueue = () => {
-    if (config.testName && config.numberOfQuestions && config.numberOfCandidates) {
+    if (config.testName && config.numberOfQuestions) {
       setTestQueue(prev => [...prev, { ...config }]);
       // Reset form after adding
       setConfig({
         ...config,
         testName: "",
-        numberOfQuestions: 50,
-        numberOfCandidates: 100
+        numberOfQuestions: 50
       });
     }
   };
@@ -198,86 +213,210 @@ export default function SimulatorPage() {
                 />
               </div>
 
-              {/* Add a New Test */}
-              <div className="bg-slate-700 rounded-lg p-4 space-y-4">
-                <h3 className="text-lg font-medium text-white">Add a New Test</h3>
+              {/* Test Configuration */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-white">Test Configuration</h3>
                 
-                <div className="space-y-3">
-                  <Input
-                    value={config.testName}
-                    onChange={(e) => setConfig({ ...config, testName: e.target.value })}
-                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
-                    placeholder="Test Name (e.g., Algebra I Final)"
-                  />
-                  
-                  <Input
-                    type="number"
-                    value={config.numberOfCandidates}
-                    onChange={(e) => setConfig({ ...config, numberOfCandidates: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
-                    placeholder="Number of Students"
-                    min="1"
-                    max="1000"
-                  />
-                  
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Test Name</Label>
+                    <Select 
+                      value={config.testName} 
+                      onValueChange={(value) => setConfig({ ...config, testName: value })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select test name" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="Mathematics Assessment">Mathematics Assessment</SelectItem>
+                        <SelectItem value="Science Evaluation">Science Evaluation</SelectItem>
+                        <SelectItem value="Language Proficiency">Language Proficiency</SelectItem>
+                        <SelectItem value="Critical Thinking">Critical Thinking</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Location</Label>
+                    <Select 
+                      value={config.location} 
+                      onValueChange={(value) => setConfig({ ...config, location: value })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select location" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="New York">New York</SelectItem>
+                        <SelectItem value="Los Angeles">Los Angeles</SelectItem>
+                        <SelectItem value="Chicago">Chicago</SelectItem>
+                        <SelectItem value="Houston">Houston</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Test Center</Label>
+                    <Select 
+                      value={config.testCenter} 
+                      onValueChange={(value) => setConfig({ ...config, testCenter: value })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select test center" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="Center A">Center A</SelectItem>
+                        <SelectItem value="Center B">Center B</SelectItem>
+                        <SelectItem value="Center C">Center C</SelectItem>
+                        <SelectItem value="Center D">Center D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Start Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={config.startTime}
+                      onChange={(e) => setConfig({ ...config, startTime: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">End Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={config.endTime}
+                      onChange={(e) => setConfig({ ...config, endTime: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Number of Questions</Label>
                   <Input
                     type="number"
                     value={config.numberOfQuestions}
                     onChange={(e) => setConfig({ ...config, numberOfQuestions: parseInt(e.target.value) || 0 })}
-                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
+                    className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
                     placeholder="Number of Questions"
                     min="1"
                     max="200"
                   />
-                  
-                  <Input
-                    type="number"
-                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
-                    placeholder="Duration (minutes)"
-                    min="1"
-                    max="480"
-                  />
                 </div>
-
-                <Button 
-                  onClick={addTestToQueue}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-                  disabled={!config.testName || !config.numberOfQuestions || !config.numberOfCandidates}
-                >
-                  Add Test to Queue
-                </Button>
               </div>
 
-              {/* Test Queue */}
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-white mb-3">Test Queue</h3>
-                <div className="bg-slate-700 rounded-lg p-4 min-h-[120px]">
-                  {testQueue.length === 0 ? (
-                    <p className="text-slate-400 text-center py-8">No tests configured yet.</p>
-                  ) : (
-                    <ScrollArea className="h-[120px]">
-                      <div className="space-y-2">
-                        {testQueue.map((test, index) => (
-                          <div key={index} className="flex items-center justify-between bg-slate-600 rounded p-3">
-                            <div className="text-white">
-                              <p className="font-medium">{test.testName}</p>
-                              <p className="text-sm text-slate-300">
-                                {test.numberOfCandidates} students • {test.numberOfQuestions} questions
-                              </p>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => removeTestFromQueue(index)}
-                              className="text-slate-400 hover:text-white hover:bg-slate-500"
-                            >
-                              ×
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  )}
+              {/* Candidate Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-white">Candidate Information</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Student ID</Label>
+                    <Input
+                      value={config.studentId}
+                      onChange={(e) => setConfig({ ...config, studentId: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="e.g., STD_001"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Question ID</Label>
+                    <Input
+                      value={config.qnId}
+                      onChange={(e) => setConfig({ ...config, qnId: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="e.g., Q_001"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Response Time (ms)</Label>
+                    <Input
+                      type="number"
+                      value={config.candidateQnResponseTime}
+                      onChange={(e) => setConfig({ ...config, candidateQnResponseTime: parseInt(e.target.value) || 0 })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="Response time in milliseconds"
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Time Stamp</Label>
+                    <Input
+                      value={config.timeStamp}
+                      onChange={(e) => setConfig({ ...config, timeStamp: e.target.value })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="ISO timestamp"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Historical Average (ms)</Label>
+                    <Input
+                      type="number"
+                      value={config.historicalAvg}
+                      onChange={(e) => setConfig({ ...config, historicalAvg: parseInt(e.target.value) || 0 })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="Historical average response time"
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Option Selected</Label>
+                    <Select 
+                      value={config.optionSelected} 
+                      onValueChange={(value) => setConfig({ ...config, optionSelected: value })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select option" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="A">A</SelectItem>
+                        <SelectItem value="B">B</SelectItem>
+                        <SelectItem value="C">C</SelectItem>
+                        <SelectItem value="D">D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Correct Option</Label>
+                    <Select 
+                      value={config.correctOption} 
+                      onValueChange={(value) => setConfig({ ...config, correctOption: value })}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select correct option" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="A">A</SelectItem>
+                        <SelectItem value="B">B</SelectItem>
+                        <SelectItem value="C">C</SelectItem>
+                        <SelectItem value="D">D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Item Difficulty</Label>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      value={config.itemDifficulty}
+                      onChange={(e) => setConfig({ ...config, itemDifficulty: parseFloat(e.target.value) || 0 })}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                      placeholder="0.0 - 1.0"
+                      min="0"
+                      max="1"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -285,7 +424,7 @@ export default function SimulatorPage() {
               <div className="flex gap-3 pt-4">
                 <Button 
                   onClick={startSimulation}
-                  disabled={isRunning || testQueue.length === 0}
+                  disabled={isRunning}
                   className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 >
                   Run Simulation
