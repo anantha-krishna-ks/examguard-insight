@@ -54,7 +54,7 @@ export function AdminSidebar() {
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive 
-      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" 
+      ? "bg-primary text-primary-foreground font-semibold shadow-md border-l-4 border-primary-foreground/20" 
       : "hover:bg-sidebar-accent/50";
 
   return (
