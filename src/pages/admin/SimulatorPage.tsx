@@ -185,7 +185,7 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="h-screen w-full bg-slate-900 overflow-auto">
       {/* Header */}
       <div className="border-b border-slate-800 bg-slate-900/50">
         <div className="container mx-auto px-6 py-6 text-center">
