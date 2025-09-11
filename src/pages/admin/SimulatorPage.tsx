@@ -57,6 +57,7 @@ export default function SimulatorPage() {
   const [progress, setProgress] = useState(0);
   const [generatedData, setGeneratedData] = useState<CandidateData[]>([]);
   const [detectedAnomalies, setDetectedAnomalies] = useState<AnomalyResult[]>([]);
+  const [testQueue, setTestQueue] = useState<SimulationConfig[]>([]);
 
   // Simulation timer
   useEffect(() => {
@@ -142,6 +143,23 @@ export default function SimulatorPage() {
     setProgress(0);
   };
 
+  const addTestToQueue = () => {
+    if (config.testName && config.numberOfQuestions && config.numberOfCandidates) {
+      setTestQueue(prev => [...prev, { ...config }]);
+      // Reset form after adding
+      setConfig({
+        ...config,
+        testName: "",
+        numberOfQuestions: 50,
+        numberOfCandidates: 100
+      });
+    }
+  };
+
+  const removeTestFromQueue = (index: number) => {
+    setTestQueue(prev => prev.filter((_, i) => i !== index));
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'high': return 'destructive';
@@ -152,290 +170,231 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold text-foreground">Test Data Simulator</h1>
-          <p className="text-muted-foreground">Generate test data and detect anomalies in real-time</p>
+    <div className="min-h-screen bg-slate-900">
+      {/* Header */}
+      <div className="border-b border-slate-800 bg-slate-900/50">
+        <div className="container mx-auto px-6 py-6 text-center">
+          <h1 className="text-3xl font-bold text-white mb-2">Test Forensics Data Simulator</h1>
+          <p className="text-slate-400">Generate real-time test data with configurable anomalies to validate your forensics application.</p>
         </div>
       </div>
 
       <div className="container mx-auto p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-200px)]">
           {/* Left Side - Configuration */}
-          <Card className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Configuration
-              </CardTitle>
-              <CardDescription>
-                Set up your simulation parameters and test details
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto space-y-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="apiEndpoint">API Endpoint URL</Label>
+          <div className="bg-slate-800 rounded-lg p-6 flex flex-col">
+            <h2 className="text-xl font-semibold text-white mb-6">Configuration</h2>
+            
+            <div className="space-y-6 flex-1">
+              {/* API Endpoint */}
+              <div className="space-y-2">
+                <Label htmlFor="apiEndpoint" className="text-slate-300">API Endpoint URL</Label>
+                <Input
+                  id="apiEndpoint"
+                  value={config.apiEndpoint}
+                  onChange={(e) => setConfig({ ...config, apiEndpoint: e.target.value })}
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  placeholder="https://yourapi.com/testdata"
+                />
+              </div>
+
+              {/* Add a New Test */}
+              <div className="bg-slate-700 rounded-lg p-4 space-y-4">
+                <h3 className="text-lg font-medium text-white">Add a New Test</h3>
+                
+                <div className="space-y-3">
                   <Input
-                    id="apiEndpoint"
-                    value={config.apiEndpoint}
-                    onChange={(e) => setConfig({ ...config, apiEndpoint: e.target.value })}
-                    placeholder="https://api.example.com/test-data"
+                    value={config.testName}
+                    onChange={(e) => setConfig({ ...config, testName: e.target.value })}
+                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
+                    placeholder="Test Name (e.g., Algebra I Final)"
+                  />
+                  
+                  <Input
+                    type="number"
+                    value={config.numberOfCandidates}
+                    onChange={(e) => setConfig({ ...config, numberOfCandidates: parseInt(e.target.value) || 0 })}
+                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
+                    placeholder="Number of Students"
+                    min="1"
+                    max="1000"
+                  />
+                  
+                  <Input
+                    type="number"
+                    value={config.numberOfQuestions}
+                    onChange={(e) => setConfig({ ...config, numberOfQuestions: parseInt(e.target.value) || 0 })}
+                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
+                    placeholder="Number of Questions"
+                    min="1"
+                    max="200"
+                  />
+                  
+                  <Input
+                    type="number"
+                    className="bg-slate-600 border-slate-500 text-white placeholder:text-slate-400"
+                    placeholder="Duration (minutes)"
+                    min="1"
+                    max="480"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="testName">Test Name</Label>
-                    <Select 
-                      value={config.testName} 
-                      onValueChange={(value) => setConfig({ ...config, testName: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select test name" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Mathematics Assessment">Mathematics Assessment</SelectItem>
-                        <SelectItem value="Science Evaluation">Science Evaluation</SelectItem>
-                        <SelectItem value="Language Proficiency">Language Proficiency</SelectItem>
-                        <SelectItem value="Critical Thinking">Critical Thinking</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <Button 
+                  onClick={addTestToQueue}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  disabled={!config.testName || !config.numberOfQuestions || !config.numberOfCandidates}
+                >
+                  Add Test to Queue
+                </Button>
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Select 
-                      value={config.location} 
-                      onValueChange={(value) => setConfig({ ...config, location: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="New York">New York</SelectItem>
-                        <SelectItem value="Los Angeles">Los Angeles</SelectItem>
-                        <SelectItem value="Chicago">Chicago</SelectItem>
-                        <SelectItem value="Houston">Houston</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="testCenter">Test Center</Label>
-                  <Select 
-                    value={config.testCenter} 
-                    onValueChange={(value) => setConfig({ ...config, testCenter: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select test center" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Center A">Center A</SelectItem>
-                      <SelectItem value="Center B">Center B</SelectItem>
-                      <SelectItem value="Center C">Center C</SelectItem>
-                      <SelectItem value="Center D">Center D</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="startTime">Start Time</Label>
-                    <Input
-                      id="startTime"
-                      type="datetime-local"
-                      value={config.startTime}
-                      onChange={(e) => setConfig({ ...config, startTime: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="endTime">End Time</Label>
-                    <Input
-                      id="endTime"
-                      type="datetime-local"
-                      value={config.endTime}
-                      onChange={(e) => setConfig({ ...config, endTime: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="numberOfQuestions">Number of Questions</Label>
-                    <Input
-                      id="numberOfQuestions"
-                      type="number"
-                      min="1"
-                      max="200"
-                      value={config.numberOfQuestions}
-                      onChange={(e) => setConfig({ ...config, numberOfQuestions: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="numberOfCandidates">Number of Candidates</Label>
-                    <Input
-                      id="numberOfCandidates"
-                      type="number"
-                      min="1"
-                      max="1000"
-                      value={config.numberOfCandidates}
-                      onChange={(e) => setConfig({ ...config, numberOfCandidates: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
+              {/* Test Queue */}
+              <div className="flex-1">
+                <h3 className="text-lg font-medium text-white mb-3">Test Queue</h3>
+                <div className="bg-slate-700 rounded-lg p-4 min-h-[120px]">
+                  {testQueue.length === 0 ? (
+                    <p className="text-slate-400 text-center py-8">No tests configured yet.</p>
+                  ) : (
+                    <ScrollArea className="h-[120px]">
+                      <div className="space-y-2">
+                        {testQueue.map((test, index) => (
+                          <div key={index} className="flex items-center justify-between bg-slate-600 rounded p-3">
+                            <div className="text-white">
+                              <p className="font-medium">{test.testName}</p>
+                              <p className="text-sm text-slate-300">
+                                {test.numberOfCandidates} students • {test.numberOfQuestions} questions
+                              </p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => removeTestFromQueue(index)}
+                              className="text-slate-400 hover:text-white hover:bg-slate-500"
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Right Side - Simulation */}
-          <div className="flex flex-col gap-6">
-            {/* Simulation Controls */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Simulation Control
-                </CardTitle>
-                <CardDescription>
-                  Control your simulation and monitor progress
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">
-                      Status: <span className={`${isRunning ? 'text-green-600' : isPaused ? 'text-yellow-600' : 'text-muted-foreground'}`}>
-                        {isRunning ? 'Running' : isPaused ? 'Paused' : 'Stopped'}
-                      </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">Progress: {progress}%</p>
-                  </div>
-                  <div className="flex gap-2">
-                    {!isRunning && !isPaused && (
-                      <Button onClick={startSimulation} className="flex items-center gap-2">
-                        <Play className="h-4 w-4" />
-                        Start
-                      </Button>
-                    )}
-                    {isRunning && (
-                      <Button onClick={pauseSimulation} variant="outline" className="flex items-center gap-2">
-                        <Pause className="h-4 w-4" />
-                        Pause
-                      </Button>
-                    )}
-                    {(isRunning || isPaused) && (
-                      <Button onClick={stopSimulation} variant="destructive" className="flex items-center gap-2">
-                        <Square className="h-4 w-4" />
-                        Stop
-                      </Button>
-                    )}
-                  </div>
-                </div>
+              {/* Control Buttons */}
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  onClick={startSimulation}
+                  disabled={isRunning || testQueue.length === 0}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Run Simulation
+                </Button>
+                <Button 
+                  onClick={stopSimulation}
+                  disabled={!isRunning && !isPaused}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  Stop Simulation
+                </Button>
+              </div>
+            </div>
+          </div>
 
-                <Progress value={progress} className="w-full" />
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Data Points:</span>
-                    <span className="font-medium">{generatedData.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Anomalies:</span>
-                    <span className="font-medium text-red-600">{detectedAnomalies.length}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Anomaly Detection Results */}
-            <Card className="flex-1">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
-                  Detected Anomalies
-                </CardTitle>
-                <CardDescription>
-                  Real-time anomaly detection results
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[300px]">
-                  {detectedAnomalies.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <div className="text-center">
-                        <AlertTriangle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p>No anomalies detected yet</p>
-                        <p className="text-sm">Start the simulation to begin detection</p>
+          {/* Right Side - Live Dashboard */}
+          <div className="bg-slate-800 rounded-lg p-6 flex flex-col">
+            <h2 className="text-xl font-semibold text-white mb-6">Live Dashboard</h2>
+            
+            <div className="flex-1 space-y-6">
+              {/* Dashboard Status */}
+              <div className="text-center py-8">
+                {!isRunning && testQueue.length === 0 ? (
+                  <p className="text-slate-400">Simulation has not started. Configure tests and press 'Run'.</p>
+                ) : !isRunning ? (
+                  <p className="text-slate-400">Ready to start simulation. Press 'Run Simulation' to begin.</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-center gap-4 text-white">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span>Simulation Running</span>
+                      </div>
+                      <span className="text-slate-400">Progress: {progress.toFixed(1)}%</span>
+                    </div>
+                    <Progress value={progress} className="w-full max-w-md mx-auto" />
+                    <div className="grid grid-cols-2 gap-8 text-center">
+                      <div>
+                        <p className="text-2xl font-bold text-white">{generatedData.length}</p>
+                        <p className="text-slate-400 text-sm">Data Points</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-red-400">{detectedAnomalies.length}</p>
+                        <p className="text-slate-400 text-sm">Anomalies</p>
                       </div>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {detectedAnomalies.map((anomaly, index) => (
-                        <div key={index} className="border rounded-lg p-4 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Badge variant={getSeverityColor(anomaly.severity)}>
-                              {anomaly.severity}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {new Date(anomaly.timestamp).toLocaleTimeString()}
-                            </span>
-                          </div>
-                          <h4 className="font-medium">{anomaly.type}</h4>
-                          <p className="text-sm text-muted-foreground">{anomaly.description}</p>
-                          <div className="flex gap-2 text-xs text-muted-foreground">
-                            <span>Student: {anomaly.studentId}</span>
-                            <span>Question: {anomaly.questionId}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                  </div>
+                )}
+              </div>
 
-            {/* Generated Data Summary */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Generated Data
-                </CardTitle>
-                <CardDescription>
-                  Latest generated test responses
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[200px]">
-                  {generatedData.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <div className="text-center">
-                        <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No data generated yet</p>
+              {/* Event Log */}
+              <div className="flex-1">
+                <h3 className="text-lg font-medium text-white mb-4">Event Log</h3>
+                <div className="bg-slate-900 rounded-lg p-4 h-[400px]">
+                  <ScrollArea className="h-full">
+                    {detectedAnomalies.length === 0 && generatedData.length === 0 ? (
+                      <div className="h-full flex items-center justify-center">
+                        <p className="text-slate-500 text-center">Event log is empty<br />Start simulation to see events</p>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {generatedData.slice(-10).map((data, index) => (
-                        <div key={index} className="flex items-center justify-between text-sm p-2 bg-muted/50 rounded">
-                          <span className="font-mono">{data.studentId}</span>
-                          <span>Q{data.questionId}</span>
-                          <span className={`font-medium ${data.optionSelected === data.correctOption ? 'text-green-600' : 'text-red-600'}`}>
-                            {data.optionSelected === data.correctOption ? 'Correct' : 'Wrong'}
-                          </span>
-                          <span className="text-muted-foreground">{data.responseTime.toFixed(0)}ms</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
+                    ) : (
+                      <div className="space-y-3">
+                        {/* Show recent anomalies first */}
+                        {detectedAnomalies.slice(-10).reverse().map((anomaly, index) => (
+                          <div key={`anomaly-${index}`} className="border-l-4 border-red-500 pl-4 py-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="destructive" className="text-xs">
+                                ANOMALY
+                              </Badge>
+                              <span className="text-xs text-slate-400">
+                                {new Date(anomaly.timestamp).toLocaleTimeString()}
+                              </span>
+                            </div>
+                            <p className="text-white text-sm font-medium">{anomaly.type}</p>
+                            <p className="text-slate-400 text-xs">
+                              Student: {anomaly.studentId} • Question: {anomaly.questionId}
+                            </p>
+                          </div>
+                        ))}
+                        
+                        {/* Show recent data points */}
+                        {generatedData.slice(-5).reverse().map((data, index) => (
+                          <div key={`data-${index}`} className="border-l-4 border-blue-500 pl-4 py-2">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Badge variant="outline" className="text-xs border-blue-500 text-blue-400">
+                                DATA
+                              </Badge>
+                              <span className="text-xs text-slate-400">
+                                {new Date(data.timeStamp).toLocaleTimeString()}
+                              </span>
+                            </div>
+                            <p className="text-white text-sm">
+                              {data.studentId} answered Q{data.questionId}
+                            </p>
+                            <p className="text-slate-400 text-xs">
+                              Response: {data.optionSelected} • 
+                              Time: {data.responseTime.toFixed(0)}ms • 
+                              <span className={data.optionSelected === data.correctOption ? 'text-green-400' : 'text-red-400'}>
+                                {data.optionSelected === data.correctOption ? 'Correct' : 'Wrong'}
+                              </span>
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
