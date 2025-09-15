@@ -620,7 +620,228 @@ export function AnswerSimilarityAnalysisPage() {
               </CardContent>
             </Card>
 
-            {/* Candidate List - Only show when drilling down to test center level */}
+            {/* G2 Statistics Chart - Test Center */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="h-5 w-5" />
+                  <span>G2 Statistics with Cut-off Highlight (3.09) - Test Center</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  G2 statistic values for candidates in this test center. Red bars indicate values above the 3.09 threshold.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={500}>
+                  <BarChart 
+                    data={g2StatisticsData} 
+                    margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.7} />
+                    <XAxis 
+                      dataKey="candidate" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      tick={{ fontSize: 10 }}
+                      label={{ value: 'Candidates', position: 'insideBottom', offset: -10 }}
+                    />
+                    <YAxis 
+                      domain={[-5, 5]} 
+                      label={{ value: 'G2 Statistics Values', angle: -90, position: 'insideLeft' }}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), 'G2 Value']}
+                      labelFormatter={(label) => `${label}`}
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        border: '1px solid #e0e7ff',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <ReferenceLine y={3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <ReferenceLine y={-3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <Bar 
+                      dataKey="g2Value" 
+                      name="G2 Statistic"
+                      radius={[2, 2, 0, 0]}
+                    >
+                      {g2StatisticsData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={getG2Color(entry.g2Value)}
+                          stroke={getG2Color(entry.g2Value)}
+                          strokeWidth={1}
+                          className="transition-all duration-300 hover:opacity-80"
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded animate-pulse"></div>
+                    <span className="text-sm">Below Threshold</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-600 rounded animate-pulse"></div>
+                    <span className="text-sm">Above Threshold (±3.09)</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Similarity Heatmap - Test Center */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Grid3X3 className="h-5 w-5" />
+                  <span>Real-time Candidate Response Similarity Matrix - Test Center</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Interactive heatmap showing response similarities between candidates in this test center. Hover over cells to see detailed similarity scores.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="flex">
+                  <div className="flex-1">
+                    <div className="relative">
+                      {/* Y-axis labels */}
+                      <div className="absolute left-0 top-[9px] w-16 grid gap-px bg-gray-200 p-1" style={{ gridTemplateRows: 'repeat(20, minmax(0, 1fr))' }}>
+                        {candidateNames.slice().reverse().map((candidate, index) => (
+                          <div key={candidate} className="h-[17px] py-px flex items-center pr-2 font-mono text-[10px] text-right">
+                            {candidate}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Main heatmap grid */}
+                      <div className="ml-16">
+                        {/* Heatmap cells */}
+                        <div className="grid grid-cols-20 gap-px bg-gray-200 p-1" style={{ gridTemplateColumns: 'repeat(20, 1fr)' }}>
+                          {Array.from({ length: 20 }, (_, row) => 
+                            Array.from({ length: 20 }, (_, col) => {
+                              const dataPoint = similarityHeatmapData.find(d => d.x === col && d.y === (19 - row));
+                              const similarity = dataPoint ? dataPoint.similarity : 0;
+                              const xName = candidateNames[col];
+                              const yName = candidateNames[19 - row];
+                              
+                              return (
+                                <div
+                                  key={`${row}-${col}`}
+                                  className="h-4 w-full cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
+                                  style={{ 
+                                    backgroundColor: getSimilarityHeatmapColor(similarity),
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                  }}
+                                  title={`${xName} vs ${yName}: ${similarity.toFixed(3)}`}
+                                />
+                              );
+                            })
+                          )}
+                        </div>
+                        
+                        {/* X-axis labels below heatmap */}
+                        <div className="grid mt-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}>
+                          {candidateNames.map((candidate) => (
+                            <div key={candidate} className="relative h-10 flex items-start justify-center">
+                              <div className="origin-top rotate-45 font-mono whitespace-nowrap text-[10px] translate-y-1">
+                                {candidate}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Color Legend */}
+                  <div className="w-24 ml-6 flex flex-col justify-center">
+                    <div className="text-sm font-medium mb-3 text-center">Similarity</div>
+                    <div className="flex flex-col space-y-2">
+                      {[1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.0].map((val) => (
+                        <div key={val} className="flex items-center space-x-2">
+                          <div 
+                            className="w-6 h-4 border border-gray-300 rounded-sm" 
+                            style={{ backgroundColor: getSimilarityHeatmapColor(val) }}
+                          ></div>
+                          <span className="text-xs font-mono">{val.toFixed(1)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 text-xs text-muted-foreground">
+                      <div className="mb-1">High similarity: Yellow</div>
+                      <div className="mb-1">Medium: Blue</div>
+                      <div>Low: Dark purple</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Candidate Comparison Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Users className="h-5 w-5" />
+                  <span>Student Comparison Analysis</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Detailed comparison of student responses showing similarity metrics across different statistical measures.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3 font-medium">Sl No</th>
+                        <th className="text-left p-3 font-medium">Source Student ID(s)</th>
+                        <th className="text-left p-3 font-medium">Student Name</th>
+                        <th className="text-left p-3 font-medium">JI1I2</th>
+                        <th className="text-left p-3 font-medium">STRINGL</th>
+                        <th className="text-left p-3 font-medium">STRINGI1</th>
+                        <th className="text-left p-3 font-medium">STRINGI2</th>
+                        <th className="text-left p-3 font-medium">T_JOINT</th>
+                        <th className="text-left p-3 font-medium">G2</th>
+                        <th className="text-left p-3 font-medium">Flag</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { slNo: 1, sourceId: '3633', studentName: 'John S.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
+                        { slNo: 2, sourceId: '3636', studentName: 'Sarah M.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 3, sourceId: '3637', studentName: 'Mike D.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 4, sourceId: '3720', studentName: 'Lisa W.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 5, sourceId: '3792', studentName: 'David B.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
+                        { slNo: 6, sourceId: '3805', studentName: 'Emma J.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 }
+                      ].map((row) => (
+                        <tr key={row.slNo} className="border-b hover:bg-muted/50">
+                          <td className="p-3 text-center">{row.slNo}</td>
+                          <td className="p-3 font-mono text-sm">{row.sourceId}</td>
+                          <td className="p-3">{row.studentName}</td>
+                          <td className="p-3 text-center">{row.ji1i2}</td>
+                          <td className="p-3 text-center">{row.stringl}</td>
+                          <td className="p-3 text-center">{row.stringi1}</td>
+                          <td className="p-3 text-center">{row.stringi2}</td>
+                          <td className="p-3 text-center">{row.tJoint}</td>
+                          <td className="p-3 text-center">{row.g2}</td>
+                          <td className="p-3 text-center">
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <EyeOff className="h-3 w-3" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Original Candidate List - Only show when drilling down to test center level */}
             {showCandidates && (
               <Card>
                 <CardHeader>
