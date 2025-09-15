@@ -279,22 +279,22 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Eye className="h-3 w-3 text-blue-500" />
                           <span className="text-xs">Facial Recognition Baseline</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Fingerprint className="h-3 w-3 text-purple-500" />
                           <span className="text-xs">Keystroke Dynamics</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Mic className="h-3 w-3 text-green-500" />
                           <span className="text-xs">Voice Print Registration</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Lock className="h-3 w-3 text-orange-500" />
                           <span className="text-xs">Multi-factor Biometric Fusion</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -322,22 +322,22 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <FileCheck className="h-3 w-3 text-blue-500" />
                           <span className="text-xs">Digital Forensic Document Analysis</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Shield className="h-3 w-3 text-purple-500" />
                           <span className="text-xs">Government ID Verification</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Database className="h-3 w-3 text-green-500" />
                           <span className="text-xs">Cross-Reference Validation</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Lock className="h-3 w-3 text-orange-500" />
                           <span className="text-xs">Blockchain-based Credential Verification</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
