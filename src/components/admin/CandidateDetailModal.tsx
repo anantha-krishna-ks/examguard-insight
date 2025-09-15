@@ -242,6 +242,79 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Environmental and Technical Security Baseline */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <Shield className="h-4 w-4 text-indigo-500" />
+                    <h4 className="font-semibold text-sm">Environmental and Technical Security Baseline</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.preTestForensics)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.preTestForensics)}`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium">Overall Status: {candidate.verificationStatuses.preTestForensics.charAt(0).toUpperCase() + candidate.verificationStatuses.preTestForensics.slice(1)}</span>
+                        <Badge variant={candidate.verificationStatuses.preTestForensics === 'passed' ? 'default' : 'destructive'}>
+                          {candidate.verificationStatuses.preTestForensics}
+                        </Badge>
+                      </div>
+                      <div className="space-y-3">
+                        <div>
+                          <h5 className="text-xs font-medium text-muted-foreground mb-2">Device and Network Forensics</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Fingerprint className="h-3 w-3 text-blue-500" />
+                              <span className="text-xs">Hardware Fingerprinting</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <MapPin className="h-3 w-3 text-purple-500" />
+                              <span className="text-xs">Network Environment Analysis</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Eye className="h-3 w-3 text-green-500" />
+                              <span className="text-xs">Browser and Application Forensics</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Database className="h-3 w-3 text-orange-500" />
+                              <span className="text-xs">Virtual Machine Detection</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="text-xs font-medium text-muted-foreground mb-2">Security Infrastructure</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Lock className="h-3 w-3 text-blue-500" />
+                              <span className="text-xs">Lockdown Browser Verification</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Shield className="h-3 w-3 text-purple-500" />
+                              <span className="text-xs">Monitoring Agent Deployment</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <FileCheck className="h-3 w-3 text-green-500" />
+                              <span className="text-xs">Baseline Security Scanning</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                            <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                              <Mic className="h-3 w-3 text-orange-500" />
+                              <span className="text-xs">Communication Channel Security</span>
+                              <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.preTestForensics === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Identity Verification and Authentication */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2 pb-2 border-b">
