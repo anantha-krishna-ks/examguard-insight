@@ -121,25 +121,43 @@ const g2StatisticsData = [
 
 // Mock similarity heatmap data - calculate weighted similarity
 const generateSimilarityHeatmapData = () => {
-  const candidates = Array.from({ length: 22 }, (_, i) => i);
+  const candidateNames = Array.from({ length: 20 }, (_, i) => `C${i + 1}`);
   const data = [];
   
-  for (let i = 0; i < candidates.length; i++) {
-    for (let j = 0; j < candidates.length; j++) {
+  for (let i = 0; i < candidateNames.length; i++) {
+    for (let j = 0; j < candidateNames.length; j++) {
       if (i === j) {
-        data.push({ x: j, y: i, similarity: 1.0 });
+        data.push({ 
+          xCandidate: candidateNames[j], 
+          yCandidate: candidateNames[i], 
+          x: j, 
+          y: i, 
+          similarity: 1.0 
+        });
       } else {
         // Simulate calculation: overlap, matches, weight, final similarity
         const totalItems = 100;
         const overlap = Math.floor(Math.random() * 40) + 60; // 60-100 items
         if (overlap < 15) {
-          data.push({ x: j, y: i, similarity: 0 }); // Skip if < 15 overlapping
+          data.push({ 
+            xCandidate: candidateNames[j], 
+            yCandidate: candidateNames[i], 
+            x: j, 
+            y: i, 
+            similarity: 0 
+          }); // Skip if < 15 overlapping
         } else {
           const matches = Math.floor(Math.random() * overlap);
           const rawSimilarity = matches / overlap;
           const weight = overlap / totalItems;
           const finalSimilarity = rawSimilarity * weight;
-          data.push({ x: j, y: i, similarity: Math.min(finalSimilarity, 1.0) });
+          data.push({ 
+            xCandidate: candidateNames[j], 
+            yCandidate: candidateNames[i], 
+            x: j, 
+            y: i, 
+            similarity: Math.min(finalSimilarity, 1.0) 
+          });
         }
       }
     }
@@ -447,67 +465,87 @@ export function AnswerSimilarityAnalysisPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Grid3X3 className="h-5 w-5" />
-                  <span>Sample: Candidate Response Similarity Matrix</span>
+                  <span>Real-time Candidate Response Similarity Matrix</span>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Weighted similarity heatmap calculated using overlap-based algorithm. Darker colors indicate lower similarity, brighter colors indicate higher similarity.
+                  Interactive heatmap showing response similarities between candidates. Hover over cells to see detailed similarity scores.
                 </p>
               </CardHeader>
               <CardContent>
                 <div className="flex">
                   <div className="flex-1">
-                    <ResponsiveContainer width="100%" height={500}>
-                      <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
-                        <XAxis 
-                          type="number" 
-                          dataKey="x" 
-                          domain={[0, 21]} 
-                          tickCount={11}
-                          tick={{ fontSize: 10 }}
-                        />
-                        <YAxis 
-                          type="number" 
-                          dataKey="y" 
-                          domain={[0, 21]} 
-                          tickCount={11}
-                          tick={{ fontSize: 10 }}
-                        />
-                        <Tooltip 
-                          formatter={(value: number, name: string, props: any) => [
-                            props.payload.similarity.toFixed(3), 
-                            'Similarity'
-                          ]}
-                          labelFormatter={(label, payload) => 
-                            payload && payload[0] ? 
-                            `Candidate ${payload[0].payload.y} vs ${payload[0].payload.x}` : 
-                            ''
-                          }
-                        />
-                        <Scatter dataKey="similarity" fill="#8884d8">
-                          {similarityHeatmapData.map((entry, index) => (
-                            <Cell 
-                              key={`cell-${index}`} 
-                              fill={getSimilarityHeatmapColor(entry.similarity)} 
-                            />
+                    <div className="relative">
+                      {/* Y-axis labels */}
+                      <div className="absolute left-0 top-6 h-96 flex flex-col justify-between text-xs">
+                        {Array.from({ length: 20 }, (_, i) => `C${20 - i}`).map((candidate, index) => (
+                          <div key={candidate} className="h-4 flex items-center pr-2">
+                            {candidate}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Main heatmap grid */}
+                      <div className="ml-8">
+                        {/* X-axis labels */}
+                        <div className="flex mb-1 text-xs">
+                          {Array.from({ length: 20 }, (_, i) => `C${i + 1}`).map((candidate) => (
+                            <div key={candidate} className="w-4 h-4 flex items-center justify-center text-center">
+                              {candidate.slice(1)}
+                            </div>
                           ))}
-                        </Scatter>
-                      </ScatterChart>
-                    </ResponsiveContainer>
+                        </div>
+                        
+                        {/* Heatmap cells */}
+                        <div className="grid grid-cols-20 gap-px bg-gray-200 p-1" style={{ gridTemplateColumns: 'repeat(20, 1fr)' }}>
+                          {Array.from({ length: 20 }, (_, row) => 
+                            Array.from({ length: 20 }, (_, col) => {
+                              const dataPoint = similarityHeatmapData.find(d => d.x === col && d.y === (19 - row));
+                              const similarity = dataPoint ? dataPoint.similarity : 0;
+                              
+                              return (
+                                <div
+                                  key={`${row}-${col}`}
+                                  className="w-4 h-4 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
+                                  style={{ 
+                                    backgroundColor: getSimilarityHeatmapColor(similarity),
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                  }}
+                                  title={`C${col + 1} vs C${20 - row}: ${similarity.toFixed(3)}`}
+                                />
+                              );
+                            })
+                          )}
+                        </div>
+                        
+                        {/* X-axis title */}
+                        <div className="text-center mt-2 text-sm font-medium">Candidates</div>
+                      </div>
+                      
+                      {/* Y-axis title */}
+                      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -rotate-90 text-sm font-medium">
+                        Candidates
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Color Legend */}
-                  <div className="w-20 ml-4 flex flex-col justify-center">
-                    <div className="text-xs font-medium mb-2 text-center">Similarity</div>
-                    <div className="flex flex-col space-y-1">
-                      {[1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2].map((val) => (
+                  <div className="w-24 ml-6 flex flex-col justify-center">
+                    <div className="text-sm font-medium mb-3 text-center">Similarity</div>
+                    <div className="flex flex-col space-y-2">
+                      {[1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.0].map((val) => (
                         <div key={val} className="flex items-center space-x-2">
                           <div 
-                            className="w-4 h-4 border border-gray-300" 
+                            className="w-6 h-4 border border-gray-300 rounded-sm" 
                             style={{ backgroundColor: getSimilarityHeatmapColor(val) }}
                           ></div>
-                          <span className="text-xs">{val.toFixed(1)}</span>
+                          <span className="text-xs font-mono">{val.toFixed(1)}</span>
                         </div>
                       ))}
+                    </div>
+                    <div className="mt-4 text-xs text-muted-foreground">
+                      <div className="mb-1">High similarity: Yellow</div>
+                      <div className="mb-1">Medium: Blue</div>
+                      <div>Low: Dark purple</div>
                     </div>
                   </div>
                 </div>
