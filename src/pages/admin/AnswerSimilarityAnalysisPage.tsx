@@ -425,41 +425,59 @@ export function AnswerSimilarityAnalysisPage() {
                 <ResponsiveContainer width="100%" height={500}>
                   <BarChart 
                     data={g2StatisticsData} 
-                    layout="horizontal"
-                    margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.7} />
                     <XAxis 
-                      type="number" 
-                      domain={[-5, 5]} 
-                      label={{ value: 'G2 Statistic', position: 'insideBottom', offset: -5 }}
+                      dataKey="candidate" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      tick={{ fontSize: 10 }}
+                      label={{ value: 'Candidates', position: 'insideBottom', offset: -10 }}
                     />
                     <YAxis 
-                      type="category" 
-                      dataKey="candidate" 
-                      width={80}
+                      domain={[-5, 5]} 
+                      label={{ value: 'G2 Statistics Values', angle: -90, position: 'insideLeft' }}
                       tick={{ fontSize: 12 }}
                     />
                     <Tooltip 
                       formatter={(value: number) => [value.toFixed(2), 'G2 Value']}
                       labelFormatter={(label) => `${label}`}
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                        border: '1px solid #e0e7ff',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                      }}
                     />
-                    <ReferenceLine x={3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
-                    <Bar dataKey="g2Value" name="G2 Statistic">
+                    <ReferenceLine y={3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <ReferenceLine y={-3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <Bar 
+                      dataKey="g2Value" 
+                      name="G2 Statistic"
+                      radius={[2, 2, 0, 0]}
+                    >
                       {g2StatisticsData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={getG2Color(entry.g2Value)} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={getG2Color(entry.g2Value)}
+                          stroke={getG2Color(entry.g2Value)}
+                          strokeWidth={1}
+                          className="transition-all duration-300 hover:opacity-80"
+                        />
                       ))}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="mt-4 flex justify-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <div className="w-4 h-4 bg-blue-600 rounded animate-pulse"></div>
                     <span className="text-sm">Below Threshold</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-red-600 rounded"></div>
-                    <span className="text-sm">Above Threshold (3.09)</span>
+                    <div className="w-4 h-4 bg-red-600 rounded animate-pulse"></div>
+                    <span className="text-sm">Above Threshold (±3.09)</span>
                   </div>
                 </div>
               </CardContent>
