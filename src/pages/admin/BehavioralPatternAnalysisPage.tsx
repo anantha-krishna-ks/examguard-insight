@@ -745,20 +745,6 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                       <Bar dataKey="probability" fill="#06b6d4" name="probability" />
                     </BarChart>
                   </ResponsiveContainer>
-                  <div className="mt-4 flex justify-center space-x-6 text-xs text-muted-foreground">
-                    <div className="flex items-center space-x-1">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span>WR (Wrong-Right) Ratio</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span>TE (Time Extension) Ratio</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span>Combined WR/TE Ratio</span>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </div>
