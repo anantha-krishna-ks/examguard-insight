@@ -842,7 +842,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">{selectedStudentData.slNo}</td>
                         <td className="p-3 font-mono text-sm">{selectedStudentData.sourceId}</td>
-                        <td className="p-3">{selectedStudentData.studentName}</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">{selectedStudentData.ji1i2}</td>
                         <td className="p-3 text-center">{selectedStudentData.stringl}</td>
                         <td className="p-3 text-center">{selectedStudentData.stringi1}</td>
@@ -863,7 +863,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">2</td>
                         <td className="p-3 font-mono text-sm">3636</td>
-                        <td className="p-3">Student-3636</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">1</td>
                         <td className="p-3 text-center">0</td>
                         <td className="p-3 text-center">2</td>
@@ -879,7 +879,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">3</td>
                         <td className="p-3 font-mono text-sm">3637</td>
-                        <td className="p-3">Student-3637</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">2</td>
                         <td className="p-3 text-center">1</td>
                         <td className="p-3 text-center">0</td>
@@ -895,7 +895,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">4</td>
                         <td className="p-3 font-mono text-sm">3720</td>
-                        <td className="p-3">Student-3720</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">0</td>
                         <td className="p-3 text-center">3</td>
                         <td className="p-3 text-center">1</td>
@@ -911,7 +911,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="border-b hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">5</td>
                         <td className="p-3 font-mono text-sm">3792</td>
-                        <td className="p-3">Student-3792</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">1</td>
                         <td className="p-3 text-center">0</td>
                         <td className="p-3 text-center">0</td>
@@ -927,7 +927,7 @@ export function AnswerSimilarityAnalysisPage() {
                       <tr className="hover:bg-muted/50 transition-colors">
                         <td className="p-3 text-center">6</td>
                         <td className="p-3 font-mono text-sm">3805</td>
-                        <td className="p-3">Student-3805</td>
+                        <td className="p-3">Student-3633</td>
                         <td className="p-3 text-center">0</td>
                         <td className="p-3 text-center">1</td>
                         <td className="p-3 text-center">3</td>
