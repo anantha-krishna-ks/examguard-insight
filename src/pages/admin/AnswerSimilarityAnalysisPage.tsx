@@ -21,68 +21,35 @@ import {
   Line
 } from "recharts";
 
-// Mock data for Primary Statistics (Union of all anomaly types)
-const primaryStatisticsData = [
+// Mock data for Primary Statistics (Union of all anomaly types) and g2 anomalies
+const similarityAnalysisData = [
   { 
     name: 'Test 1', 
-    sharedWrong: 45, 
-    longestRun: 32, 
-    longestIncorrect: 28, 
-    stringI2: 18, 
-    tJoint: 23, 
-    g2: 15,
-    total: 161
+    primaryStatistics: 161, // Union of: sharedWrong(45) + longestRun(32) + longestIncorrect(28) + stringI2(18) + tJoint(23) + g2(15)
+    g2Anomalies: 26
   },
   { 
     name: 'Test 2', 
-    sharedWrong: 52, 
-    longestRun: 38, 
-    longestIncorrect: 35, 
-    stringI2: 22, 
-    tJoint: 28, 
-    g2: 19,
-    total: 194
+    primaryStatistics: 206, // Union of all anomaly types
+    g2Anomalies: 51
   },
   { 
     name: 'Test 3', 
-    sharedWrong: 38, 
-    longestRun: 25, 
-    longestIncorrect: 21, 
-    stringI2: 14, 
-    tJoint: 18, 
-    g2: 12,
-    total: 128
+    primaryStatistics: 97, // Union of all anomaly types
+    g2Anomalies: 5
   },
   { 
     name: 'Test 4', 
-    sharedWrong: 47, 
-    longestRun: 34, 
-    longestIncorrect: 30, 
-    stringI2: 20, 
-    tJoint: 25, 
-    g2: 17,
-    total: 173
+    primaryStatistics: 173, // Union of all anomaly types
+    g2Anomalies: 34
   },
   { 
     name: 'Test 5', 
-    sharedWrong: 41, 
-    longestRun: 29, 
-    longestIncorrect: 26, 
-    stringI2: 16, 
-    tJoint: 21, 
-    g2: 14,
-    total: 147
+    primaryStatistics: 147, // Union of all anomaly types
+    g2Anomalies: 22
   }
 ];
 
-// Mock data for similarity analysis overview
-const similarityOverviewData = [
-  { test: 'Test 1', candidatePairs: 847, highSimilarity: 23, mediumSimilarity: 67, lowSimilarity: 757 },
-  { test: 'Test 2', candidatePairs: 923, highSimilarity: 31, mediumSimilarity: 89, lowSimilarity: 803 },
-  { test: 'Test 3', candidatePairs: 654, highSimilarity: 12, mediumSimilarity: 45, lowSimilarity: 597 },
-  { test: 'Test 4', candidatePairs: 789, highSimilarity: 28, mediumSimilarity: 73, lowSimilarity: 688 },
-  { test: 'Test 5', candidatePairs: 712, highSimilarity: 19, mediumSimilarity: 58, lowSimilarity: 635 }
-];
 
 // Mock data for detailed similarity metrics
 const detailedSimilarityData = [
@@ -158,58 +125,41 @@ export function AnswerSimilarityAnalysisPage() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            {/* Primary Statistics Chart */}
+            {/* Similarity Analysis Chart */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Primary Statistics - Union of All Anomaly Types</span>
+                  <span>Similarity Analysis</span>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Combined analysis of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and G2 anomalies
+                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies
                 </p>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={primaryStatisticsData}>
+                  <BarChart data={similarityAnalysisData} barCategoryGap="20%">
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
-                    <YAxis />
+                    <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
                     <Tooltip 
                       formatter={(value: number, name: string) => [value, name]}
                       labelFormatter={(label) => `Test: ${label}`}
                     />
-                    <Bar dataKey="sharedWrong" stackId="a" fill="#ef4444" name="Shared Wrong Answers (JI1I2)" />
-                    <Bar dataKey="longestRun" stackId="a" fill="#f97316" name="Longest Run (STRINGL)" />
-                    <Bar dataKey="longestIncorrect" stackId="a" fill="#eab308" name="Longest Incorrect (STRINGI1)" />
-                    <Bar dataKey="stringI2" stackId="a" fill="#3b82f6" name="STRINGI2" />
-                    <Bar dataKey="tJoint" stackId="a" fill="#8b5cf6" name="TJOINT" />
-                    <Bar dataKey="g2" stackId="a" fill="#06b6d4" name="G2 Anomalies" />
+                    <Bar dataKey="primaryStatistics" fill="#2563eb" name="Primary Statistics" />
+                    <Bar dataKey="g2Anomalies" fill="#ea580c" name="g2 anomalies" />
                   </BarChart>
                 </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Similarity Overview Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>Similarity Distribution Overview</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={similarityOverviewData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="test" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="highSimilarity" stackId="similarity" fill="#ef4444" name="High Similarity (>0.8)" />
-                    <Bar dataKey="mediumSimilarity" stackId="similarity" fill="#f97316" name="Medium Similarity (0.6-0.8)" />
-                    <Bar dataKey="lowSimilarity" stackId="similarity" fill="#22c55e" name="Low Similarity (<0.6)" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <span className="text-sm">Primary Statistics</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-orange-600 rounded"></div>
+                    <span className="text-sm">g2 anomalies</span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
