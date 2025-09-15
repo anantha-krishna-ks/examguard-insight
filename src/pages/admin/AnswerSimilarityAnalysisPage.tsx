@@ -16,7 +16,9 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell
+  Cell,
+  ScatterChart,
+  Scatter
 } from "recharts";
 
 type ViewLevel = "test" | "location" | "testcenter";
@@ -71,6 +73,64 @@ const candidateData = [
   { id: 'AS004', name: 'Lisa Wilson', email: 'lisa@example.com', similarityScore: 0.83, matchedWith: 'AS005', testName: 'English Test', flagType: 'Medium', flagged: false },
   { id: 'AS005', name: 'David Brown', email: 'david@example.com', similarityScore: 0.79, matchedWith: 'AS004', testName: 'English Test', flagType: 'Medium', flagged: false }
 ];
+
+// G2 Statistics data for the location tab
+const g2StatisticsData = [
+  { candidate: 'Candidate_1', g2Value: 1.8, isFlagged: false },
+  { candidate: 'Candidate_2', g2Value: 4.7, isFlagged: true },
+  { candidate: 'Candidate_3', g2Value: 3.7, isFlagged: true },
+  { candidate: 'Candidate_4', g2Value: 2.9, isFlagged: false },
+  { candidate: 'Candidate_5', g2Value: 0.8, isFlagged: false },
+  { candidate: 'Candidate_6', g2Value: 0.8, isFlagged: false },
+  { candidate: 'Candidate_7', g2Value: 0.3, isFlagged: false },
+  { candidate: 'Candidate_8', g2Value: 4.3, isFlagged: true },
+  { candidate: 'Candidate_9', g2Value: 2.9, isFlagged: false },
+  { candidate: 'Candidate_10', g2Value: 3.6, isFlagged: true },
+  { candidate: 'Candidate_11', g2Value: 4.8, isFlagged: true },
+  { candidate: 'Candidate_12', g2Value: 4.1, isFlagged: true },
+  { candidate: 'Candidate_13', g2Value: 1.0, isFlagged: false },
+  { candidate: 'Candidate_14', g2Value: 0.9, isFlagged: false }
+];
+
+// Similarity heatmap data
+const generateSimilarityMatrix = () => {
+  const candidates = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20'];
+  const matrix = [];
+  
+  for (let i = 0; i < candidates.length; i++) {
+    for (let j = 0; j < candidates.length; j++) {
+      let similarity;
+      if (i === j) {
+        similarity = 1.0; // Perfect similarity with self
+      } else {
+        // Generate realistic similarity values based on algorithm
+        const overlap = Math.floor(Math.random() * 30) + 15; // 15-45 overlapping items
+        const matches = Math.floor(Math.random() * overlap * 0.8); // 0-80% matches
+        const totalItems = 50; // Total test items
+        
+        if (overlap < 15) {
+          similarity = 0; // Skip if less than 15 overlapping
+        } else {
+          const rawSimilarity = matches / overlap;
+          const weight = overlap / totalItems;
+          similarity = rawSimilarity * weight;
+        }
+      }
+      
+      matrix.push({
+        x: j,
+        y: i,
+        similarity: Math.round(similarity * 100) / 100,
+        candidateX: candidates[j],
+        candidateY: candidates[i]
+      });
+    }
+  }
+  
+  return matrix;
+};
+
+const similarityMatrixData = generateSimilarityMatrix();
 
 const levelLabels = {
   test: "Test",
@@ -273,47 +333,134 @@ export function AnswerSimilarityAnalysisPage() {
 
           {/* Location Tab */}
           <TabsContent value="location" className="space-y-6">
+            {/* G2 Statistics Chart */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Answer Similarity Analysis - {levelLabels[viewLevel]} Level</span>
+                  <span>G2 Statistics with Cut-off Highlight (3.09)</span>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies. Click bars to drill down.
+                  G2 values for each candidate with candidates on Y-axis (vertical orientation)
                 </p>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={getCurrentData()} barCategoryGap="20%">
+                <ResponsiveContainer width="100%" height={500}>
+                  <BarChart 
+                    data={g2StatisticsData} 
+                    layout="horizontal"
+                    margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar 
-                      dataKey="primaryStatistics" 
-                      fill="#2563eb" 
-                      name="Primary Statistics"
-                      onClick={(data) => handleBarClick(data, "primaryStatistics")}
-                      style={{ cursor: 'pointer' }}
+                    <XAxis 
+                      type="number" 
+                      domain={[-1, 5]} 
+                      label={{ value: 'G2 Statistic', position: 'insideBottom', offset: -5 }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="candidate" 
+                      label={{ value: 'Candidates', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), 'G2 Value']}
+                      labelFormatter={(label) => `${label}`}
                     />
                     <Bar 
-                      dataKey="g2Anomalies" 
-                      fill="#ea580c" 
-                      name="g2 anomalies"
-                      onClick={(data) => handleBarClick(data, "g2Anomalies")}
-                      style={{ cursor: 'pointer' }}
-                    />
+                      dataKey="g2Value"
+                      name="G2 Value"
+                    >
+                      {g2StatisticsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.isFlagged ? "#ef4444" : "#3b82f6"} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="mt-4 flex justify-center space-x-6">
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
-                    <span className="text-sm">Primary Statistics</span>
+                    <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                    <span className="text-sm">Normal</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 bg-orange-600 rounded"></div>
-                    <span className="text-sm">g2 anomalies</span>
+                    <div className="w-4 h-4 bg-red-500 rounded"></div>
+                    <span className="text-sm">Flagged (&gt;3.09)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-2 border border-red-500 border-dashed"></div>
+                    <span className="text-sm">Cut-off = 3.09</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Similarity Heatmap */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Grid3X3 className="h-5 w-5" />
+                  <span>Candidate Response Similarity Matrix</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Weighted similarity based on overlapping responses (minimum 15 items overlap required)
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={600}>
+                  <ScatterChart
+                    margin={{ top: 20, right: 80, bottom: 20, left: 20 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      type="number" 
+                      dataKey="x" 
+                      domain={[0, 19]}
+                      tickFormatter={(value) => `C${value + 1}`}
+                      label={{ value: 'Candidates', position: 'insideBottom', offset: -5 }}
+                    />
+                    <YAxis 
+                      type="number" 
+                      dataKey="y" 
+                      domain={[0, 19]}
+                      tickFormatter={(value) => `C${value + 1}`}
+                      label={{ value: 'Candidates', angle: -90, position: 'insideLeft' }}
+                    />
+                    <Tooltip 
+                      formatter={(value: any, name: string, props: any) => [
+                        props.payload.similarity.toFixed(3), 
+                        'Similarity'
+                      ]}
+                      labelFormatter={(label, payload) => 
+                        payload && payload[0] ? 
+                        `${payload[0].payload.candidateY} vs ${payload[0].payload.candidateX}` : 
+                        ''
+                      }
+                    />
+                    <Scatter 
+                      data={similarityMatrixData} 
+                      fill="#8884d8"
+                    >
+                      {similarityMatrixData.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={`hsl(${240 + (entry.similarity * 60)}, 70%, ${30 + (entry.similarity * 50)}%)`}
+                        />
+                      ))}
+                    </Scatter>
+                  </ScatterChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center items-center space-x-4">
+                  <span className="text-sm font-medium">Similarity Scale:</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4" style={{ backgroundColor: 'hsl(240, 70%, 30%)' }}></div>
+                    <span className="text-sm">0.0</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4" style={{ backgroundColor: 'hsl(270, 70%, 55%)' }}></div>
+                    <span className="text-sm">0.5</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4" style={{ backgroundColor: 'hsl(300, 70%, 80%)' }}></div>
+                    <span className="text-sm">1.0</span>
                   </div>
                 </div>
               </CardContent>
