@@ -481,9 +481,9 @@ export function AnswerSimilarityAnalysisPage() {
                   <div className="flex-1">
                     <div className="relative">
                       {/* Y-axis labels */}
-                      <div className="absolute left-0 top-16 grid gap-px bg-gray-200 p-1" style={{ gridTemplateRows: 'repeat(20, minmax(0, 1fr))' }}>
+                      <div className="absolute left-0 top-0 w-16 grid gap-px bg-gray-200 p-1" style={{ gridTemplateRows: 'repeat(20, minmax(0, 1fr))' }}>
                         {candidateNames.slice().reverse().map((candidate, index) => (
-                          <div key={candidate} className="h-4 flex items-center pr-2 font-mono text-[10px] text-right">
+                          <div key={candidate} className="h-4 py-px flex items-center pr-2 font-mono text-[10px] text-right">
                             {candidate}
                           </div>
                         ))}
