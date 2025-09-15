@@ -742,7 +742,7 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                           return [value, name];
                         }}
                       />
-                      <Bar dataKey="probability" fill="#06b6d4" name="probability" />
+                      <Bar dataKey="probability" fill="#22c55e" name="probability" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
