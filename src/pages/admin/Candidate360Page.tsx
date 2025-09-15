@@ -307,11 +307,16 @@ const Candidate360Page = () => {
                       <div className="grid grid-cols-2 gap-2">
                         {Object.entries(candidate.verificationStatuses).map(([key, status]) => {
                           const Icon = getVerificationIcon(key);
-                          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          let label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          if (key === 'preTestForensics') {
+                            label = 'Environmental and Technical Security Baseline';
+                          } else {
+                            label = label.replace('Pre Test', 'Pre-Test');
+                          }
                           return (
                             <div key={key} className={`flex items-center space-x-1 p-2 rounded-md border text-xs ${getVerificationColor(status)}`}>
                               <Icon className="h-3 w-3 flex-shrink-0" />
-                              <span className="font-medium truncate">{label.replace('Pre Test', 'Pre-Test')}</span>
+                              <span className="font-medium truncate">{label}</span>
                               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                                 status === 'passed' ? 'bg-green-500' : 
                                 status === 'failed' ? 'bg-red-500' : 
