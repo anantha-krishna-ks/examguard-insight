@@ -121,7 +121,12 @@ const g2StatisticsData = [
 
 // Mock similarity heatmap data - calculate weighted similarity
 const generateSimilarityHeatmapData = () => {
-  const candidateNames = Array.from({ length: 20 }, (_, i) => `C${i + 1}`);
+  const candidateNames = [
+    'John S.', 'Sarah M.', 'Mike D.', 'Lisa W.', 'David B.',
+    'Emma J.', 'Alex P.', 'Maria G.', 'Chris L.', 'Anna T.',
+    'James R.', 'Kate H.', 'Tom N.', 'Lucy C.', 'Mark F.',
+    'Nina K.', 'Ryan M.', 'Zoe A.', 'Paul E.', 'Ivy Z.'
+  ];
   const data = [];
   
   for (let i = 0; i < candidateNames.length; i++) {
@@ -162,10 +167,10 @@ const generateSimilarityHeatmapData = () => {
       }
     }
   }
-  return data;
+  return { data, candidateNames };
 };
 
-const similarityHeatmapData = generateSimilarityHeatmapData();
+const { data: similarityHeatmapData, candidateNames } = generateSimilarityHeatmapData();
 
 export function AnswerSimilarityAnalysisPage() {
   const navigate = useNavigate();
@@ -477,20 +482,22 @@ export function AnswerSimilarityAnalysisPage() {
                     <div className="relative">
                       {/* Y-axis labels */}
                       <div className="absolute left-0 top-6 h-96 flex flex-col justify-between text-xs">
-                        {Array.from({ length: 20 }, (_, i) => `C${20 - i}`).map((candidate, index) => (
-                          <div key={candidate} className="h-4 flex items-center pr-2">
+                        {candidateNames.slice().reverse().map((candidate, index) => (
+                          <div key={candidate} className="h-4 flex items-center pr-2 font-mono">
                             {candidate}
                           </div>
                         ))}
                       </div>
                       
                       {/* Main heatmap grid */}
-                      <div className="ml-8">
+                      <div className="ml-16">
                         {/* X-axis labels */}
                         <div className="flex mb-1 text-xs">
-                          {Array.from({ length: 20 }, (_, i) => `C${i + 1}`).map((candidate) => (
-                            <div key={candidate} className="w-4 h-4 flex items-center justify-center text-center">
-                              {candidate.slice(1)}
+                          {candidateNames.map((candidate) => (
+                            <div key={candidate} className="w-4 h-6 flex items-end justify-center text-center">
+                              <div className="transform -rotate-45 origin-bottom font-mono whitespace-nowrap text-xs">
+                                {candidate}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -501,6 +508,8 @@ export function AnswerSimilarityAnalysisPage() {
                             Array.from({ length: 20 }, (_, col) => {
                               const dataPoint = similarityHeatmapData.find(d => d.x === col && d.y === (19 - row));
                               const similarity = dataPoint ? dataPoint.similarity : 0;
+                              const xName = candidateNames[col];
+                              const yName = candidateNames[19 - row];
                               
                               return (
                                 <div
@@ -510,7 +519,7 @@ export function AnswerSimilarityAnalysisPage() {
                                     backgroundColor: getSimilarityHeatmapColor(similarity),
                                     border: '1px solid rgba(255,255,255,0.1)'
                                   }}
-                                  title={`C${col + 1} vs C${20 - row}: ${similarity.toFixed(3)}`}
+                                  title={`${xName} vs ${yName}: ${similarity.toFixed(3)}`}
                                 />
                               );
                             })
@@ -518,7 +527,7 @@ export function AnswerSimilarityAnalysisPage() {
                         </div>
                         
                         {/* X-axis title */}
-                        <div className="text-center mt-2 text-sm font-medium">Candidates</div>
+                        <div className="text-center mt-4 text-sm font-medium">Candidates</div>
                       </div>
                       
                       {/* Y-axis title */}
