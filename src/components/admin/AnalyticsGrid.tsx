@@ -41,6 +41,34 @@ const behavioralAnomalyData = [
   { test: 'Test 3', sequentialPattern: 97, answerRevision: 5 },
 ];
 
+const testLevelData = [
+  { 
+    name: 'Test 1', 
+    primaryStatistics: 161, // Union of: sharedWrong(45) + longestRun(32) + longestIncorrect(28) + stringI2(18) + tJoint(23) + g2(15)
+    g2Anomalies: 26
+  },
+  { 
+    name: 'Test 2', 
+    primaryStatistics: 206, // Union of all anomaly types
+    g2Anomalies: 51
+  },
+  { 
+    name: 'Test 3', 
+    primaryStatistics: 97, // Union of all anomaly types
+    g2Anomalies: 5
+  },
+  { 
+    name: 'Test 4', 
+    primaryStatistics: 173, // Union of all anomaly types
+    g2Anomalies: 34
+  },
+  { 
+    name: 'Test 5', 
+    primaryStatistics: 147, // Union of all anomaly types
+    g2Anomalies: 22
+  }
+];
+
 const similarityData = [
   { x: 12, y: 34, similarity: 0.85, candidate: 'A001' },
   { x: 45, y: 23, similarity: 0.92, candidate: 'A002' },
@@ -157,71 +185,39 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="flex">
-            <div className="flex-1">
-              <div className="relative">
-                {/* Y-axis labels */}
-                <div className="absolute left-0 top-[9px] w-12 grid gap-px bg-gray-200 p-1" style={{ gridTemplateRows: 'repeat(10, minmax(0, 1fr))' }}>
-                  {['Anna T.', 'Chris L.', 'Maria G.', 'Alex P.', 'Emma J.', 'David B.', 'Lisa W.', 'Mike D.', 'Sarah M.', 'John S.'].map((candidate, index) => (
-                    <div key={candidate} className="h-[17px] py-px flex items-center pr-2 font-mono text-[8px] text-right">
-                      {candidate}
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Main heatmap grid */}
-                <div className="ml-12">
-                  {/* Heatmap cells */}
-                  <div className="grid grid-cols-10 gap-px bg-gray-200 p-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
-                    {Array.from({ length: 10 }, (_, row) => 
-                      Array.from({ length: 10 }, (_, col) => {
-                        const similarity = col === row ? 1.0 : Math.random() * 0.6 + 0.2;
-                        const xName = ['John S.', 'Sarah M.', 'Mike D.', 'Lisa W.', 'David B.', 'Emma J.', 'Alex P.', 'Maria G.', 'Chris L.', 'Anna T.'][col];
-                        const yName = ['Anna T.', 'Chris L.', 'Maria G.', 'Alex P.', 'Emma J.', 'David B.', 'Lisa W.', 'Mike D.', 'Sarah M.', 'John S.'][row];
-                        
-                        return (
-                          <div
-                            key={`${row}-${col}`}
-                            className="h-4 w-full cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
-                            style={{ 
-                              backgroundColor: getSimilarityHeatmapColor(similarity),
-                              border: '1px solid rgba(255,255,255,0.1)'
-                            }}
-                            title={`${xName} vs ${yName}: ${similarity.toFixed(3)}`}
-                          />
-                        );
-                      })
-                    )}
-                  </div>
-                  
-                  {/* X-axis labels below heatmap */}
-                  <div className="grid mt-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))' }}>
-                    {['John S.', 'Sarah M.', 'Mike D.', 'Lisa W.', 'David B.', 'Emma J.', 'Alex P.', 'Maria G.', 'Chris L.', 'Anna T.'].map((candidate) => (
-                      <div key={candidate} className="relative h-10 flex items-start justify-center">
-                        <div className="origin-top rotate-45 font-mono whitespace-nowrap text-[8px] translate-y-1">
-                          {candidate}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={testLevelData} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
+              <Tooltip 
+                formatter={(value: number, name: string) => [value, name]}
+                labelFormatter={(label) => `Test: ${label}`}
+              />
+              <Bar 
+                dataKey="primaryStatistics" 
+                fill="#2563eb" 
+                name="Primary Statistics"
+                onClick={(data) => onChartClick('similarity', data)}
+                style={{ cursor: 'pointer' }}
+              />
+              <Bar 
+                dataKey="g2Anomalies" 
+                fill="#ea580c" 
+                name="g2 anomalies"
+                onClick={(data) => onChartClick('similarity', data)}
+                style={{ cursor: 'pointer' }}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="mt-2 flex justify-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-blue-600 rounded"></div>
+              <span className="text-sm">Primary Statistics</span>
             </div>
-            
-            {/* Color Legend */}
-            <div className="w-16 ml-4 flex flex-col justify-center">
-              <div className="text-xs font-medium mb-2 text-center">Similarity</div>
-              <div className="flex flex-col space-y-1">
-                {[1.0, 0.8, 0.6, 0.4, 0.2, 0.0].map((val) => (
-                  <div key={val} className="flex items-center space-x-1">
-                    <div 
-                      className="w-4 h-3 border border-gray-300 rounded-sm" 
-                      style={{ backgroundColor: getSimilarityHeatmapColor(val) }}
-                    ></div>
-                    <span className="text-xs font-mono">{val.toFixed(1)}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-orange-600 rounded"></div>
+              <span className="text-sm">g2 anomalies</span>
             </div>
           </div>
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
