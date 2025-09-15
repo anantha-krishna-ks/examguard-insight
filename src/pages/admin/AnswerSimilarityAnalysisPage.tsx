@@ -811,12 +811,12 @@ export function AnswerSimilarityAnalysisPage() {
                     </thead>
                     <tbody>
                       {[
-                        { slNo: 1, sourceId: '3633', studentName: 'John S.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
-                        { slNo: 2, sourceId: '3636', studentName: 'Sarah M.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
-                        { slNo: 3, sourceId: '3637', studentName: 'Mike D.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
-                        { slNo: 4, sourceId: '3720', studentName: 'Lisa W.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
-                        { slNo: 5, sourceId: '3792', studentName: 'David B.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
-                        { slNo: 6, sourceId: '3805', studentName: 'Emma J.', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 }
+                        { slNo: 1, sourceId: '3633', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
+                        { slNo: 2, sourceId: '3636', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 3, sourceId: '3637', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 4, sourceId: '3720', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 },
+                        { slNo: 5, sourceId: '3792', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
+                        { slNo: 6, sourceId: '3805', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 }
                       ].map((row) => (
                         <tr key={row.slNo} className="border-b hover:bg-muted/50">
                           <td className="p-3 text-center">{row.slNo}</td>
