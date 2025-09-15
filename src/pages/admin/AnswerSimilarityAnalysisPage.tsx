@@ -815,33 +815,26 @@ export function AnswerSimilarityAnalysisPage() {
                         <th className="text-left p-3 font-medium">Sl No.</th>
                         <th className="text-left p-3 font-medium">Source Student ID(s)</th>
                         <th className="text-left p-3 font-medium">StudentName</th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>JI1I2</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          JI1I2 <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>STRINGL</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          STRINGL <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>STRINGI1</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          STRINGI1 <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>STRINGI2</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          STRINGI2 <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>T JOINT</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          T JOINT <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>G2</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          G2 <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
-                        <th className="text-left p-3 font-medium flex items-center space-x-1">
-                          <span>Flag</span>
-                          <Info className="h-3 w-3 text-muted-foreground" />
+                        <th className="text-left p-3 font-medium">
+                          Flag <Info className="h-3 w-3 text-muted-foreground inline ml-1" />
                         </th>
                       </tr>
                     </thead>
