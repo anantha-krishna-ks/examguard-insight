@@ -254,9 +254,17 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                   <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.identityVerification)}`}>
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Status: {candidate.verificationStatuses.identityVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.identityVerification.slice(1)}</span>
-                      <Badge variant={candidate.verificationStatuses.identityVerification === 'passed' ? 'default' : 'destructive'}>
-                        {candidate.verificationStatuses.identityVerification}
-                      </Badge>
+                      <div className={`px-3 py-1.5 rounded-full text-xs font-semibold border-2 ${
+                        candidate.verificationStatuses.identityVerification === 'passed' 
+                          ? 'bg-green-50 text-green-700 border-green-200' 
+                          : candidate.verificationStatuses.identityVerification === 'failed'
+                          ? 'bg-red-50 text-red-700 border-red-200'
+                          : candidate.verificationStatuses.identityVerification === 'pending'
+                          ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                          : 'bg-gray-50 text-gray-700 border-gray-200'
+                      }`}>
+                        {candidate.verificationStatuses.identityVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.identityVerification.slice(1)}
+                      </div>
                     </div>
                   </div>
                 </div>
