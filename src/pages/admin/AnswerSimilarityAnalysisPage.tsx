@@ -528,11 +528,6 @@ export function AnswerSimilarityAnalysisPage() {
                         {/* X-axis title */}
                         <div className="text-center mt-4 text-sm font-medium">Candidates</div>
                       </div>
-                      
-                      {/* Y-axis title */}
-                      <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -rotate-90 text-sm font-medium">
-                        Candidates
-                      </div>
                     </div>
                   </div>
                   
