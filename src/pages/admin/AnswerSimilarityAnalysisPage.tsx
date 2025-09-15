@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-import { ArrowLeft, Grid3X3, BarChart3, Users, Filter, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Grid3X3, BarChart3, Users, Filter, Eye, EyeOff, Flag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
 import { 
@@ -183,6 +183,7 @@ export function AnswerSimilarityAnalysisPage() {
   const [clickedSegment, setClickedSegment] = useState<string | null>(null);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [showCandidateCharts, setShowCandidateCharts] = useState(false);
+  const [flaggedStudents, setFlaggedStudents] = useState<Set<number>>(new Set());
 
   const getCurrentData = () => {
     if (viewLevel === "test") return testLevelData;
@@ -229,6 +230,18 @@ export function AnswerSimilarityAnalysisPage() {
   const handleCandidateClick = (candidate: any) => {
     setSelectedCandidate(candidate);
     setShowCandidateCharts(true);
+  };
+
+  const toggleStudentFlag = (slNo: number) => {
+    setFlaggedStudents(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(slNo)) {
+        newSet.delete(slNo);
+      } else {
+        newSet.add(slNo);
+      }
+      return newSet;
+    });
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -829,8 +842,13 @@ export function AnswerSimilarityAnalysisPage() {
                           <td className="p-3 text-center">{row.tJoint}</td>
                           <td className="p-3 text-center">{row.g2}</td>
                           <td className="p-3 text-center">
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                              <EyeOff className="h-3 w-3" />
+                            <Button 
+                              variant={flaggedStudents.has(row.slNo) ? "destructive" : "ghost"} 
+                              size="sm" 
+                              className="h-6 w-6 p-0"
+                              onClick={() => toggleStudentFlag(row.slNo)}
+                            >
+                              <Flag className={`h-3 w-3 ${flaggedStudents.has(row.slNo) ? 'fill-current' : ''}`} />
                             </Button>
                           </td>
                         </tr>
