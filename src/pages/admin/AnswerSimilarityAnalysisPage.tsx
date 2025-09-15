@@ -16,7 +16,10 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell
+  Cell,
+  ReferenceLine,
+  ScatterChart,
+  Scatter
 } from "recharts";
 
 type ViewLevel = "test" | "location" | "testcenter";
@@ -97,6 +100,54 @@ const candidateSimilarityData = [
   { id: 'AS004', name: 'Lisa Wilson', email: 'lisa@example.com', similarityScore: 0.83, matchedWith: 'AS005', testName: 'English Test', flagType: 'Medium' },
   { id: 'AS005', name: 'David Brown', email: 'david@example.com', similarityScore: 0.79, matchedWith: 'AS004', testName: 'English Test', flagType: 'Medium' }
 ];
+
+// Mock G2 Statistics data for vertical chart
+const g2StatisticsData = [
+  { candidate: 'Candidate_1', g2Value: 1.8, aboveThreshold: false },
+  { candidate: 'Candidate_2', g2Value: 4.8, aboveThreshold: true },
+  { candidate: 'Candidate_3', g2Value: 3.7, aboveThreshold: true },
+  { candidate: 'Candidate_4', g2Value: 3.0, aboveThreshold: false },
+  { candidate: 'Candidate_5', g2Value: 0.8, aboveThreshold: false },
+  { candidate: 'Candidate_6', g2Value: 0.8, aboveThreshold: false },
+  { candidate: 'Candidate_7', g2Value: 0.3, aboveThreshold: false },
+  { candidate: 'Candidate_8', g2Value: 4.3, aboveThreshold: true },
+  { candidate: 'Candidate_9', g2Value: 3.0, aboveThreshold: false },
+  { candidate: 'Candidate_10', g2Value: 3.6, aboveThreshold: true },
+  { candidate: 'Candidate_11', g2Value: 4.8, aboveThreshold: true },
+  { candidate: 'Candidate_12', g2Value: 4.2, aboveThreshold: true },
+  { candidate: 'Candidate_13', g2Value: 1.0, aboveThreshold: false },
+  { candidate: 'Candidate_14', g2Value: 1.0, aboveThreshold: false }
+];
+
+// Mock similarity heatmap data - calculate weighted similarity
+const generateSimilarityHeatmapData = () => {
+  const candidates = Array.from({ length: 22 }, (_, i) => i);
+  const data = [];
+  
+  for (let i = 0; i < candidates.length; i++) {
+    for (let j = 0; j < candidates.length; j++) {
+      if (i === j) {
+        data.push({ x: j, y: i, similarity: 1.0 });
+      } else {
+        // Simulate calculation: overlap, matches, weight, final similarity
+        const totalItems = 100;
+        const overlap = Math.floor(Math.random() * 40) + 60; // 60-100 items
+        if (overlap < 15) {
+          data.push({ x: j, y: i, similarity: 0 }); // Skip if < 15 overlapping
+        } else {
+          const matches = Math.floor(Math.random() * overlap);
+          const rawSimilarity = matches / overlap;
+          const weight = overlap / totalItems;
+          const finalSimilarity = rawSimilarity * weight;
+          data.push({ x: j, y: i, similarity: Math.min(finalSimilarity, 1.0) });
+        }
+      }
+    }
+  }
+  return data;
+};
+
+const similarityHeatmapData = generateSimilarityHeatmapData();
 
 export function AnswerSimilarityAnalysisPage() {
   const navigate = useNavigate();
@@ -182,6 +233,22 @@ export function AnswerSimilarityAnalysisPage() {
 
   const getThresholdColor = (value: number, threshold: number) => {
     return value > threshold ? "#ef4444" : "#22c55e";
+  };
+
+  const getG2Color = (value: number) => {
+    return value > 3.09 ? "#ef4444" : "#3b82f6"; // Red if above threshold, blue if below
+  };
+
+  const getSimilarityHeatmapColor = (similarity: number) => {
+    if (similarity === 0) return "#1a1a2e"; // Dark purple for no data
+    if (similarity < 0.3) return "#16213e"; // Very dark blue
+    if (similarity < 0.4) return "#0f3460"; // Dark blue
+    if (similarity < 0.5) return "#0e4b99"; // Medium blue
+    if (similarity < 0.6) return "#2e8b99"; // Teal
+    if (similarity < 0.7) return "#5cb3cc"; // Light teal
+    if (similarity < 0.8) return "#7dd3fc"; // Light blue
+    if (similarity < 0.9) return "#fde047"; // Yellow
+    return "#fef08a"; // Light yellow for high similarity
   };
 
   return (
@@ -273,6 +340,7 @@ export function AnswerSimilarityAnalysisPage() {
 
           {/* Location Tab */}
           <TabsContent value="location" className="space-y-6">
+            {/* Original Answer Similarity Analysis Chart */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
@@ -314,6 +382,133 @@ export function AnswerSimilarityAnalysisPage() {
                   <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-orange-600 rounded"></div>
                     <span className="text-sm">g2 anomalies</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* G2 Statistics Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="h-5 w-5" />
+                  <span>G2 Statistics with Cut-off Highlight (3.09)</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  G2 statistic values for candidate_15 compared to other candidates. Red bars indicate values above the 3.09 threshold.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={500}>
+                  <BarChart 
+                    data={g2StatisticsData} 
+                    layout="horizontal"
+                    margin={{ top: 20, right: 30, left: 80, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis 
+                      type="number" 
+                      domain={[-5, 5]} 
+                      label={{ value: 'G2 Statistic', position: 'insideBottom', offset: -5 }}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="candidate" 
+                      width={80}
+                      tick={{ fontSize: 12 }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number) => [value.toFixed(2), 'G2 Value']}
+                      labelFormatter={(label) => `${label}`}
+                    />
+                    <ReferenceLine x={3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <Bar dataKey="g2Value" name="G2 Statistic">
+                      {g2StatisticsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={getG2Color(entry.g2Value)} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <span className="text-sm">Below Threshold</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-600 rounded"></div>
+                    <span className="text-sm">Above Threshold (3.09)</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Similarity Heatmap */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Grid3X3 className="h-5 w-5" />
+                  <span>Sample: Candidate Response Similarity Matrix</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Weighted similarity heatmap calculated using overlap-based algorithm. Darker colors indicate lower similarity, brighter colors indicate higher similarity.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="flex">
+                  <div className="flex-1">
+                    <ResponsiveContainer width="100%" height={500}>
+                      <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
+                        <XAxis 
+                          type="number" 
+                          dataKey="x" 
+                          domain={[0, 21]} 
+                          tickCount={11}
+                          tick={{ fontSize: 10 }}
+                        />
+                        <YAxis 
+                          type="number" 
+                          dataKey="y" 
+                          domain={[0, 21]} 
+                          tickCount={11}
+                          tick={{ fontSize: 10 }}
+                        />
+                        <Tooltip 
+                          formatter={(value: number, name: string, props: any) => [
+                            props.payload.similarity.toFixed(3), 
+                            'Similarity'
+                          ]}
+                          labelFormatter={(label, payload) => 
+                            payload && payload[0] ? 
+                            `Candidate ${payload[0].payload.y} vs ${payload[0].payload.x}` : 
+                            ''
+                          }
+                        />
+                        <Scatter dataKey="similarity" fill="#8884d8">
+                          {similarityHeatmapData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={getSimilarityHeatmapColor(entry.similarity)} 
+                            />
+                          ))}
+                        </Scatter>
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+                  
+                  {/* Color Legend */}
+                  <div className="w-20 ml-4 flex flex-col justify-center">
+                    <div className="text-xs font-medium mb-2 text-center">Similarity</div>
+                    <div className="flex flex-col space-y-1">
+                      {[1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2].map((val) => (
+                        <div key={val} className="flex items-center space-x-2">
+                          <div 
+                            className="w-4 h-4 border border-gray-300" 
+                            style={{ backgroundColor: getSimilarityHeatmapColor(val) }}
+                          ></div>
+                          <span className="text-xs">{val.toFixed(1)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </CardContent>
