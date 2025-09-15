@@ -136,7 +136,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
 
       {/* Similarity Heatmap */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onChartClick('similarity', similarityData)}>
+            onClick={() => navigate('/admin/answer-similarity-analysis')}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="flex items-center space-x-2">
             <Grid3X3 className="h-4 w-4 text-admin-critical-alert" />

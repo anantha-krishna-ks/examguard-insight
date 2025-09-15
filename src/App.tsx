@@ -16,6 +16,7 @@ import SettingsPage from "./pages/admin/SettingsPage";
 import CasesPage from "./pages/admin/CasesPage";
 import TestCentresPage from "./pages/admin/TestCentresPage";
 import { BehavioralPatternAnalysisPage } from "./pages/admin/BehavioralPatternAnalysisPage";
+import { AnswerSimilarityAnalysisPage } from "./pages/admin/AnswerSimilarityAnalysisPage";
 import ComingSoonPage from "./pages/admin/ComingSoonPage";
 import SimulatorPage from "./pages/admin/SimulatorPage";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/admin/response-time" element={<ResponseTimePage />} />
           <Route path="/admin/response-time-analysis" element={<ResponseTimeAnalysisPage />} />
           <Route path="/admin/behavioral-pattern-analysis" element={<BehavioralPatternAnalysisPage />} />
+          <Route path="/admin/answer-similarity-analysis" element={<AnswerSimilarityAnalysisPage />} />
           <Route path="/admin/system-health" element={<SystemHealthPage />} />
           <Route path="/admin/settings" element={<SettingsPage />} />
           <Route path="/admin/cases" element={<CasesPage />} />
