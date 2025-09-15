@@ -792,57 +792,64 @@ export function AnswerSimilarityAnalysisPage() {
           >
             <div className="fixed inset-0 bg-black/50" />
             <div 
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-br from-background via-background to-muted/20 border-2 border-primary/20 rounded-2xl p-8 w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl backdrop-blur-sm animate-scale-in"
               onClick={(e) => e.stopPropagation()}
+              style={{
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+              }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Student Details</h2>
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-primary/20">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-gradient-to-r from-primary to-primary/60 rounded-full animate-pulse"></div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                    Student Analysis Details
+                  </h2>
+                </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setShowStudentModal(false)}
-                  className="h-6 w-6 p-0"
+                  className="h-8 w-8 p-0 rounded-full hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                 >
-                  ✕
+                  <span className="text-lg">✕</span>
                 </Button>
               </div>
               
-              <div className="space-y-4">
-                <div className="overflow-x-auto">
+              <div className="space-y-6">
+                <div className="overflow-x-auto rounded-xl border border-primary/20 bg-gradient-to-r from-background to-muted/10">
                   <table className="w-full border-collapse">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-3 font-medium">Sl No.</th>
-                        <th className="text-left p-3 font-medium">Source Student ID(s)</th>
-                        <th className="text-left p-3 font-medium">StudentName</th>
-                        <th className="text-left p-3 font-medium">JI1I2 i</th>
-                        <th className="text-left p-3 font-medium">STRINGL i</th>
-                        <th className="text-left p-3 font-medium">STRINGI1 i</th>
-                        <th className="text-left p-3 font-medium">STRINGI2 i</th>
-                        <th className="text-left p-3 font-medium">T JOINT i</th>
-                        <th className="text-left p-3 font-medium">G2 i</th>
-                        <th className="text-left p-3 font-medium">Flag i</th>
+                      <tr className="border-b border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+                        <th className="text-left p-4 font-semibold text-primary">Sl No.</th>
+                        <th className="text-left p-4 font-semibold text-primary">Source Student ID(s)</th>
+                        <th className="text-left p-4 font-semibold text-primary">StudentName</th>
+                        <th className="text-left p-4 font-semibold text-primary">JI1I2 i</th>
+                        <th className="text-left p-4 font-semibold text-primary">STRINGL i</th>
+                        <th className="text-left p-4 font-semibold text-primary">STRINGI1 i</th>
+                        <th className="text-left p-4 font-semibold text-primary">STRINGI2 i</th>
+                        <th className="text-left p-4 font-semibold text-primary">T JOINT i</th>
+                        <th className="text-left p-4 font-semibold text-primary">G2 i</th>
+                        <th className="text-left p-4 font-semibold text-primary">Flag i</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b">
-                        <td className="p-3 text-center">{selectedStudentData.slNo}</td>
-                        <td className="p-3 font-mono text-sm">{selectedStudentData.sourceId}</td>
-                        <td className="p-3">{selectedStudentData.studentName}</td>
-                        <td className="p-3 text-center">{selectedStudentData.ji1i2}</td>
-                        <td className="p-3 text-center">{selectedStudentData.stringl}</td>
-                        <td className="p-3 text-center">{selectedStudentData.stringi1}</td>
-                        <td className="p-3 text-center">{selectedStudentData.stringi2}</td>
-                        <td className="p-3 text-center">{selectedStudentData.tJoint}</td>
-                        <td className="p-3 text-center">{selectedStudentData.g2}</td>
-                        <td className="p-3 text-center">
+                      <tr className="border-b border-primary/10 hover:bg-primary/5 transition-colors duration-200">
+                        <td className="p-4 text-center font-medium">{selectedStudentData.slNo}</td>
+                        <td className="p-4 font-mono text-sm bg-muted/30 rounded-md">{selectedStudentData.sourceId}</td>
+                        <td className="p-4 font-medium">{selectedStudentData.studentName}</td>
+                        <td className="p-4 text-center font-bold text-lg">{selectedStudentData.ji1i2}</td>
+                        <td className="p-4 text-center font-bold text-lg">{selectedStudentData.stringl}</td>
+                        <td className="p-4 text-center font-bold text-lg">{selectedStudentData.stringi1}</td>
+                        <td className="p-4 text-center font-bold text-lg">{selectedStudentData.stringi2}</td>
+                        <td className="p-4 text-center font-bold text-lg text-orange-600">{selectedStudentData.tJoint}</td>
+                        <td className="p-4 text-center font-bold text-lg">{selectedStudentData.g2}</td>
+                        <td className="p-4 text-center">
                           <Button 
                             variant={flaggedStudents.has(selectedStudentData.slNo) ? "destructive" : "ghost"} 
                             size="sm" 
-                            className="h-6 w-6 p-0"
-                            onClick={() => toggleStudentFlag(selectedStudentData.slNo)}
+                            className="h-8 w-8 p-0 rounded-full hover-scale transition-all duration-200 shadow-md"
                           >
-                            <Flag className={`h-3 w-3 ${flaggedStudents.has(selectedStudentData.slNo) ? 'fill-current' : ''}`} />
+                            <Flag className={`h-4 w-4 ${flaggedStudents.has(selectedStudentData.slNo) ? 'fill-current' : ''}`} />
                           </Button>
                         </td>
                       </tr>
