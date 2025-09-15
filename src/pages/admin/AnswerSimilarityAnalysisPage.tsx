@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminHeader } from "@/components/admin/AdminHeader";
-import { ArrowLeft, Grid3X3, BarChart3, Users, TrendingUp } from "lucide-react";
+import { ArrowLeft, Grid3X3, BarChart3, Users, Filter, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
 import { 
   BarChart, 
   Bar, 
@@ -14,15 +16,14 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell,
-  ScatterChart,
-  Scatter,
-  LineChart,
-  Line
+  Cell
 } from "recharts";
 
-// Mock data for Primary Statistics (Union of all anomaly types) and g2 anomalies
-const similarityAnalysisData = [
+type ViewLevel = "test" | "location" | "testcenter";
+type FilterType = "all" | "flagged" | "unflagged";
+
+// Mock data for different levels
+const testLevelData = [
   { 
     name: 'Test 1', 
     primaryStatistics: 161, // Union of: sharedWrong(45) + longestRun(32) + longestIncorrect(28) + stringI2(18) + tJoint(23) + g2(15)
@@ -50,6 +51,33 @@ const similarityAnalysisData = [
   }
 ];
 
+const locationLevelData = [
+  { name: 'New York', primaryStatistics: 189, g2Anomalies: 42 },
+  { name: 'California', primaryStatistics: 156, g2Anomalies: 38 },
+  { name: 'Texas', primaryStatistics: 134, g2Anomalies: 28 },
+  { name: 'Florida', primaryStatistics: 178, g2Anomalies: 35 },
+];
+
+const testCenterLevelData = [
+  { name: 'NYC Center A', primaryStatistics: 95, g2Anomalies: 18 },
+  { name: 'NYC Center B', primaryStatistics: 87, g2Anomalies: 15 },
+  { name: 'NYC Center C', primaryStatistics: 102, g2Anomalies: 22 },
+];
+
+const candidateData = [
+  { id: 'AS001', name: 'John Smith', email: 'john@example.com', similarityScore: 0.94, matchedWith: 'AS002', testName: 'Math Assessment', flagType: 'Critical', flagged: true },
+  { id: 'AS002', name: 'Sarah Johnson', email: 'sarah@example.com', similarityScore: 0.91, matchedWith: 'AS003', testName: 'Math Assessment', flagType: 'High', flagged: true },
+  { id: 'AS003', name: 'Mike Davis', email: 'mike@example.com', similarityScore: 0.87, matchedWith: 'AS001', testName: 'Science Test', flagType: 'High', flagged: true },
+  { id: 'AS004', name: 'Lisa Wilson', email: 'lisa@example.com', similarityScore: 0.83, matchedWith: 'AS005', testName: 'English Test', flagType: 'Medium', flagged: false },
+  { id: 'AS005', name: 'David Brown', email: 'david@example.com', similarityScore: 0.79, matchedWith: 'AS004', testName: 'English Test', flagType: 'Medium', flagged: false }
+];
+
+const levelLabels = {
+  test: "Test",
+  location: "Location", 
+  testcenter: "Test Center"
+};
+
 
 // Mock data for detailed similarity metrics
 const detailedSimilarityData = [
@@ -72,7 +100,78 @@ const candidateSimilarityData = [
 
 export function AnswerSimilarityAnalysisPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [viewLevel, setViewLevel] = useState<ViewLevel>("test");
+  
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [selectedTestCenter, setSelectedTestCenter] = useState<string | null>(null);
+  const [showCandidates, setShowCandidates] = useState(false);
+  const [candidateFilter, setCandidateFilter] = useState<FilterType>("all");
+  const [clickedSegment, setClickedSegment] = useState<string | null>(null);
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [showCandidateCharts, setShowCandidateCharts] = useState(false);
+
+  const getCurrentData = () => {
+    if (viewLevel === "test") return testLevelData;
+    if (viewLevel === "location") return locationLevelData;
+    return testCenterLevelData;
+  };
+
+  const handleLevelChange = (level: ViewLevel) => {
+    setViewLevel(level);
+    setSelectedLocation(null);
+    setSelectedTestCenter(null);
+    setShowCandidates(false);
+    setClickedSegment(null);
+  };
+
+  const handleBarClick = (data: any, segment?: string) => {
+    if (viewLevel === "test") {
+      // Drill down from test to location level
+      setViewLevel("location");
+    } else if (viewLevel === "location" && !selectedLocation) {
+      setSelectedLocation(data.name);
+      setViewLevel("testcenter");
+    } else if (viewLevel === "testcenter") {
+      setSelectedTestCenter(data.name);
+      setShowCandidates(true);
+      if (segment === "primaryStatistics") {
+        setClickedSegment("primaryStatistics");
+        setCandidateFilter("flagged");
+      } else {
+        setClickedSegment(null);
+        setCandidateFilter("all");
+      }
+    }
+  };
+
+  const getFilteredCandidates = () => {
+    return candidateData.filter(candidate => {
+      if (candidateFilter === "flagged") return candidate.flagged;
+      if (candidateFilter === "unflagged") return !candidate.flagged;
+      return true;
+    });
+  };
+
+  const handleCandidateClick = (candidate: any) => {
+    setSelectedCandidate(candidate);
+    setShowCandidateCharts(true);
+  };
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-background border rounded-lg p-3 shadow-lg">
+          <p className="font-semibold">{`${label}`}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={index} style={{ color: entry.color }}>
+              {`${entry.dataKey}: ${entry.value}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   const getSimilarityColor = (score: number) => {
     if (score > 0.9) return "#ef4444"; // Critical
@@ -116,38 +215,46 @@ export function AnswerSimilarityAnalysisPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={viewLevel} onValueChange={handleLevelChange} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="metrics">Detailed Metrics</TabsTrigger>
-            <TabsTrigger value="candidates">Flagged Candidates</TabsTrigger>
+            <TabsTrigger value="test">Test</TabsTrigger>
+            <TabsTrigger value="location">Location</TabsTrigger>
+            <TabsTrigger value="testcenter">Test Center</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Similarity Analysis Chart */}
+          {/* Test Tab */}
+          <TabsContent value="test" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Similarity Analysis</span>
+                  <span>Answer Similarity Analysis - {levelLabels[viewLevel]} Level</span>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies
+                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies. Click bars to drill down.
                 </p>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={similarityAnalysisData} barCategoryGap="20%">
+                  <BarChart data={getCurrentData()} barCategoryGap="20%">
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
-                    <Tooltip 
-                      formatter={(value: number, name: string) => [value, name]}
-                      labelFormatter={(label) => `Test: ${label}`}
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="primaryStatistics" 
+                      fill="#2563eb" 
+                      name="Primary Statistics"
+                      onClick={(data) => handleBarClick(data, "primaryStatistics")}
+                      style={{ cursor: 'pointer' }}
                     />
-                    <Bar dataKey="primaryStatistics" fill="#2563eb" name="Primary Statistics" />
-                    <Bar dataKey="g2Anomalies" fill="#ea580c" name="g2 anomalies" />
+                    <Bar 
+                      dataKey="g2Anomalies" 
+                      fill="#ea580c" 
+                      name="g2 anomalies"
+                      onClick={(data) => handleBarClick(data, "g2Anomalies")}
+                      style={{ cursor: 'pointer' }}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="mt-4 flex justify-center space-x-6">
@@ -164,109 +271,201 @@ export function AnswerSimilarityAnalysisPage() {
             </Card>
           </TabsContent>
 
-          {/* Detailed Metrics Tab */}
-          <TabsContent value="metrics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {detailedSimilarityData.map((metric, index) => (
-                <Card key={metric.metric}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">{metric.metric}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Current Value</span>
-                        <span 
-                          className="text-lg font-bold"
-                          style={{ color: getThresholdColor(metric.value, metric.threshold) }}
-                        >
-                          {metric.value.toFixed(3)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Threshold</span>
-                        <span className="text-lg">{metric.threshold.toFixed(3)}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Flagged Cases</span>
-                        <Badge variant={metric.value > metric.threshold ? "destructive" : "secondary"}>
-                          {metric.flagged}
-                        </Badge>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="h-2 rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${(metric.value / 1) * 100}%`,
-                            backgroundColor: getThresholdColor(metric.value, metric.threshold)
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Flagged Candidates Tab */}
-          <TabsContent value="candidates" className="space-y-6">
+          {/* Location Tab */}
+          <TabsContent value="location" className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5" />
-                  <span>Flagged Candidates by Similarity</span>
+                  <BarChart3 className="h-5 w-5" />
+                  <span>Answer Similarity Analysis - {levelLabels[viewLevel]} Level</span>
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies. Click bars to drill down.
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-3 font-medium">Candidate ID</th>
-                        <th className="text-left p-3 font-medium">Name</th>
-                        <th className="text-left p-3 font-medium">Email</th>
-                        <th className="text-left p-3 font-medium">Similarity Score</th>
-                        <th className="text-left p-3 font-medium">Matched With</th>
-                        <th className="text-left p-3 font-medium">Test</th>
-                        <th className="text-left p-3 font-medium">Flag Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {candidateSimilarityData.map((candidate) => (
-                        <tr key={candidate.id} className="border-b hover:bg-muted/50">
-                          <td className="p-3 font-mono text-sm">{candidate.id}</td>
-                          <td className="p-3">{candidate.name}</td>
-                          <td className="p-3 text-muted-foreground">{candidate.email}</td>
-                          <td className="p-3">
-                            <span 
-                              className="font-bold"
-                              style={{ color: getSimilarityColor(candidate.similarityScore) }}
-                            >
-                              {(candidate.similarityScore * 100).toFixed(1)}%
-                            </span>
-                          </td>
-                          <td className="p-3 font-mono text-sm">{candidate.matchedWith}</td>
-                          <td className="p-3">{candidate.testName}</td>
-                          <td className="p-3">
-                            <Badge 
-                              variant={
-                                candidate.flagType === 'Critical' ? 'destructive' :
-                                candidate.flagType === 'High' ? 'secondary' : 'outline'
-                              }
-                            >
-                              {candidate.flagType}
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={getCurrentData()} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="primaryStatistics" 
+                      fill="#2563eb" 
+                      name="Primary Statistics"
+                      onClick={(data) => handleBarClick(data, "primaryStatistics")}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <Bar 
+                      dataKey="g2Anomalies" 
+                      fill="#ea580c" 
+                      name="g2 anomalies"
+                      onClick={(data) => handleBarClick(data, "g2Anomalies")}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <span className="text-sm">Primary Statistics</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-orange-600 rounded"></div>
+                    <span className="text-sm">g2 anomalies</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Test Center Tab */}
+          <TabsContent value="testcenter" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart3 className="h-5 w-5" />
+                  <span>Answer Similarity Analysis - {levelLabels[viewLevel]} Level</span>
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Primary Statistics represents the union of JI1I2, STRINGL, STRINGI1, STRINGI2, TJOINT, and g2 anomalies. Click bars to drill down.
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={getCurrentData()} barCategoryGap="20%">
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis label={{ value: 'Anomaly Student Numbers', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar 
+                      dataKey="primaryStatistics" 
+                      fill="#2563eb" 
+                      name="Primary Statistics"
+                      onClick={(data) => handleBarClick(data, "primaryStatistics")}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <Bar 
+                      dataKey="g2Anomalies" 
+                      fill="#ea580c" 
+                      name="g2 anomalies"
+                      onClick={(data) => handleBarClick(data, "g2Anomalies")}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                    <span className="text-sm">Primary Statistics</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-orange-600 rounded"></div>
+                    <span className="text-sm">g2 anomalies</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Candidate List - Only show when drilling down to test center level */}
+            {showCandidates && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center space-x-2">
+                      <Users className="h-5 w-5" />
+                      <span>Flagged Candidates</span>
+                    </CardTitle>
+                    <div className="flex items-center space-x-4">
+                      <Select value={candidateFilter} onValueChange={(value: FilterType) => setCandidateFilter(value)}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Candidates</SelectItem>
+                          <SelectItem value="flagged">Flagged Only</SelectItem>
+                          <SelectItem value="unflagged">Not Flagged</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-3 font-medium">Candidate ID</th>
+                          <th className="text-left p-3 font-medium">Name</th>
+                          <th className="text-left p-3 font-medium">Email</th>
+                          <th className="text-left p-3 font-medium">Similarity Score</th>
+                          <th className="text-left p-3 font-medium">Matched With</th>
+                          <th className="text-left p-3 font-medium">Test</th>
+                          <th className="text-left p-3 font-medium">Flag Type</th>
+                          <th className="text-left p-3 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getFilteredCandidates().map((candidate) => (
+                          <tr key={candidate.id} className="border-b hover:bg-muted/50">
+                            <td className="p-3 font-mono text-sm">{candidate.id}</td>
+                            <td className="p-3">{candidate.name}</td>
+                            <td className="p-3 text-muted-foreground">{candidate.email}</td>
+                            <td className="p-3">
+                              <span 
+                                className="font-bold"
+                                style={{ color: getSimilarityColor(candidate.similarityScore) }}
+                              >
+                                {(candidate.similarityScore * 100).toFixed(1)}%
+                              </span>
+                            </td>
+                            <td className="p-3 font-mono text-sm">{candidate.matchedWith}</td>
+                            <td className="p-3">{candidate.testName}</td>
+                            <td className="p-3">
+                              <Badge 
+                                variant={
+                                  candidate.flagType === 'Critical' ? 'destructive' :
+                                  candidate.flagType === 'High' ? 'secondary' : 'outline'
+                                }
+                              >
+                                {candidate.flagType}
+                              </Badge>
+                            </td>
+                            <td className="p-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleCandidateClick(candidate)}
+                                className="flex items-center space-x-1"
+                              >
+                                <Eye className="h-4 w-4" />
+                                <span>View</span>
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
         </Tabs>
+
+        {/* Candidate Charts Modal */}
+        {selectedCandidate && (
+          <CandidateChartsModal
+            candidate={selectedCandidate}
+            isOpen={showCandidateCharts}
+            onClose={() => {
+              setShowCandidateCharts(false);
+              setSelectedCandidate(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
