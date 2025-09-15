@@ -242,6 +242,25 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Identity Verification and Authentication */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <UserCheck className="h-4 w-4 text-blue-500" />
+                    <h4 className="font-semibold text-sm">Identity Verification and Authentication</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.identityVerification)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.identityVerification)}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Status: {candidate.verificationStatuses.identityVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.identityVerification.slice(1)}</span>
+                      <Badge variant={candidate.verificationStatuses.identityVerification === 'passed' ? 'default' : 'destructive'}>
+                        {candidate.verificationStatuses.identityVerification}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Environmental and Technical Security Baseline */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2 pb-2 border-b">
@@ -311,25 +330,6 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Identity Verification and Authentication */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 pb-2 border-b">
-                    <UserCheck className="h-4 w-4 text-blue-500" />
-                    <h4 className="font-semibold text-sm">Identity Verification and Authentication</h4>
-                    <div className="ml-auto">
-                      {getVerificationStatusIcon(candidate.verificationStatuses.identityVerification)}
-                    </div>
-                  </div>
-                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.identityVerification)}`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Status: {candidate.verificationStatuses.identityVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.identityVerification.slice(1)}</span>
-                      <Badge variant={candidate.verificationStatuses.identityVerification === 'passed' ? 'default' : 'destructive'}>
-                        {candidate.verificationStatuses.identityVerification}
-                      </Badge>
                     </div>
                   </div>
                 </div>
