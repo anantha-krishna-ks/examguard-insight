@@ -19,7 +19,15 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  Shield,
+  UserCheck,
+  Fingerprint,
+  FileCheck,
+  Eye,
+  Mic,
+  Lock,
+  Database
 } from "lucide-react";
 import { type Candidate } from "@/data/candidateData";
 
@@ -57,6 +65,26 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const getVerificationStatusColor = (status: string) => {
+    switch (status) {
+      case 'passed': return 'text-green-600 bg-green-50 border-green-200';
+      case 'failed': return 'text-red-600 bg-red-50 border-red-200';
+      case 'pending': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'not-started': return 'text-gray-600 bg-gray-50 border-gray-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  const getVerificationStatusIcon = (status: string) => {
+    switch (status) {
+      case 'passed': return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'failed': return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'pending': return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'not-started': return <AlertTriangle className="h-4 w-4 text-gray-600" />;
+      default: return <Clock className="h-4 w-4 text-gray-600" />;
+    }
   };
 
   return (
@@ -204,6 +232,144 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                 </CardContent>
               </Card>
             </div>
+
+            {/* Pre-Test Forensics Section */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="h-5 w-5 text-blue-600" />
+                  <span>Pre-Test Forensics</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Identity Verification and Authentication */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <UserCheck className="h-4 w-4 text-blue-500" />
+                    <h4 className="font-semibold text-sm">Identity Verification and Authentication</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.identityVerification)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.identityVerification)}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Status: {candidate.verificationStatuses.identityVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.identityVerification.slice(1)}</span>
+                      <Badge variant={candidate.verificationStatuses.identityVerification === 'passed' ? 'default' : 'destructive'}>
+                        {candidate.verificationStatuses.identityVerification}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Biometric Enrollment Systems */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <Fingerprint className="h-4 w-4 text-purple-500" />
+                    <h4 className="font-semibold text-sm">Biometric Enrollment Systems</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.biometricEnrollment)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.biometricEnrollment)}`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium">Overall Status: {candidate.verificationStatuses.biometricEnrollment.charAt(0).toUpperCase() + candidate.verificationStatuses.biometricEnrollment.slice(1)}</span>
+                        <Badge variant={candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'default' : 'destructive'}>
+                          {candidate.verificationStatuses.biometricEnrollment}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Eye className="h-3 w-3 text-blue-500" />
+                          <span className="text-xs">Facial Recognition Baseline</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Fingerprint className="h-3 w-3 text-purple-500" />
+                          <span className="text-xs">Keystroke Dynamics</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Mic className="h-3 w-3 text-green-500" />
+                          <span className="text-xs">Voice Print Registration</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Lock className="h-3 w-3 text-orange-500" />
+                          <span className="text-xs">Multi-factor Biometric Fusion</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Document Verification and Fraud Detection */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <FileCheck className="h-4 w-4 text-green-500" />
+                    <h4 className="font-semibold text-sm">Document Verification and Fraud Detection</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.documentVerification)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.documentVerification)}`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium">Overall Status: {candidate.verificationStatuses.documentVerification.charAt(0).toUpperCase() + candidate.verificationStatuses.documentVerification.slice(1)}</span>
+                        <Badge variant={candidate.verificationStatuses.documentVerification === 'passed' ? 'default' : 'destructive'}>
+                          {candidate.verificationStatuses.documentVerification}
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <FileCheck className="h-3 w-3 text-blue-500" />
+                          <span className="text-xs">Digital Forensic Document Analysis</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Shield className="h-3 w-3 text-purple-500" />
+                          <span className="text-xs">Government ID Verification</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Database className="h-3 w-3 text-green-500" />
+                          <span className="text-xs">Cross-Reference Validation</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
+                          <Lock className="h-3 w-3 text-orange-500" />
+                          <span className="text-xs">Blockchain-based Credential Verification</span>
+                          <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pre-Test Forensics Summary */}
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-2 pb-2 border-b">
+                    <Shield className="h-4 w-4 text-red-500" />
+                    <h4 className="font-semibold text-sm">Pre-Test Forensics Summary</h4>
+                    <div className="ml-auto">
+                      {getVerificationStatusIcon(candidate.verificationStatuses.preTestForensics)}
+                    </div>
+                  </div>
+                  <div className={`p-3 rounded-lg border ${getVerificationStatusColor(candidate.verificationStatuses.preTestForensics)}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Overall Forensics Status: {candidate.verificationStatuses.preTestForensics.charAt(0).toUpperCase() + candidate.verificationStatuses.preTestForensics.slice(1)}</span>
+                      <Badge variant={candidate.verificationStatuses.preTestForensics === 'passed' ? 'default' : 'destructive'}>
+                        {candidate.verificationStatuses.preTestForensics}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Comprehensive security analysis combining biometric verification, document authentication, and identity validation systems.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="tests" className="space-y-4">
