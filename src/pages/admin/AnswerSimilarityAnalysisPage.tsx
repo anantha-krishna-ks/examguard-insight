@@ -808,62 +808,46 @@ export function AnswerSimilarityAnalysisPage() {
               </div>
               
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Source Student ID</label>
-                    <p className="font-mono text-lg">{selectedStudentData.sourceId}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Student Name</label>
-                    <p className="text-lg">{selectedStudentData.studentName}</p>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="font-medium mb-3">Similarity Metrics</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">JI1I2</p>
-                      <p className="text-2xl font-bold">{selectedStudentData.ji1i2}</p>
-                    </div>
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">STRINGL</p>
-                      <p className="text-2xl font-bold">{selectedStudentData.stringl}</p>
-                    </div>
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">STRINGI1</p>
-                      <p className="text-2xl font-bold">{selectedStudentData.stringi1}</p>
-                    </div>
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">STRINGI2</p>
-                      <p className="text-2xl font-bold">{selectedStudentData.stringi2}</p>
-                    </div>
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">T_JOINT</p>
-                      <p className="text-2xl font-bold text-orange-600">{selectedStudentData.tJoint}</p>
-                    </div>
-                    <div className="text-center p-3 border rounded-lg">
-                      <p className="text-sm text-muted-foreground">G2</p>
-                      <p className="text-2xl font-bold">{selectedStudentData.g2}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h3 className="font-medium mb-3">Actions</h3>
-                  <div className="flex space-x-2">
-                    <Button 
-                      variant={flaggedStudents.has(selectedStudentData.slNo) ? "destructive" : "outline"}
-                      onClick={() => toggleStudentFlag(selectedStudentData.slNo)}
-                    >
-                      <Flag className={`h-4 w-4 mr-2 ${flaggedStudents.has(selectedStudentData.slNo) ? 'fill-current' : ''}`} />
-                      {flaggedStudents.has(selectedStudentData.slNo) ? 'Unflag Student' : 'Flag Student'}
-                    </Button>
-                    <Button variant="outline">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
-                  </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3 font-medium">Sl No.</th>
+                        <th className="text-left p-3 font-medium">Source Student ID(s)</th>
+                        <th className="text-left p-3 font-medium">StudentName</th>
+                        <th className="text-left p-3 font-medium">JI1I2 i</th>
+                        <th className="text-left p-3 font-medium">STRINGL i</th>
+                        <th className="text-left p-3 font-medium">STRINGI1 i</th>
+                        <th className="text-left p-3 font-medium">STRINGI2 i</th>
+                        <th className="text-left p-3 font-medium">T JOINT i</th>
+                        <th className="text-left p-3 font-medium">G2 i</th>
+                        <th className="text-left p-3 font-medium">Flag i</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b">
+                        <td className="p-3 text-center">{selectedStudentData.slNo}</td>
+                        <td className="p-3 font-mono text-sm">{selectedStudentData.sourceId}</td>
+                        <td className="p-3">{selectedStudentData.studentName}</td>
+                        <td className="p-3 text-center">{selectedStudentData.ji1i2}</td>
+                        <td className="p-3 text-center">{selectedStudentData.stringl}</td>
+                        <td className="p-3 text-center">{selectedStudentData.stringi1}</td>
+                        <td className="p-3 text-center">{selectedStudentData.stringi2}</td>
+                        <td className="p-3 text-center">{selectedStudentData.tJoint}</td>
+                        <td className="p-3 text-center">{selectedStudentData.g2}</td>
+                        <td className="p-3 text-center">
+                          <Button 
+                            variant={flaggedStudents.has(selectedStudentData.slNo) ? "destructive" : "ghost"} 
+                            size="sm" 
+                            className="h-6 w-6 p-0"
+                            onClick={() => toggleStudentFlag(selectedStudentData.slNo)}
+                          >
+                            <Flag className={`h-3 w-3 ${flaggedStudents.has(selectedStudentData.slNo) ? 'fill-current' : ''}`} />
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
