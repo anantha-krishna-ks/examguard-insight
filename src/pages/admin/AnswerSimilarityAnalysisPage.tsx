@@ -491,11 +491,10 @@ export function AnswerSimilarityAnalysisPage() {
                       
                       {/* Main heatmap grid */}
                       <div className="ml-16">
-                        {/* X-axis labels */}
-                        <div className="flex mb-1 text-xs">
+                        <div className="grid mb-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}>
                           {candidateNames.map((candidate) => (
-                            <div key={candidate} className="w-4 h-6 flex items-end justify-center text-center">
-                              <div className="transform -rotate-45 origin-bottom font-mono whitespace-nowrap text-xs">
+                            <div key={candidate} className="relative h-10 flex items-end justify-center">
+                              <div className="origin-bottom -rotate-45 font-mono whitespace-nowrap text-[10px] translate-y-1">
                                 {candidate}
                               </div>
                             </div>
@@ -514,7 +513,7 @@ export function AnswerSimilarityAnalysisPage() {
                               return (
                                 <div
                                   key={`${row}-${col}`}
-                                  className="w-4 h-4 cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
+                                  className="h-4 w-full cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
                                   style={{ 
                                     backgroundColor: getSimilarityHeatmapColor(similarity),
                                     border: '1px solid rgba(255,255,255,0.1)'
