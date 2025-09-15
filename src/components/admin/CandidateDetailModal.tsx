@@ -233,63 +233,15 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
               </Card>
             </div>
 
-            {/* Environmental and Technical Security Baseline Section */}
+            {/* Pre-Test Forensics Section */}
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Shield className="h-5 w-5 text-blue-600" />
-                  <span>Environmental and Technical Security Baseline</span>
+                  <span>Pre-Test Forensics</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Device and Network Forensics */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 pb-2 border-b">
-                    <Shield className="h-4 w-4 text-blue-500" />
-                    <h4 className="font-semibold text-sm">Device and Network Forensics</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Hardware Fingerprinting:</h5>
-                      <p className="text-xs text-muted-foreground">Unique device identification through hardware characteristics, screen resolution, installed fonts, and system configurations</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Network Environment Analysis:</h5>
-                      <p className="text-xs text-muted-foreground">IP geolocation verification, network infrastructure assessment, and unauthorized connection detection</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Browser and Application Forensics:</h5>
-                      <p className="text-xs text-muted-foreground">Security plugin verification, extension detection, and browser integrity assessment</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Virtual Machine and Remote Access Detection:</h5>
-                      <p className="text-xs text-muted-foreground">Identification of virtualized environments and remote desktop connections</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Security Infrastructure Deployment */}
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-2 pb-2 border-b">
-                    <Lock className="h-4 w-4 text-purple-500" />
-                    <h4 className="font-semibold text-sm">Security Infrastructure Deployment</h4>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Lockdown Browser Installation Verification:</h5>
-                      <p className="text-xs text-muted-foreground">Cryptographic verification of security software integrity and proper configuration</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Monitoring Agent Deployment:</h5>
-                      <p className="text-xs text-muted-foreground">Installation of forensic data collection tools with tamper-evident capabilities</p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border/20">
-                      <h5 className="font-medium text-sm mb-2">Baseline Security Scanning:</h5>
-                      <p className="text-xs text-muted-foreground">Pre-test malware detection, unauthorized software identification, and system vulnerability</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Identity Verification and Authentication */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2 pb-2 border-b">
@@ -327,22 +279,22 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Eye className="h-3 w-3 text-blue-500" />
                           <span className="text-xs">Facial Recognition Baseline</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Fingerprint className="h-3 w-3 text-purple-500" />
                           <span className="text-xs">Keystroke Dynamics</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Mic className="h-3 w-3 text-green-500" />
                           <span className="text-xs">Voice Print Registration</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Lock className="h-3 w-3 text-orange-500" />
                           <span className="text-xs">Multi-factor Biometric Fusion</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.biometricEnrollment === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -370,22 +322,22 @@ export const CandidateDetailModal = ({ candidate, isOpen, onClose }: CandidateDe
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <FileCheck className="h-3 w-3 text-blue-500" />
                           <span className="text-xs">Digital Forensic Document Analysis</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Shield className="h-3 w-3 text-purple-500" />
                           <span className="text-xs">Government ID Verification</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Database className="h-3 w-3 text-green-500" />
                           <span className="text-xs">Cross-Reference Validation</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
                         </div>
-                        <div className="flex items-center space-x-2 p-2 bg-muted/30 border border-border/20 rounded">
+                        <div className="flex items-center space-x-2 p-2 bg-background/50 rounded">
                           <Lock className="h-3 w-3 text-orange-500" />
                           <span className="text-xs">Blockchain-based Credential Verification</span>
                           <div className={`w-2 h-2 rounded-full ${candidate.verificationStatuses.documentVerification === 'passed' ? 'bg-green-500' : 'bg-red-500'}`} />
