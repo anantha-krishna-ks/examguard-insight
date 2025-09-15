@@ -717,24 +717,32 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={getCurrentWrTeRatioData().filter(d => d.name === selectedTestCenter)}>
+                    <BarChart data={getCurrentProbabilityData()}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="candidate" 
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        domain={[0, 1]}
+                        ticks={[0, 0.2, 0.4, 0.6, 0.8, 1.0]}
+                        tickFormatter={(value) => value.toFixed(1)}
+                      />
                       <Tooltip 
                         formatter={(value, name) => {
                           if (typeof value === 'number') {
                             return [
-                              name === 'combinedRatio' ? value.toFixed(2) : `${(value * 100).toFixed(1)}%`,
-                              name === 'wrRatio' ? 'WR Ratio' : name === 'teRatio' ? 'TE Ratio' : 'WR/TE Ratio'
+                              name === 'probability' ? value.toFixed(2) : value,
+                              name === 'probability' ? 'Probability' : name
                             ];
                           }
                           return [value, name];
                         }}
                       />
-                      <Bar dataKey="wrRatio" fill="#10b981" name="WR Ratio" />
-                      <Bar dataKey="teRatio" fill="#3b82f6" name="TE Ratio" />
-                      <Bar dataKey="combinedRatio" fill="#8b5cf6" name="WR/TE Combined Ratio" />
+                      <Bar dataKey="probability" fill="#06b6d4" name="probability" />
                     </BarChart>
                   </ResponsiveContainer>
                   <div className="mt-4 flex justify-center space-x-6 text-xs text-muted-foreground">
