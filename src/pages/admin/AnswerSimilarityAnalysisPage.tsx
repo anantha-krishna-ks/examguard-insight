@@ -491,16 +491,6 @@ export function AnswerSimilarityAnalysisPage() {
                       
                       {/* Main heatmap grid */}
                       <div className="ml-16">
-                        <div className="grid mb-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}>
-                          {candidateNames.map((candidate) => (
-                            <div key={candidate} className="relative h-10 flex items-end justify-center">
-                              <div className="origin-bottom -rotate-45 font-mono whitespace-nowrap text-[10px] translate-y-1">
-                                {candidate}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        
                         {/* Heatmap cells */}
                         <div className="grid grid-cols-20 gap-px bg-gray-200 p-1" style={{ gridTemplateColumns: 'repeat(20, 1fr)' }}>
                           {Array.from({ length: 20 }, (_, row) => 
@@ -525,8 +515,16 @@ export function AnswerSimilarityAnalysisPage() {
                           )}
                         </div>
                         
-                        {/* X-axis title */}
-                        <div className="text-center mt-4 text-sm font-medium">Candidates</div>
+                        {/* X-axis labels below heatmap */}
+                        <div className="grid mt-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(20, minmax(0, 1fr))' }}>
+                          {candidateNames.map((candidate) => (
+                            <div key={candidate} className="relative h-10 flex items-start justify-center">
+                              <div className="origin-top rotate-45 font-mono whitespace-nowrap text-[10px] translate-y-1">
+                                {candidate}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
