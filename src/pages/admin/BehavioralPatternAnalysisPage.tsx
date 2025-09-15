@@ -199,14 +199,24 @@ const responseTimeWindowData = {
 
 const probabilityCorrectnessData = {
   'HYD-001': [
-    { item: 'Item 1', probability: 0.72, candidatesAffected: 15 },
-    { item: 'Item 2', probability: 0.68, candidatesAffected: 18 },
-    { item: 'Item 3', probability: 0.81, candidatesAffected: 12 },
-    { item: 'Item 4', probability: 0.75, candidatesAffected: 14 },
-    { item: 'Item 5', probability: 0.63, candidatesAffected: 20 },
+    { candidate: 'C_201_D', probability: 0.62 },
+    { candidate: 'C_201_01', probability: 0.51 },
+    { candidate: 'C_201_1', probability: 0.50 },
+    { candidate: 'C_202_51', probability: 0.41 },
+    { candidate: 'C_203_53', probability: 0.40 },
+    { candidate: 'C_204_A', probability: 0.39 },
+    { candidate: 'C_205_45', probability: 0.38 },
+    { candidate: 'C_206_5', probability: 0.39 },
+    { candidate: 'C_207_1', probability: 0.39 },
+    { candidate: 'C_208_9', probability: 0.29 },
+    { candidate: 'C_209_A', probability: 0.28 },
+    { candidate: 'C_210_65', probability: 0.21 },
+    { candidate: 'C_211_B', probability: 0.21 },
+    { candidate: 'C_212_97', probability: 0.21 },
+    { candidate: 'C_213_GT', probability: 0.11 },
   ],
   'HYD-002': [
-    { item: 'Item 1', probability: 0.69, candidatesAffected: 12 },
+    { candidate: 'C_301_D', probability: 0.59 },
     { item: 'Item 2', probability: 0.74, candidatesAffected: 14 },
     { item: 'Item 3', probability: 0.66, candidatesAffected: 16 },
     { item: 'Item 4', probability: 0.78, candidatesAffected: 11 },
@@ -655,28 +665,37 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <BarChart3 className="h-5 w-5 text-indigo-500" />
-                    <span>Probability of Correctness for Item Changes</span>
+                    <span>Average Correctness for Candidates in Center A</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={getCurrentProbabilityData()}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="item" />
-                      <YAxis />
+                      <XAxis 
+                        dataKey="candidate" 
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        domain={[0, 1]}
+                        ticks={[0, 0.2, 0.4, 0.6, 0.8, 1.0]}
+                        tickFormatter={(value) => value.toFixed(1)}
+                      />
                       <Tooltip 
                         formatter={(value, name) => {
                           if (typeof value === 'number') {
                             return [
-                              name === 'probability' ? `${(value * 100).toFixed(1)}%` : value,
-                              name === 'probability' ? 'Probability' : 'Candidates Affected'
+                              name === 'probability' ? value.toFixed(2) : value,
+                              name === 'probability' ? 'Average Correctness (Probability)' : name
                             ];
                           }
                           return [value, name];
                         }}
                       />
-                      <Bar dataKey="probability" fill="#6366f1" name="Probability" />
-                      <Bar dataKey="candidatesAffected" fill="#06b6d4" name="Candidates Affected" />
+                      <Bar dataKey="probability" fill="#06b6d4" name="probability" />
                     </BarChart>
                   </ResponsiveContainer>
                   <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
