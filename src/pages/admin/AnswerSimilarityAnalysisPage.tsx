@@ -526,7 +526,7 @@ export function AnswerSimilarityAnalysisPage() {
                         </div>
                         
                         {/* X-axis title */}
-                        <div className="text-center mt-4 text-sm font-medium">Candidates</div>
+                        <div className="text-center mt-4 text-sm font-medium">{candidateNames.join(', ')}</div>
                       </div>
                     </div>
                   </div>
