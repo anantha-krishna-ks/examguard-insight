@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Filter, Users, MapPin, Building2, Eye, Clock, ArrowLeft } from "lucide-react";
+import { Search, Filter, Users, MapPin, Building2, Eye, Clock, ArrowLeft, Shield, UserCheck, Fingerprint, FileCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,26 @@ const Candidate360Page = () => {
 
   const getStatusText = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
+  const getVerificationColor = (status: string) => {
+    switch (status) {
+      case 'passed': return 'text-green-600 bg-green-50 border-green-200';
+      case 'failed': return 'text-red-600 bg-red-50 border-red-200';
+      case 'pending': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'not-started': return 'text-gray-600 bg-gray-50 border-gray-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+    }
+  };
+
+  const getVerificationIcon = (type: string) => {
+    switch (type) {
+      case 'preTestForensics': return Shield;
+      case 'identityVerification': return UserCheck;
+      case 'biometricEnrollment': return Fingerprint;
+      case 'documentVerification': return FileCheck;
+      default: return Shield;
+    }
   };
 
   return (
@@ -279,6 +299,28 @@ const Candidate360Page = () => {
                           {candidate.suspiciousActivity} flags
                         </Badge>
                       )}
+                    </div>
+
+                    {/* Verification Statuses */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Verification Systems</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {Object.entries(candidate.verificationStatuses).map(([key, status]) => {
+                          const Icon = getVerificationIcon(key);
+                          const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                          return (
+                            <div key={key} className={`flex items-center space-x-1 p-2 rounded-md border text-xs ${getVerificationColor(status)}`}>
+                              <Icon className="h-3 w-3 flex-shrink-0" />
+                              <span className="font-medium truncate">{label.replace('Pre Test', 'Pre-Test')}</span>
+                              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                status === 'passed' ? 'bg-green-500' : 
+                                status === 'failed' ? 'bg-red-500' : 
+                                status === 'pending' ? 'bg-yellow-500' : 'bg-gray-400'
+                              }`} />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
 
                     {/* Action Button */}

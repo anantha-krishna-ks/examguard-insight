@@ -17,6 +17,12 @@ export interface Candidate {
   department: string;
   position: string;
   testHistory: TestResult[];
+  verificationStatuses: {
+    preTestForensics: 'passed' | 'failed' | 'pending' | 'not-started';
+    identityVerification: 'passed' | 'failed' | 'pending' | 'not-started';
+    biometricEnrollment: 'passed' | 'failed' | 'pending' | 'not-started';
+    documentVerification: 'passed' | 'failed' | 'pending' | 'not-started';
+  };
 }
 
 export interface TestResult {
@@ -96,7 +102,13 @@ export const mockCandidates: Candidate[] = [
         status: "completed",
         flags: []
       }
-    ]
+    ],
+    verificationStatuses: {
+      preTestForensics: 'passed',
+      identityVerification: 'passed',
+      biometricEnrollment: 'passed',
+      documentVerification: 'passed'
+    }
   },
   {
     id: "C002",
@@ -125,7 +137,13 @@ export const mockCandidates: Candidate[] = [
         status: "flagged",
         flags: ["Multiple tab switches", "Unusual typing pattern"]
       }
-    ]
+    ],
+    verificationStatuses: {
+      preTestForensics: 'failed',
+      identityVerification: 'pending',
+      biometricEnrollment: 'failed',
+      documentVerification: 'pending'
+    }
   },
   {
     id: "C003",
@@ -154,7 +172,13 @@ export const mockCandidates: Candidate[] = [
         status: "completed",
         flags: []
       }
-    ]
+    ],
+    verificationStatuses: {
+      preTestForensics: 'passed',
+      identityVerification: 'passed',
+      biometricEnrollment: 'passed',
+      documentVerification: 'passed'
+    }
   },
   {
     id: "C004",
@@ -183,7 +207,13 @@ export const mockCandidates: Candidate[] = [
         status: "completed",
         flags: ["Extended break time"]
       }
-    ]
+    ],
+    verificationStatuses: {
+      preTestForensics: 'passed',
+      identityVerification: 'pending',
+      biometricEnrollment: 'passed',
+      documentVerification: 'not-started'
+    }
   },
   {
     id: "C005",
@@ -212,7 +242,13 @@ export const mockCandidates: Candidate[] = [
         status: "flagged",
         flags: ["Multiple suspicious activities", "Possible external assistance"]
       }
-    ]
+    ],
+    verificationStatuses: {
+      preTestForensics: 'failed',
+      identityVerification: 'failed',
+      biometricEnrollment: 'not-started',
+      documentVerification: 'failed'
+    }
   }
 ];
 
