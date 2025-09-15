@@ -657,16 +657,8 @@ export function AnswerSimilarityAnalysisPage() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left p-3 font-medium">Sl No</th>
                         <th className="text-left p-3 font-medium">Source Student ID(s)</th>
                         <th className="text-left p-3 font-medium">Student Name</th>
-                        <th className="text-left p-3 font-medium">JI1I2</th>
-                        <th className="text-left p-3 font-medium">STRINGL</th>
-                        <th className="text-left p-3 font-medium">STRINGI1</th>
-                        <th className="text-left p-3 font-medium">STRINGI2</th>
-                        <th className="text-left p-3 font-medium">T_JOINT</th>
-                        <th className="text-left p-3 font-medium">G2</th>
-                        <th className="text-left p-3 font-medium">Flag</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -683,25 +675,8 @@ export function AnswerSimilarityAnalysisPage() {
                            className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
                            onClick={() => handleStudentRowClick(row)}
                          >
-                          <td className="p-3 text-center">{row.slNo}</td>
                           <td className="p-3 font-mono text-sm">{row.sourceId}</td>
                           <td className="p-3">{row.studentName}</td>
-                          <td className="p-3 text-center">{row.ji1i2}</td>
-                          <td className="p-3 text-center">{row.stringl}</td>
-                          <td className="p-3 text-center">{row.stringi1}</td>
-                          <td className="p-3 text-center">{row.stringi2}</td>
-                          <td className="p-3 text-center">{row.tJoint}</td>
-                          <td className="p-3 text-center">{row.g2}</td>
-                          <td className="p-3 text-center">
-                            <Button 
-                              variant={flaggedStudents.has(row.slNo) ? "destructive" : "ghost"} 
-                              size="sm" 
-                              className="h-6 w-6 p-0"
-                              onClick={() => toggleStudentFlag(row.slNo)}
-                            >
-                              <Flag className={`h-3 w-3 ${flaggedStudents.has(row.slNo) ? 'fill-current' : ''}`} />
-                            </Button>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
