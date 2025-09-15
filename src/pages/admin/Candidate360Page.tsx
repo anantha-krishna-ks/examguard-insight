@@ -305,9 +305,7 @@ const Candidate360Page = () => {
                     <div className="space-y-2">
                       <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Verification Systems</h4>
                       <div className="grid grid-cols-2 gap-2">
-                        {Object.entries(candidate.verificationStatuses)
-                          .filter(([key]) => key !== 'preTestForensics')
-                          .map(([key, status]) => {
+                        {Object.entries(candidate.verificationStatuses).map(([key, status]) => {
                           const Icon = getVerificationIcon(key);
                           const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                           return (
