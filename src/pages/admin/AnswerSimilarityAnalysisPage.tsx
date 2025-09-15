@@ -103,20 +103,20 @@ const candidateSimilarityData = [
 
 // Mock G2 Statistics data for vertical chart
 const g2StatisticsData = [
-  { candidate: 'Candidate_1', g2Value: 1.8, aboveThreshold: false },
-  { candidate: 'Candidate_2', g2Value: 4.8, aboveThreshold: true },
-  { candidate: 'Candidate_3', g2Value: 3.7, aboveThreshold: true },
-  { candidate: 'Candidate_4', g2Value: 3.0, aboveThreshold: false },
-  { candidate: 'Candidate_5', g2Value: 0.8, aboveThreshold: false },
-  { candidate: 'Candidate_6', g2Value: 0.8, aboveThreshold: false },
-  { candidate: 'Candidate_7', g2Value: 0.3, aboveThreshold: false },
-  { candidate: 'Candidate_8', g2Value: 4.3, aboveThreshold: true },
-  { candidate: 'Candidate_9', g2Value: 3.0, aboveThreshold: false },
-  { candidate: 'Candidate_10', g2Value: 3.6, aboveThreshold: true },
-  { candidate: 'Candidate_11', g2Value: 4.8, aboveThreshold: true },
-  { candidate: 'Candidate_12', g2Value: 4.2, aboveThreshold: true },
-  { candidate: 'Candidate_13', g2Value: 1.0, aboveThreshold: false },
-  { candidate: 'Candidate_14', g2Value: 1.0, aboveThreshold: false }
+  { candidate: 'John S.', g2Value: 1.8, aboveThreshold: false },
+  { candidate: 'Sarah M.', g2Value: 4.8, aboveThreshold: true },
+  { candidate: 'Mike D.', g2Value: 3.7, aboveThreshold: true },
+  { candidate: 'Lisa W.', g2Value: 3.0, aboveThreshold: false },
+  { candidate: 'David B.', g2Value: 0.8, aboveThreshold: false },
+  { candidate: 'Emma J.', g2Value: 0.8, aboveThreshold: false },
+  { candidate: 'Alex P.', g2Value: 0.3, aboveThreshold: false },
+  { candidate: 'Maria G.', g2Value: 4.3, aboveThreshold: true },
+  { candidate: 'Chris L.', g2Value: 3.0, aboveThreshold: false },
+  { candidate: 'Anna T.', g2Value: 3.6, aboveThreshold: true },
+  { candidate: 'James R.', g2Value: 4.8, aboveThreshold: true },
+  { candidate: 'Kate H.', g2Value: 4.2, aboveThreshold: true },
+  { candidate: 'Tom N.', g2Value: 1.0, aboveThreshold: false },
+  { candidate: 'Lucy C.', g2Value: 1.0, aboveThreshold: false }
 ];
 
 // Mock similarity heatmap data - calculate weighted similarity
