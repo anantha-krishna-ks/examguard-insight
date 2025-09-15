@@ -423,116 +423,61 @@ export function AnswerSimilarityAnalysisPage() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={500}>
-                  <ScatterChart 
-                    data={g2StatisticsData.map((item, index) => ({ ...item, index: index + 1 }))} 
-                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                  <BarChart 
+                    data={g2StatisticsData} 
+                    margin={{ top: 20, right: 30, left: 20, bottom: 100 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" opacity={0.7} />
-                    
-                    {/* Background zones */}
-                    <defs>
-                      <linearGradient id="safeZone" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#dcfce7" stopOpacity={0.6} />
-                        <stop offset="100%" stopColor="#bbf7d0" stopOpacity={0.3} />
-                      </linearGradient>
-                      <linearGradient id="dangerZone" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#fecaca" stopOpacity={0.6} />
-                        <stop offset="100%" stopColor="#fca5a5" stopOpacity={0.3} />
-                      </linearGradient>
-                    </defs>
-                    
-                    {/* Safe zone background */}
-                    <rect 
-                      x="0" 
-                      y="20%" 
-                      width="100%" 
-                      height="60%" 
-                      fill="url(#safeZone)" 
-                      opacity={0.4}
-                    />
-                    
                     <XAxis 
-                      dataKey="index"
-                      type="number"
-                      domain={[0, 15]}
-                      label={{ value: 'Candidate Number', position: 'insideBottom', offset: -10 }}
-                      tick={{ fontSize: 12 }}
+                      dataKey="candidate" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={100}
+                      tick={{ fontSize: 10 }}
+                      label={{ value: 'Candidates', position: 'insideBottom', offset: -10 }}
                     />
                     <YAxis 
                       domain={[-5, 5]} 
                       label={{ value: 'G2 Statistics Values', angle: -90, position: 'insideLeft' }}
                       tick={{ fontSize: 12 }}
                     />
-                    
                     <Tooltip 
                       formatter={(value: number) => [value.toFixed(2), 'G2 Value']}
-                      labelFormatter={(label) => `Candidate ${Math.round(label as number)}`}
+                      labelFormatter={(label) => `${label}`}
                       contentStyle={{ 
                         backgroundColor: 'rgba(255, 255, 255, 0.95)', 
                         border: '1px solid #e0e7ff',
-                        borderRadius: '12px',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
-                        backdropFilter: 'blur(8px)'
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
                       }}
                     />
-                    
-                    {/* Threshold lines */}
-                    <ReferenceLine y={3.09} stroke="#ef4444" strokeDasharray="8 4" strokeWidth={2} opacity={0.8} />
-                    <ReferenceLine y={-3.09} stroke="#ef4444" strokeDasharray="8 4" strokeWidth={2} opacity={0.8} />
-                    <ReferenceLine y={0} stroke="#64748b" strokeDasharray="2 2" strokeWidth={1} opacity={0.5} />
-                    
-                    <Scatter dataKey="g2Value" fill="#3b82f6">
+                    <ReferenceLine y={3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <ReferenceLine y={-3.09} stroke="#ef4444" strokeDasharray="5 5" strokeWidth={2} />
+                    <Bar 
+                      dataKey="g2Value" 
+                      name="G2 Statistic"
+                      radius={[2, 2, 0, 0]}
+                    >
                       {g2StatisticsData.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={entry.aboveThreshold ? "#ef4444" : "#22c55e"}
-                          r={6}
-                          className="transition-all duration-300 hover:r-8 drop-shadow-lg"
-                          style={{
-                            filter: entry.aboveThreshold ? 'drop-shadow(0 4px 8px rgba(239, 68, 68, 0.3))' : 'drop-shadow(0 4px 8px rgba(34, 197, 94, 0.3))',
-                            animation: 'scale-in 0.5s ease-out'
-                          }}
+                          fill={getG2Color(entry.g2Value)}
+                          stroke={getG2Color(entry.g2Value)}
+                          strokeWidth={1}
+                          className="transition-all duration-300 hover:opacity-80"
                         />
                       ))}
-                    </Scatter>
-                  </ScatterChart>
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
-                
-                <div className="mt-6 space-y-4">
-                  {/* Legend */}
-                  <div className="flex justify-center space-x-8">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse shadow-lg"></div>
-                      <span className="text-sm font-medium">Safe Zone (-3.09 to +3.09)</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse shadow-lg"></div>
-                      <span className="text-sm font-medium">Critical Zone (Beyond ±3.09)</span>
-                    </div>
+                <div className="mt-4 flex justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded animate-pulse"></div>
+                    <span className="text-sm">Below Threshold</span>
                   </div>
-                  
-                  {/* Statistics */}
-                  <div className="bg-muted/50 rounded-lg p-4 border">
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-green-600">
-                          {g2StatisticsData.filter(d => !d.aboveThreshold).length}
-                        </div>
-                        <div className="text-sm text-muted-foreground">Safe Candidates</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-red-600">
-                          {g2StatisticsData.filter(d => d.aboveThreshold).length}
-                        </div>
-                        <div className="text-sm text-muted-foreground">Flagged Candidates</div>
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold text-blue-600">
-                          {((g2StatisticsData.filter(d => d.aboveThreshold).length / g2StatisticsData.length) * 100).toFixed(1)}%
-                        </div>
-                        <div className="text-sm text-muted-foreground">Risk Percentage</div>
-                      </div>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-red-600 rounded animate-pulse"></div>
+                    <span className="text-sm">Above Threshold (±3.09)</span>
                   </div>
                 </div>
               </CardContent>
