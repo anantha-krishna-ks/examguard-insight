@@ -65,6 +65,18 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
     return "#3b82f6"; // Normal
   };
 
+  const getSimilarityHeatmapColor = (similarity: number) => {
+    if (similarity === 0) return "#1a1a2e"; // Dark purple for no data
+    if (similarity < 0.3) return "#16213e"; // Very dark blue
+    if (similarity < 0.4) return "#0f3460"; // Dark blue
+    if (similarity < 0.5) return "#0e4b99"; // Medium blue
+    if (similarity < 0.6) return "#2e8b99"; // Teal
+    if (similarity < 0.7) return "#5cb3cc"; // Light teal
+    if (similarity < 0.8) return "#7dd3fc"; // Light blue
+    if (similarity < 0.9) return "#fde047"; // Yellow
+    return "#fef08a"; // Light yellow for high similarity
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Response Time-Based Anomaly */}
@@ -145,32 +157,73 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
-            <ScatterChart data={similarityData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="x" />
-              <YAxis dataKey="y" />
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload[0]) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-card p-2 border rounded shadow">
-                        <p>Candidate: {data.candidate}</p>
-                        <p>Similarity: {(data.similarity * 100).toFixed(1)}%</p>
+          <div className="flex">
+            <div className="flex-1">
+              <div className="relative">
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-[9px] w-12 grid gap-px bg-gray-200 p-1" style={{ gridTemplateRows: 'repeat(10, minmax(0, 1fr))' }}>
+                  {['Anna T.', 'Chris L.', 'Maria G.', 'Alex P.', 'Emma J.', 'David B.', 'Lisa W.', 'Mike D.', 'Sarah M.', 'John S.'].map((candidate, index) => (
+                    <div key={candidate} className="h-[17px] py-px flex items-center pr-2 font-mono text-[8px] text-right">
+                      {candidate}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Main heatmap grid */}
+                <div className="ml-12">
+                  {/* Heatmap cells */}
+                  <div className="grid grid-cols-10 gap-px bg-gray-200 p-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+                    {Array.from({ length: 10 }, (_, row) => 
+                      Array.from({ length: 10 }, (_, col) => {
+                        const similarity = col === row ? 1.0 : Math.random() * 0.6 + 0.2;
+                        const xName = ['John S.', 'Sarah M.', 'Mike D.', 'Lisa W.', 'David B.', 'Emma J.', 'Alex P.', 'Maria G.', 'Chris L.', 'Anna T.'][col];
+                        const yName = ['Anna T.', 'Chris L.', 'Maria G.', 'Alex P.', 'Emma J.', 'David B.', 'Lisa W.', 'Mike D.', 'Sarah M.', 'John S.'][row];
+                        
+                        return (
+                          <div
+                            key={`${row}-${col}`}
+                            className="h-4 w-full cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all duration-200"
+                            style={{ 
+                              backgroundColor: getSimilarityHeatmapColor(similarity),
+                              border: '1px solid rgba(255,255,255,0.1)'
+                            }}
+                            title={`${xName} vs ${yName}: ${similarity.toFixed(3)}`}
+                          />
+                        );
+                      })
+                    )}
+                  </div>
+                  
+                  {/* X-axis labels below heatmap */}
+                  <div className="grid mt-1 bg-gray-200 p-1 gap-px" style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))' }}>
+                    {['John S.', 'Sarah M.', 'Mike D.', 'Lisa W.', 'David B.', 'Emma J.', 'Alex P.', 'Maria G.', 'Chris L.', 'Anna T.'].map((candidate) => (
+                      <div key={candidate} className="relative h-10 flex items-start justify-center">
+                        <div className="origin-top rotate-45 font-mono whitespace-nowrap text-[8px] translate-y-1">
+                          {candidate}
+                        </div>
                       </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Scatter dataKey="similarity">
-                {similarityData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getSimilarityColor(entry.similarity)} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Color Legend */}
+            <div className="w-16 ml-4 flex flex-col justify-center">
+              <div className="text-xs font-medium mb-2 text-center">Similarity</div>
+              <div className="flex flex-col space-y-1">
+                {[1.0, 0.8, 0.6, 0.4, 0.2, 0.0].map((val) => (
+                  <div key={val} className="flex items-center space-x-1">
+                    <div 
+                      className="w-4 h-3 border border-gray-300 rounded-sm" 
+                      style={{ backgroundColor: getSimilarityHeatmapColor(val) }}
+                    ></div>
+                    <span className="text-xs font-mono">{val.toFixed(1)}</span>
+                  </div>
                 ))}
-              </Scatter>
-            </ScatterChart>
-          </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
           <div className="mt-2 flex justify-between text-xs text-muted-foreground">
             <span>Suspicious clusters detected</span>
             <Badge variant="outline" className="text-admin-critical-alert border-admin-critical-alert">
