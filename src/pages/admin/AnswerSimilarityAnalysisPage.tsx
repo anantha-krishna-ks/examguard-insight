@@ -184,6 +184,8 @@ export function AnswerSimilarityAnalysisPage() {
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [showCandidateCharts, setShowCandidateCharts] = useState(false);
   const [flaggedStudents, setFlaggedStudents] = useState<Set<number>>(new Set());
+  const [selectedStudentData, setSelectedStudentData] = useState<any>(null);
+  const [showStudentModal, setShowStudentModal] = useState(false);
 
   const getCurrentData = () => {
     if (viewLevel === "test") return testLevelData;
@@ -242,6 +244,11 @@ export function AnswerSimilarityAnalysisPage() {
       }
       return newSet;
     });
+  };
+
+  const handleStudentRowClick = (studentData: any) => {
+    setSelectedStudentData(studentData);
+    setShowStudentModal(true);
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -831,7 +838,11 @@ export function AnswerSimilarityAnalysisPage() {
                         { slNo: 5, sourceId: '3792', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 13, g2: 0 },
                         { slNo: 6, sourceId: '3805', studentName: 'Student-3633', ji1i2: 0, stringl: 0, stringi1: 0, stringi2: 0, tJoint: 12, g2: 0 }
                       ].map((row) => (
-                        <tr key={row.slNo} className="border-b hover:bg-muted/50">
+                         <tr 
+                           key={row.slNo} 
+                           className="border-b hover:bg-muted/50 cursor-pointer transition-colors"
+                           onClick={() => handleStudentRowClick(row)}
+                         >
                           <td className="p-3 text-center">{row.slNo}</td>
                           <td className="p-3 font-mono text-sm">{row.sourceId}</td>
                           <td className="p-3">{row.studentName}</td>
@@ -956,6 +967,92 @@ export function AnswerSimilarityAnalysisPage() {
               setSelectedCandidate(null);
             }}
           />
+        )}
+
+        {/* Student Detail Modal */}
+        {selectedStudentData && (
+          <dialog 
+            className={`fixed inset-0 z-50 ${showStudentModal ? 'block' : 'hidden'}`}
+            onClick={() => setShowStudentModal(false)}
+          >
+            <div className="fixed inset-0 bg-black/50" />
+            <div 
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Student Details</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowStudentModal(false)}
+                  className="h-6 w-6 p-0"
+                >
+                  ✕
+                </Button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Source Student ID</label>
+                    <p className="font-mono text-lg">{selectedStudentData.sourceId}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Student Name</label>
+                    <p className="text-lg">{selectedStudentData.studentName}</p>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-medium mb-3">Similarity Metrics</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">JI1I2</p>
+                      <p className="text-2xl font-bold">{selectedStudentData.ji1i2}</p>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">STRINGL</p>
+                      <p className="text-2xl font-bold">{selectedStudentData.stringl}</p>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">STRINGI1</p>
+                      <p className="text-2xl font-bold">{selectedStudentData.stringi1}</p>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">STRINGI2</p>
+                      <p className="text-2xl font-bold">{selectedStudentData.stringi2}</p>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">T_JOINT</p>
+                      <p className="text-2xl font-bold text-orange-600">{selectedStudentData.tJoint}</p>
+                    </div>
+                    <div className="text-center p-3 border rounded-lg">
+                      <p className="text-sm text-muted-foreground">G2</p>
+                      <p className="text-2xl font-bold">{selectedStudentData.g2}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="font-medium mb-3">Actions</h3>
+                  <div className="flex space-x-2">
+                    <Button 
+                      variant={flaggedStudents.has(selectedStudentData.slNo) ? "destructive" : "outline"}
+                      onClick={() => toggleStudentFlag(selectedStudentData.slNo)}
+                    >
+                      <Flag className={`h-4 w-4 mr-2 ${flaggedStudents.has(selectedStudentData.slNo) ? 'fill-current' : ''}`} />
+                      {flaggedStudents.has(selectedStudentData.slNo) ? 'Unflag Student' : 'Flag Student'}
+                    </Button>
+                    <Button variant="outline">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </dialog>
         )}
       </div>
     </div>
