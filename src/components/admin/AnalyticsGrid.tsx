@@ -106,7 +106,9 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold text-foreground">Statistical Technique</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Response Time-Based Anomaly */}
       <Card className="cursor-pointer hover:shadow-lg transition-shadow"
             onClick={() => navigate('/admin/response-time-analysis')}>
@@ -257,6 +259,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
