@@ -87,8 +87,9 @@ const personFitData = [
 
 // AI Based Technique mock data
 const advancedBehavioralData = [
-  { category: 'AI-Powered Behaviour Detection', detected: 45, flagged: 12, verified: 8 },
-  { category: 'Biometric Continuity Verification', detected: 67, flagged: 23, verified: 15 },
+  { category: 'Test 1', aiPowered: 45, biometric: 67 },
+  { category: 'Test 2', aiPowered: 32, biometric: 54 },
+  { category: 'Test 3', aiPowered: 28, biometric: 41 },
 ];
 
 const technicalSecurityData = [
@@ -301,9 +302,8 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
                   <XAxis dataKey="category" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="detected" fill="#3b82f6" name="Detected" />
-                  <Bar dataKey="flagged" fill="#f59e0b" name="Flagged" />
-                  <Bar dataKey="verified" fill="#ef4444" name="Verified" />
+                  <Bar dataKey="aiPowered" fill="#3b82f6" name="AI-Powered Behaviour Detection" />
+                  <Bar dataKey="biometric" fill="#10b981" name="Biometric Continuity Verification" />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">
