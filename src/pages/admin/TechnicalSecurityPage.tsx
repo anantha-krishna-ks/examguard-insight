@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
+import { TechnicalSecurityModal } from "@/components/admin/TechnicalSecurityModal";
 import { 
   BarChart, 
   Bar, 
@@ -93,6 +94,7 @@ export default function TechnicalSecurityPage() {
   const [candidateFilter, setCandidateFilter] = useState<FilterType>('all');
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [showCandidateModal, setShowCandidateModal] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
 
   const handleLevelChange = (level: ViewLevel) => {
     setCurrentLevel(level);
@@ -126,7 +128,7 @@ export default function TechnicalSecurityPage() {
 
   const handleCandidateClick = (candidate: any) => {
     setSelectedCandidate(candidate);
-    setShowCandidateModal(true);
+    setShowSecurityModal(true);
   };
 
   const getCurrentData = () => {
@@ -313,14 +315,24 @@ export default function TechnicalSecurityPage() {
       )}
 
       {selectedCandidate && (
-        <CandidateChartsModal
-          isOpen={showCandidateModal}
-          onClose={() => {
-            setShowCandidateModal(false);
-            setSelectedCandidate(null);
-          }}
-          candidate={selectedCandidate}
-        />
+        <>
+          <CandidateChartsModal
+            isOpen={showCandidateModal}
+            onClose={() => {
+              setShowCandidateModal(false);
+              setSelectedCandidate(null);
+            }}
+            candidate={selectedCandidate}
+          />
+          <TechnicalSecurityModal
+            isOpen={showSecurityModal}
+            onClose={() => {
+              setShowSecurityModal(false);
+              setSelectedCandidate(null);
+            }}
+            candidate={selectedCandidate}
+          />
+        </>
       )}
     </div>
   );
