@@ -52,7 +52,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Flagged', 
     securityScore: 78, 
-    violationType: 'Content Protection',
+    violationType: 'System Integrity Monitoring',
     flagged: true 
   },
   { 
@@ -61,7 +61,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Normal', 
     securityScore: 23, 
-    violationType: 'None',
+    violationType: 'Content Security and Anti-Harvesting',
     flagged: false 
   },
   { 
@@ -70,7 +70,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Flagged', 
     securityScore: 89, 
-    violationType: 'Technical Security',
+    violationType: 'System Integrity Monitoring',
     flagged: true 
   },
   { 
@@ -79,7 +79,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Normal', 
     securityScore: 15, 
-    violationType: 'None',
+    violationType: 'Content Security and Anti-Harvesting',
     flagged: false 
   },
 ];
@@ -284,7 +284,7 @@ export default function TechnicalSecurityPage() {
                           <TableHead>Test Center</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Security Score</TableHead>
-                          <TableHead>Violation Type</TableHead>
+                          <TableHead>Anomaly Type</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
