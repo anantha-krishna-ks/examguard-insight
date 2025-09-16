@@ -93,9 +93,9 @@ const advancedBehavioralData = [
 ];
 
 const technicalSecurityData = [
-  { category: 'Security A', alerts: 89, violations: 34, resolved: 28 },
-  { category: 'Security B', alerts: 56, violations: 19, resolved: 16 },
-  { category: 'Security C', alerts: 72, violations: 27, resolved: 22 },
+  { category: 'Test 1', systemIntegrity: 89, contentSecurity: 56, sessionRecording: 72 },
+  { category: 'Test 2', systemIntegrity: 67, contentSecurity: 43, sessionRecording: 58 },
+  { category: 'Test 3', systemIntegrity: 82, contentSecurity: 61, sessionRecording: 49 },
 ];
 
 const multiModalData = [
@@ -332,9 +332,9 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
                   <XAxis dataKey="category" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="alerts" fill="#8b5cf6" name="Alerts" />
-                  <Bar dataKey="violations" fill="#f59e0b" name="Violations" />
-                  <Bar dataKey="resolved" fill="#10b981" name="Resolved" />
+                  <Bar dataKey="systemIntegrity" fill="#8b5cf6" name="System Integrity Monitoring" />
+                  <Bar dataKey="contentSecurity" fill="#f59e0b" name="Content Security and Anti-Harvesting" />
+                  <Bar dataKey="sessionRecording" fill="#10b981" name="Session Recording and Documentation" />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-2 flex justify-between text-xs text-muted-foreground">

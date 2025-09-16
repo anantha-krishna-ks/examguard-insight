@@ -25,25 +25,25 @@ type FilterType = 'all' | 'flagged' | 'normal';
 
 // Mock data for different levels
 const testLevelData = [
-  { name: 'Test 1', alerts: 89, violations: 34, resolved: 28 },
-  { name: 'Test 2', alerts: 156, violations: 67, resolved: 52 },
-  { name: 'Test 3', alerts: 72, violations: 27, resolved: 22 },
-  { name: 'Test 4', alerts: 134, violations: 56, resolved: 43 },
-  { name: 'Test 5', alerts: 198, violations: 78, resolved: 65 },
+  { name: 'Test 1', systemIntegrity: 89, contentSecurity: 56, sessionRecording: 72 },
+  { name: 'Test 2', systemIntegrity: 67, contentSecurity: 43, sessionRecording: 58 },
+  { name: 'Test 3', systemIntegrity: 82, contentSecurity: 61, sessionRecording: 49 },
+  { name: 'Test 4', systemIntegrity: 134, contentSecurity: 78, sessionRecording: 91 },
+  { name: 'Test 5', systemIntegrity: 198, contentSecurity: 112, sessionRecording: 156 },
 ];
 
 const locationLevelData = [
-  { name: 'Location A', alerts: 234, violations: 89, resolved: 72 },
-  { name: 'Location B', alerts: 189, violations: 134, resolved: 98 },
-  { name: 'Location C', alerts: 156, violations: 67, resolved: 54 },
-  { name: 'Location D', alerts: 298, violations: 123, resolved: 89 },
+  { name: 'Location A', systemIntegrity: 234, contentSecurity: 134, sessionRecording: 189 },
+  { name: 'Location B', systemIntegrity: 189, contentSecurity: 98, sessionRecording: 156 },
+  { name: 'Location C', systemIntegrity: 156, contentSecurity: 87, sessionRecording: 123 },
+  { name: 'Location D', systemIntegrity: 298, contentSecurity: 167, sessionRecording: 234 },
 ];
 
 const testCenterLevelData = [
-  { name: 'Center 001', alerts: 67, violations: 23, resolved: 18 },
-  { name: 'Center 002', alerts: 89, violations: 34, resolved: 27 },
-  { name: 'Center 003', alerts: 123, violations: 45, resolved: 38 },
-  { name: 'Center 004', alerts: 78, violations: 29, resolved: 24 },
+  { name: 'Center 001', systemIntegrity: 67, contentSecurity: 34, sessionRecording: 45 },
+  { name: 'Center 002', systemIntegrity: 89, contentSecurity: 45, sessionRecording: 67 },
+  { name: 'Center 003', systemIntegrity: 123, contentSecurity: 67, sessionRecording: 89 },
+  { name: 'Center 004', systemIntegrity: 78, contentSecurity: 42, sessionRecording: 56 },
 ];
 
 const candidateData = [
@@ -233,23 +233,23 @@ export default function TechnicalSecurityPage() {
                       <YAxis />
                       <Tooltip content={<CustomTooltip />} />
                       <Bar 
-                        dataKey="alerts" 
+                        dataKey="systemIntegrity" 
                         fill="#8b5cf6" 
-                        name="Alerts"
+                        name="System Integrity Monitoring"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
                       <Bar 
-                        dataKey="violations" 
+                        dataKey="contentSecurity" 
                         fill="#f59e0b" 
-                        name="Violations"
+                        name="Content Security and Anti-Harvesting"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
                       <Bar 
-                        dataKey="resolved" 
+                        dataKey="sessionRecording" 
                         fill="#10b981" 
-                        name="Resolved"
+                        name="Session Recording and Documentation"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
