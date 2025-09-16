@@ -87,9 +87,8 @@ const personFitData = [
 
 // AI Based Technique mock data
 const advancedBehavioralData = [
-  { category: 'Pattern A', detected: 45, flagged: 12, verified: 8 },
-  { category: 'Pattern B', detected: 67, flagged: 23, verified: 15 },
-  { category: 'Pattern C', detected: 34, flagged: 8, verified: 5 },
+  { category: 'AI-Powered Behaviour Detection', detected: 45, flagged: 12, verified: 8 },
+  { category: 'Biometric Continuity Verification', detected: 67, flagged: 23, verified: 15 },
 ];
 
 const technicalSecurityData = [

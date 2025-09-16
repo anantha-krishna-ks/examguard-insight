@@ -25,11 +25,8 @@ type FilterType = 'all' | 'flagged' | 'normal';
 
 // Mock data for different levels
 const testLevelData = [
-  { name: 'Test 1', detected: 45, flagged: 12, verified: 8 },
-  { name: 'Test 2', detected: 67, flagged: 23, verified: 15 },
-  { name: 'Test 3', detected: 34, flagged: 8, verified: 5 },
-  { name: 'Test 4', detected: 56, flagged: 18, verified: 12 },
-  { name: 'Test 5', detected: 78, flagged: 25, verified: 19 },
+  { name: 'AI-Powered Behaviour Detection', detected: 45, flagged: 12, verified: 8 },
+  { name: 'Biometric Continuity Verification', detected: 67, flagged: 23, verified: 15 },
 ];
 
 const locationLevelData = [
