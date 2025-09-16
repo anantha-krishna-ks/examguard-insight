@@ -25,22 +25,25 @@ type FilterType = 'all' | 'flagged' | 'normal';
 
 // Mock data for different levels
 const testLevelData = [
-  { name: 'AI-Powered Behaviour Detection', detected: 45, flagged: 12, verified: 8 },
-  { name: 'Biometric Continuity Verification', detected: 67, flagged: 23, verified: 15 },
+  { name: 'Test 1', aiPowered: 45, biometric: 67 },
+  { name: 'Test 2', aiPowered: 32, biometric: 54 },
+  { name: 'Test 3', aiPowered: 28, biometric: 41 },
+  { name: 'Test 4', aiPowered: 56, biometric: 72 },
+  { name: 'Test 5', aiPowered: 78, biometric: 89 },
 ];
 
 const locationLevelData = [
-  { name: 'Location A', detected: 89, flagged: 34, verified: 25 },
-  { name: 'Location B', detected: 123, flagged: 45, verified: 32 },
-  { name: 'Location C', detected: 67, flagged: 23, verified: 18 },
-  { name: 'Location D', detected: 98, flagged: 38, verified: 28 },
+  { name: 'Location A', aiPowered: 89, biometric: 124 },
+  { name: 'Location B', aiPowered: 123, biometric: 167 },
+  { name: 'Location C', aiPowered: 67, biometric: 95 },
+  { name: 'Location D', aiPowered: 98, biometric: 134 },
 ];
 
 const testCenterLevelData = [
-  { name: 'Center 001', detected: 23, flagged: 8, verified: 5 },
-  { name: 'Center 002', detected: 34, flagged: 12, verified: 9 },
-  { name: 'Center 003', detected: 45, flagged: 16, verified: 11 },
-  { name: 'Center 004', detected: 29, flagged: 10, verified: 7 },
+  { name: 'Center 001', aiPowered: 23, biometric: 31 },
+  { name: 'Center 002', aiPowered: 34, biometric: 46 },
+  { name: 'Center 003', aiPowered: 45, biometric: 61 },
+  { name: 'Center 004', aiPowered: 29, biometric: 39 },
 ];
 
 const candidateData = [
@@ -230,23 +233,16 @@ export default function AdvancedBehavioralAnalyticsPage() {
                       <YAxis />
                       <Tooltip content={<CustomTooltip />} />
                       <Bar 
-                        dataKey="detected" 
+                        dataKey="aiPowered" 
                         fill="#3b82f6" 
-                        name="Detected"
+                        name="AI-Powered Behaviour Detection"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
                       <Bar 
-                        dataKey="flagged" 
-                        fill="#f59e0b" 
-                        name="Flagged"
-                        onClick={handleBarClick}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Bar 
-                        dataKey="verified" 
-                        fill="#ef4444" 
-                        name="Verified"
+                        dataKey="biometric" 
+                        fill="#10b981" 
+                        name="Biometric Continuity Verification"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
