@@ -25,6 +25,10 @@ interface BehavioralPatternSettings {
   answerChangePercentage: number;
 }
 
+interface AnswerSimilaritySettings {
+  g2CutOff: number;
+}
+
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -43,6 +47,10 @@ export default function SettingsPage() {
     wrTeRatio: 0.8,
     probabilityOfCorrectness: 0.9,
     answerChangePercentage: 15
+  });
+
+  const [answerSimilaritySettings, setAnswerSimilaritySettings] = useState<AnswerSimilaritySettings>({
+    g2CutOff: 3.09
   });
 
   const handleSave = () => {
@@ -67,6 +75,16 @@ export default function SettingsPage() {
     const numValue = parseFloat(value);
     if (!isNaN(numValue) && numValue >= 0) {
       setBehavioralSettings(prev => ({
+        ...prev,
+        [field]: numValue
+      }));
+    }
+  };
+
+  const handleAnswerSimilarityInputChange = (field: keyof AnswerSimilaritySettings, value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      setAnswerSimilaritySettings(prev => ({
         ...prev,
         [field]: numValue
       }));
@@ -129,7 +147,7 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Accordion type="multiple" className="w-full space-y-4" defaultValue={["response-time", "behavioral-pattern"]}>
+            <Accordion type="multiple" className="w-full space-y-4" defaultValue={["response-time", "behavioral-pattern", "answer-similarity"]}>
               
               {/* Response Time-Based Anomalies */}
               <AccordionItem value="response-time" className="border rounded-lg px-6 py-2 bg-background/50">
@@ -400,6 +418,47 @@ export default function SettingsPage() {
                         className="w-20 text-center"
                       />
                       <Label className="text-sm font-medium">% of attended items</Label>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Answer Similarity Configuration */}
+              <AccordionItem value="answer-similarity" className="border rounded-lg px-6 py-2 bg-background/50">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-500/10 rounded-lg">
+                      <Shield className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold text-lg">Answer Similarity</h3>
+                      <p className="text-sm text-muted-foreground">Configure thresholds for detecting answer similarity anomalies</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="pt-6 space-y-6">
+                  {/* G2 Cut-off */}
+                  <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
+                    <Label htmlFor="g2CutOff" className="text-base font-semibold flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <span>G2 Cut-off</span>
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Set the G2 statistic threshold for detecting answer similarity patterns between candidates.
+                    </p>
+                    <div className="flex items-center space-x-3 bg-background p-3 rounded-md">
+                      <Label htmlFor="g2CutOffInput" className="min-w-0 text-sm font-medium">
+                        G2 Cut-off threshold
+                      </Label>
+                      <Input
+                        id="g2CutOffInput"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={answerSimilaritySettings.g2CutOff}
+                        onChange={(e) => handleAnswerSimilarityInputChange('g2CutOff', e.target.value)}
+                        className="w-20 text-center"
+                      />
                     </div>
                   </div>
                 </AccordionContent>
