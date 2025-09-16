@@ -287,7 +287,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
           
           {/* Advanced Behavioural Analytics */}
           <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => onChartClick('advancedBehavioral', advancedBehavioralData)}>
+                onClick={() => navigate('/admin/advanced-behavioral-analytics')}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-4 w-4 text-blue-500" />
@@ -318,7 +318,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
 
           {/* Technical Security and Content Protection */}
           <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => onChartClick('technicalSecurity', technicalSecurityData)}>
+                onClick={() => navigate('/admin/technical-security')}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="h-4 w-4 text-purple-500" />
@@ -349,7 +349,7 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
 
           {/* Multi-Modal Data Capture */}
           <Card className="cursor-pointer hover:shadow-lg transition-shadow"
-                onClick={() => onChartClick('multiModal', multiModalData)}>
+                onClick={() => navigate('/admin/multi-modal-data-capture')}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="flex items-center space-x-2">
                 <Grid3X3 className="h-4 w-4 text-green-500" />

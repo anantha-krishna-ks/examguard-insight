@@ -19,6 +19,9 @@ import { BehavioralPatternAnalysisPage } from "./pages/admin/BehavioralPatternAn
 import { AnswerSimilarityAnalysisPage } from "./pages/admin/AnswerSimilarityAnalysisPage";
 import ComingSoonPage from "./pages/admin/ComingSoonPage";
 import SimulatorPage from "./pages/admin/SimulatorPage";
+import AdvancedBehavioralAnalyticsPage from "./pages/admin/AdvancedBehavioralAnalyticsPage";
+import TechnicalSecurityPage from "./pages/admin/TechnicalSecurityPage";
+import MultiModalDataCapturePage from "./pages/admin/MultiModalDataCapturePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +49,9 @@ const App = () => (
           <Route path="/admin/items" element={<ComingSoonPage />} />
           <Route path="/admin/simulator" element={<SimulatorPage />} />
           <Route path="/admin/similarity" element={<ComingSoonPage />} />
+          <Route path="/admin/advanced-behavioral-analytics" element={<AdvancedBehavioralAnalyticsPage />} />
+          <Route path="/admin/technical-security" element={<TechnicalSecurityPage />} />
+          <Route path="/admin/multi-modal-data-capture" element={<MultiModalDataCapturePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
