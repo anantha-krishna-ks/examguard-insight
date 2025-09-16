@@ -52,7 +52,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Flagged', 
     behavioralScore: 85, 
-    patternType: 'Sequential',
+    patternType: 'AI-Powered Behaviour Detection',
     flagged: true 
   },
   { 
@@ -61,7 +61,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Normal', 
     behavioralScore: 45, 
-    patternType: 'Random',
+    patternType: 'Biometric Continuity Verification',
     flagged: false 
   },
   { 
@@ -70,7 +70,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Flagged', 
     behavioralScore: 92, 
-    patternType: 'Clustering',
+    patternType: 'AI-Powered Behaviour Detection',
     flagged: true 
   },
   { 
@@ -79,7 +79,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Normal', 
     behavioralScore: 38, 
-    patternType: 'Random',
+    patternType: 'Biometric Continuity Verification',
     flagged: false 
   },
 ];
@@ -284,7 +284,7 @@ export default function AdvancedBehavioralAnalyticsPage() {
                           <TableHead>Test Center</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Behavioral Score</TableHead>
-                          <TableHead>Pattern Type</TableHead>
+                          <TableHead>Anomaly Type</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
