@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CandidateChartsModal } from "@/components/admin/CandidateChartsModal";
+import { AnomalyDetailModal } from "@/components/admin/AnomalyDetailModal";
 import { 
   BarChart, 
   Bar, 
@@ -93,6 +94,7 @@ export default function AdvancedBehavioralAnalyticsPage() {
   const [candidateFilter, setCandidateFilter] = useState<FilterType>('all');
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
   const [showCandidateModal, setShowCandidateModal] = useState(false);
+  const [showAnomalyModal, setShowAnomalyModal] = useState(false);
 
   const handleLevelChange = (level: ViewLevel) => {
     setCurrentLevel(level);
@@ -126,7 +128,7 @@ export default function AdvancedBehavioralAnalyticsPage() {
 
   const handleCandidateClick = (candidate: any) => {
     setSelectedCandidate(candidate);
-    setShowCandidateModal(true);
+    setShowAnomalyModal(true);
   };
 
   const getCurrentData = () => {
@@ -313,14 +315,24 @@ export default function AdvancedBehavioralAnalyticsPage() {
       )}
 
       {selectedCandidate && (
-        <CandidateChartsModal
-          isOpen={showCandidateModal}
-          onClose={() => {
-            setShowCandidateModal(false);
-            setSelectedCandidate(null);
-          }}
-          candidate={selectedCandidate}
-        />
+        <>
+          <CandidateChartsModal
+            isOpen={showCandidateModal}
+            onClose={() => {
+              setShowCandidateModal(false);
+              setSelectedCandidate(null);
+            }}
+            candidate={selectedCandidate}
+          />
+          <AnomalyDetailModal
+            isOpen={showAnomalyModal}
+            onClose={() => {
+              setShowAnomalyModal(false);
+              setSelectedCandidate(null);
+            }}
+            candidate={selectedCandidate}
+          />
+        </>
       )}
     </div>
   );
