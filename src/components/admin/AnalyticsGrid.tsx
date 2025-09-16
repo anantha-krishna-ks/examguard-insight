@@ -85,6 +85,25 @@ const personFitData = [
   { range: '0.8-1.0', count: 35, probability: 'Very High' },
 ];
 
+// AI Based Technique mock data
+const advancedBehavioralData = [
+  { category: 'Pattern A', detected: 45, flagged: 12, verified: 8 },
+  { category: 'Pattern B', detected: 67, flagged: 23, verified: 15 },
+  { category: 'Pattern C', detected: 34, flagged: 8, verified: 5 },
+];
+
+const technicalSecurityData = [
+  { category: 'Security A', alerts: 89, violations: 34, resolved: 28 },
+  { category: 'Security B', alerts: 56, violations: 19, resolved: 16 },
+  { category: 'Security C', alerts: 72, violations: 27, resolved: 22 },
+];
+
+const multiModalData = [
+  { category: 'Audio', captured: 234, processed: 189, analyzed: 167 },
+  { category: 'Video', captured: 198, processed: 156, analyzed: 142 },
+  { category: 'Screen', captured: 287, processed: 243, analyzed: 221 },
+];
+
 export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
   const navigate = useNavigate();
   const getSimilarityColor = (similarity: number) => {
@@ -259,6 +278,107 @@ export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {
           </div>
         </CardContent>
       </Card>
+      </div>
+
+      {/* AI Based Technique Section */}
+      <div className="space-y-6">
+        <h2 className="text-2xl font-semibold text-foreground">AI Based Technique</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Advanced Behavioural Analytics */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => onChartClick('advancedBehavioral', advancedBehavioralData)}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="h-4 w-4 text-blue-500" />
+                <CardTitle className="text-sm font-medium">Advanced Behavioural Analytics</CardTitle>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={advancedBehavioralData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="detected" fill="#3b82f6" name="Detected" />
+                  <Bar dataKey="flagged" fill="#f59e0b" name="Flagged" />
+                  <Bar dataKey="verified" fill="#ef4444" name="Verified" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>Behavioral pattern analysis</span>
+                <Badge variant="outline" className="text-blue-500 border-blue-500">
+                  AI Analytics
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Technical Security and Content Protection */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => onChartClick('technicalSecurity', technicalSecurityData)}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="h-4 w-4 text-purple-500" />
+                <CardTitle className="text-sm font-medium">Technical Security and Content Protection</CardTitle>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={technicalSecurityData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="alerts" fill="#8b5cf6" name="Alerts" />
+                  <Bar dataKey="violations" fill="#f59e0b" name="Violations" />
+                  <Bar dataKey="resolved" fill="#10b981" name="Resolved" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>Security monitoring results</span>
+                <Badge variant="outline" className="text-purple-500 border-purple-500">
+                  Security AI
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Multi-Modal Data Capture */}
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow"
+                onClick={() => onChartClick('multiModal', multiModalData)}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="flex items-center space-x-2">
+                <Grid3X3 className="h-4 w-4 text-green-500" />
+                <CardTitle className="text-sm font-medium">Multi-Modal Data Capture</CardTitle>
+              </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={multiModalData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="captured" fill="#059669" name="Captured" />
+                  <Bar dataKey="processed" fill="#0d9488" name="Processed" />
+                  <Bar dataKey="analyzed" fill="#0891b2" name="Analyzed" />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <span>Multi-modal data processing</span>
+                <Badge variant="outline" className="text-green-500 border-green-500">
+                  Data AI
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+        </div>
       </div>
     </div>
   );
