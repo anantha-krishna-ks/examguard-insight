@@ -53,7 +53,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Flagged', 
     behavioralScore: 85, 
-    patternType: 'AI-Powered Behaviour Detection',
+    patternType: 'Gaze Pattern Analysis',
     flagged: true 
   },
   { 
@@ -62,7 +62,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Normal', 
     behavioralScore: 45, 
-    patternType: 'Biometric Continuity Verification',
+    patternType: 'Continuous Facial Recognition',
     flagged: false 
   },
   { 
@@ -71,7 +71,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Flagged', 
     behavioralScore: 92, 
-    patternType: 'AI-Powered Behaviour Detection',
+    patternType: 'Micro-Expression Detection',
     flagged: true 
   },
   { 
@@ -80,7 +80,43 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Normal', 
     behavioralScore: 38, 
-    patternType: 'Biometric Continuity Verification',
+    patternType: 'Voice Pattern Verification',
+    flagged: false 
+  },
+  { 
+    id: 'C005', 
+    name: 'David Brown', 
+    testCenter: 'Center 001', 
+    status: 'Flagged', 
+    behavioralScore: 78, 
+    patternType: 'Posture and Movement Analysis',
+    flagged: true 
+  },
+  { 
+    id: 'C006', 
+    name: 'Emily Davis', 
+    testCenter: 'Center 003', 
+    status: 'Normal', 
+    behavioralScore: 52, 
+    patternType: 'Behavioural Biometric Monitoring',
+    flagged: false 
+  },
+  { 
+    id: 'C007', 
+    name: 'Robert Garcia', 
+    testCenter: 'Center 002', 
+    status: 'Flagged', 
+    behavioralScore: 89, 
+    patternType: 'Environmental Anomaly Detection',
+    flagged: true 
+  },
+  { 
+    id: 'C008', 
+    name: 'Lisa Martinez', 
+    testCenter: 'Center 004', 
+    status: 'Normal', 
+    behavioralScore: 41, 
+    patternType: 'Liveness Detection',
     flagged: false 
   },
 ];
