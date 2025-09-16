@@ -172,38 +172,58 @@ export default function AdvancedBehavioralAnalyticsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <AdminHeader />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/admin')}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Dashboard</span>
-            </Button>
-            <h1 className="text-3xl font-bold">{getCurrentTitle()}</h1>
+    <div className="min-h-screen bg-background p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate('/admin')}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Dashboard</span>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Advanced Behavioral Analytics</h1>
+            <p className="text-muted-foreground">
+              Hierarchical drill-down analysis at {currentLevel} level
+              {selectedLocation && ` - ${selectedLocation}`}
+              {selectedTestCenter && ` - ${selectedTestCenter}`}
+            </p>
           </div>
         </div>
+        <Badge variant="outline" className="text-blue-500 border-blue-500">
+          AI Analytics
+        </Badge>
+      </div>
 
-        <div className="space-y-6">
-          <Tabs value={currentLevel} onValueChange={(value) => handleLevelChange(value as ViewLevel)}>
-            <TabsList className="grid grid-cols-3 w-96">
-              <TabsTrigger value="test">Test Level</TabsTrigger>
-              <TabsTrigger value="location">Location Level</TabsTrigger>
-              <TabsTrigger value="testCenter">Test Center Level</TabsTrigger>
+      {/* Level Selector Tabs */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Filter className="h-5 w-5" />
+            <span>Analysis Level</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={currentLevel} onValueChange={(value) => handleLevelChange(value as ViewLevel)} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="test">Test</TabsTrigger>
+              <TabsTrigger value="location">Location</TabsTrigger>
+              <TabsTrigger value="testCenter">Test Center</TabsTrigger>
             </TabsList>
+          </Tabs>
+        </CardContent>
+      </Card>
 
-            <TabsContent value={currentLevel} className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Behavioral Pattern Analysis</CardTitle>
-                </CardHeader>
-                <CardContent>
+      {/* Main Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Behavioral Pattern Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
                   <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={getCurrentData()} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -233,12 +253,12 @@ export default function AdvancedBehavioralAnalyticsPage() {
                       />
                     </BarChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
+        </CardContent>
+      </Card>
 
-              {showCandidates && currentLevel === 'testCenter' && (
-                <Card>
-                  <CardHeader>
+      {showCandidates && currentLevel === 'testCenter' && (
+        <Card>
+          <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle>Candidate List - {selectedTestCenter}</CardTitle>
                       <div className="flex items-center space-x-2">
@@ -254,9 +274,9 @@ export default function AdvancedBehavioralAnalyticsPage() {
                         </select>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
+          </CardHeader>
+          <CardContent>
+            <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Candidate ID</TableHead>
@@ -287,14 +307,10 @@ export default function AdvancedBehavioralAnalyticsPage() {
                           </TableRow>
                         ))}
                       </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
 
       {selectedCandidate && (
         <CandidateChartsModal
