@@ -45,7 +45,15 @@ export function TechnicalSecurityModal({ isOpen, onClose, candidate }: Technical
 
   if (!candidate) return null;
 
-  const isSystemIntegrity = candidate.violationType === "System Integrity Monitoring";
+  // Check if it's a System Integrity type
+  const systemIntegrityTypes = [
+    'Process-Level Forensics',
+    'Network Traffic Analysis', 
+    'Resource Utilization Monitoring',
+    'Virtualization and Sandboxing Detection'
+  ];
+  
+  const isSystemIntegrity = systemIntegrityTypes.includes(candidate.violationType);
   const currentMetrics = isSystemIntegrity ? systemIntegrityMetrics : contentSecurityMetrics;
 
   const handleExport = (format: string) => {

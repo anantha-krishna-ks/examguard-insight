@@ -53,7 +53,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Flagged', 
     securityScore: 78, 
-    violationType: 'System Integrity Monitoring',
+    violationType: 'Process-Level Forensics',
     flagged: true 
   },
   { 
@@ -62,7 +62,7 @@ const candidateData = [
     testCenter: 'Center 001', 
     status: 'Normal', 
     securityScore: 23, 
-    violationType: 'Content Security and Anti-Harvesting',
+    violationType: 'Screen Recording Prevention',
     flagged: false 
   },
   { 
@@ -71,7 +71,7 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Flagged', 
     securityScore: 89, 
-    violationType: 'System Integrity Monitoring',
+    violationType: 'Network Traffic Analysis',
     flagged: true 
   },
   { 
@@ -80,7 +80,43 @@ const candidateData = [
     testCenter: 'Center 002', 
     status: 'Normal', 
     securityScore: 15, 
-    violationType: 'Content Security and Anti-Harvesting',
+    violationType: 'Watermarking and Tracking',
+    flagged: false 
+  },
+  { 
+    id: 'C005', 
+    name: 'David Brown', 
+    testCenter: 'Center 003', 
+    status: 'Flagged', 
+    securityScore: 82, 
+    violationType: 'Resource Utilization Monitoring',
+    flagged: true 
+  },
+  { 
+    id: 'C006', 
+    name: 'Emily Davis', 
+    testCenter: 'Center 001', 
+    status: 'Normal', 
+    securityScore: 31, 
+    violationType: 'Dynamic Content Delivery',
+    flagged: false 
+  },
+  { 
+    id: 'C007', 
+    name: 'Robert Garcia', 
+    testCenter: 'Center 004', 
+    status: 'Flagged', 
+    securityScore: 76, 
+    violationType: 'Virtualization and Sandboxing Detection',
+    flagged: true 
+  },
+  { 
+    id: 'C008', 
+    name: 'Lisa Martinez', 
+    testCenter: 'Center 002', 
+    status: 'Normal', 
+    securityScore: 28, 
+    violationType: 'Clipboard and Input Monitoring',
     flagged: false 
   },
 ];
