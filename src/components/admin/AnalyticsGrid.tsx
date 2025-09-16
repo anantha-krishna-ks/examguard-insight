@@ -99,9 +99,7 @@ const technicalSecurityData = [
 ];
 
 const multiModalData = [
-  { category: 'Audio', captured: 234, processed: 189, analyzed: 167 },
-  { category: 'Video', captured: 198, processed: 156, analyzed: 142 },
-  { category: 'Screen', captured: 287, processed: 243, analyzed: 221 },
+  { category: 'Multi-Modal Data Capture', captured: 719, processed: 588, analyzed: 530 },
 ];
 
 export function AnalyticsGrid({ onChartClick }: AnalyticsGridProps) {

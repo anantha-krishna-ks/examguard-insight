@@ -24,25 +24,25 @@ type FilterType = 'all' | 'flagged' | 'normal';
 
 // Mock data for different levels
 const testLevelData = [
-  { name: 'Test 1', captured: 234, processed: 189, analyzed: 167 },
-  { name: 'Test 2', captured: 298, processed: 256, analyzed: 221 },
-  { name: 'Test 3', captured: 156, processed: 134, analyzed: 118 },
-  { name: 'Test 4', captured: 367, processed: 298, analyzed: 254 },
-  { name: 'Test 5', captured: 423, processed: 356, analyzed: 312 },
+  { name: 'Test 1', multiModalDataCapture: 234 },
+  { name: 'Test 2', multiModalDataCapture: 298 },
+  { name: 'Test 3', multiModalDataCapture: 156 },
+  { name: 'Test 4', multiModalDataCapture: 367 },
+  { name: 'Test 5', multiModalDataCapture: 423 },
 ];
 
 const locationLevelData = [
-  { name: 'Location A', captured: 567, processed: 489, analyzed: 423 },
-  { name: 'Location B', captured: 734, processed: 623, analyzed: 556 },
-  { name: 'Location C', captured: 445, processed: 378, analyzed: 334 },
-  { name: 'Location D', captured: 623, processed: 534, analyzed: 467 },
+  { name: 'Location A', multiModalDataCapture: 567 },
+  { name: 'Location B', multiModalDataCapture: 734 },
+  { name: 'Location C', multiModalDataCapture: 445 },
+  { name: 'Location D', multiModalDataCapture: 623 },
 ];
 
 const testCenterLevelData = [
-  { name: 'Center 001', captured: 134, processed: 112, analyzed: 98 },
-  { name: 'Center 002', captured: 189, processed: 156, analyzed: 134 },
-  { name: 'Center 003', captured: 223, processed: 189, analyzed: 167 },
-  { name: 'Center 004', captured: 167, processed: 143, analyzed: 123 },
+  { name: 'Center 001', multiModalDataCapture: 134 },
+  { name: 'Center 002', multiModalDataCapture: 189 },
+  { name: 'Center 003', multiModalDataCapture: 223 },
+  { name: 'Center 004', multiModalDataCapture: 167 },
 ];
 
 const candidateData = [
@@ -230,24 +230,10 @@ export default function MultiModalDataCapturePage() {
                       <XAxis dataKey="name" />
                       <YAxis />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar 
-                        dataKey="captured" 
+                       <Bar 
+                        dataKey="multiModalDataCapture" 
                         fill="#059669" 
-                        name="Captured"
-                        onClick={handleBarClick}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Bar 
-                        dataKey="processed" 
-                        fill="#0d9488" 
-                        name="Processed"
-                        onClick={handleBarClick}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Bar 
-                        dataKey="analyzed" 
-                        fill="#0891b2" 
-                        name="Analyzed"
+                        name="Multi-Modal Data Capture"
                         onClick={handleBarClick}
                         style={{ cursor: 'pointer' }}
                       />
