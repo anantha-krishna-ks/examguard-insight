@@ -150,7 +150,7 @@ export default function SettingsPage() {
             <Accordion type="multiple" className="w-full space-y-4" defaultValue={["response-time", "behavioral-pattern", "answer-similarity"]}>
               
               {/* Response Time-Based Anomalies */}
-              <AccordionItem value="response-time" className="border rounded-lg px-6 py-2 bg-card shadow-sm border-border/60">
+              <AccordionItem value="response-time" className="border rounded-lg px-6 py-2 bg-background/50">
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -281,7 +281,7 @@ export default function SettingsPage() {
               </AccordionItem>
 
               {/* Behavioural Pattern Anomaly */}
-              <AccordionItem value="behavioral-pattern" className="border rounded-lg px-6 py-2 bg-card shadow-sm border-border/60">
+              <AccordionItem value="behavioral-pattern" className="border rounded-lg px-6 py-2 bg-background/50">
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-purple-500/10 rounded-lg">
@@ -424,7 +424,7 @@ export default function SettingsPage() {
               </AccordionItem>
 
               {/* Answer Similarity Configuration */}
-              <AccordionItem value="answer-similarity" className="border rounded-lg px-6 py-2 bg-card shadow-sm border-border/60">
+              <AccordionItem value="answer-similarity" className="border rounded-lg px-6 py-2 bg-background/50">
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-green-500/10 rounded-lg">
