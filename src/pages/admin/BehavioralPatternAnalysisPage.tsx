@@ -175,25 +175,28 @@ const perItemChangesData = {
 
 const responseTimeWindowData = {
   'HYD-001': [
-    { timeWindow: '0-5s', changes: 12, mostModifiedItem: 'Item 3' },
-    { timeWindow: '5-10s', changes: 8, mostModifiedItem: 'Item 1' },
-    { timeWindow: '10-15s', changes: 6, mostModifiedItem: 'Item 5' },
-    { timeWindow: '15-20s', changes: 4, mostModifiedItem: 'Item 2' },
-    { timeWindow: '20-25s', changes: 3, mostModifiedItem: 'Item 4' },
+    { timeWindow: '<5 secs', changes: 12 },
+    { timeWindow: '>=5 secs', changes: 21 },
   ],
   'HYD-002': [
-    { timeWindow: '0-5s', changes: 9, mostModifiedItem: 'Item 2' },
-    { timeWindow: '5-10s', changes: 6, mostModifiedItem: 'Item 1' },
-    { timeWindow: '10-15s', changes: 4, mostModifiedItem: 'Item 4' },
-    { timeWindow: '15-20s', changes: 3, mostModifiedItem: 'Item 3' },
-    { timeWindow: '20-25s', changes: 2, mostModifiedItem: 'Item 5' },
+    { timeWindow: '<5 secs', changes: 9 },
+    { timeWindow: '>=5 secs', changes: 15 },
   ],
   'HYD-003': [
-    { timeWindow: '0-5s', changes: 18, mostModifiedItem: 'Item 5' },
-    { timeWindow: '5-10s', changes: 14, mostModifiedItem: 'Item 2' },
-    { timeWindow: '10-15s', changes: 10, mostModifiedItem: 'Item 1' },
-    { timeWindow: '15-20s', changes: 8, mostModifiedItem: 'Item 3' },
-    { timeWindow: '20-25s', changes: 5, mostModifiedItem: 'Item 4' },
+    { timeWindow: '<5 secs', changes: 18 },
+    { timeWindow: '>=5 secs', changes: 37 },
+  ],
+  'HYD-004': [
+    { timeWindow: '<5 secs', changes: 15 },
+    { timeWindow: '>=5 secs', changes: 28 },
+  ],
+  'HYD-005': [
+    { timeWindow: '<5 secs', changes: 11 },
+    { timeWindow: '>=5 secs', changes: 19 },
+  ],
+  'HYD-006': [
+    { timeWindow: '<5 secs', changes: 22 },
+    { timeWindow: '>=5 secs', changes: 43 },
   ],
 };
 
@@ -625,36 +628,30 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <BarChart3 className="h-5 w-5 text-purple-500" />
-                    <span>Response Changes in 5s Time Windows</span>
+                    <span>Response Changes by Time Categories</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={getCurrentResponseTimeData()}>
+                    <BarChart data={getCurrentResponseTimeData()}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="timeWindow" />
                       <YAxis />
                       <Tooltip 
-                        labelFormatter={(label) => `Time Window: ${label}`}
-                        formatter={(value, name, props) => [
-                          value,
-                          'Changes',
-                          `Most Modified: ${props.payload.mostModifiedItem}`
-                        ]}
+                        labelFormatter={(label) => `Time Category: ${label}`}
+                        formatter={(value) => [value, 'Changes']}
                       />
-                      <Line 
-                        type="monotone" 
+                      <Bar 
                         dataKey="changes" 
-                        stroke="#8b5cf6" 
-                        strokeWidth={3}
-                        dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
+                        fill="#8b5cf6" 
+                        name="Changes"
                       />
-                    </LineChart>
+                    </BarChart>
                   </ResponsiveContainer>
                   <div className="mt-4 p-3 bg-muted/20 rounded text-sm">
-                    <p className="font-medium">Time Window Analysis:</p>
+                    <p className="font-medium">Time Category Analysis:</p>
                     <p className="text-xs text-muted-foreground">
-                      Line plot shows response changes within 5-second intervals. Hover over points to see the most modified item in each window.
+                      Bar chart shows response changes categorized by time: responses made in under 5 seconds vs 5 seconds or more.
                     </p>
                   </div>
                 </CardContent>
