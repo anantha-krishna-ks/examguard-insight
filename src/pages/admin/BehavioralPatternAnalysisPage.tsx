@@ -283,7 +283,11 @@ export function BehavioralPatternAnalysisPage({}: BehavioralPatternAnalysisPageP
     if (viewLevel === 'testcenter' && selectedTestCenter) {
       return responseTimeWindowData[selectedTestCenter as keyof typeof responseTimeWindowData] || [];
     }
-    return [];
+    // Default data for all view levels
+    return [
+      { timeWindow: '<5 secs', changes: 15 },
+      { timeWindow: '>=5 secs', changes: 28 },
+    ];
   };
 
   const getCurrentProbabilityData = () => {
