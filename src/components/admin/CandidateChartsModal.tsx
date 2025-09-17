@@ -57,17 +57,10 @@ const anomalyData = [
   { time: 6, probability: 0.05, itemNo: 6, outlierScore: 20.004859271615384 }
 ];
 
-// Mock data for item time frequency distribution
+// Mock data for response time analysis - 2 bars
 const timeFrequencyData = [
-  { timeRange: "0-30s", frequency: 8 },
-  { timeRange: "31-60s", frequency: 15 },
-  { timeRange: "61-90s", frequency: 22 },
-  { timeRange: "91-120s", frequency: 18 },
-  { timeRange: "121-150s", frequency: 12 },
-  { timeRange: "151-180s", frequency: 8 },
-  { timeRange: "181-210s", frequency: 5 },
-  { timeRange: "211-240s", frequency: 3 },
-  { timeRange: "241s+", frequency: 2 }
+  { timeRange: "<5 secs", frequency: 35 },
+  { timeRange: ">=5 secs", frequency: 65 }
 ];
 
 // Mock data for individual anomaly frequency charts
@@ -507,7 +500,7 @@ export function CandidateChartsModal({ candidate, isOpen, onClose }: CandidateCh
               </CardHeader>
               <CardContent className="pt-0">
                 <ResponsiveContainer width="100%" height={320}>
-                  <BarChart data={timeFrequencyData.slice(0, 3)} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
+                  <BarChart data={timeFrequencyData} margin={{ top: 10, right: 10, left: 10, bottom: 30 }}>
                      <defs>
                        <linearGradient id="rapidGradient" x1="0" y1="0" x2="0" y2="1">
                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
